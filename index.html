@@ -6,6 +6,7 @@
     <title>BUCH DER BEGIERDE</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg: #0a0806;
@@ -24,6 +25,8 @@
             --wärme: #8b5e2f;
             --licht: #9b8a5e;
             --schatten: #2a1f1a;
+            --db-ok: #4a8c5c;
+            --db-err: #8c4a4a;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -43,7 +46,6 @@
             position: relative;
         }
 
-        /* ===== 氛围背景层 ===== */
         .atmosphere {
             position: fixed;
             top: 0; left: 0;
@@ -88,7 +90,6 @@
             background-size: 256px 256px;
         }
 
-        /* ===== 浮动粒子 ===== */
         .particles-container {
             position: fixed;
             top: 0; left: 0;
@@ -113,7 +114,6 @@
             100% { opacity: 0; transform: translateY(-10vh) scale(1.2); }
         }
 
-        /* ===== Header & Navigation ===== */
         header {
             position: fixed;
             top: 0; left: 0;
@@ -199,17 +199,9 @@
             transform: translateX(-50%);
         }
 
-        nav a:hover {
-            color: var(--fg);
-            border-color: var(--card-border);
-        }
-
+        nav a:hover { color: var(--fg); border-color: var(--card-border); }
         nav a:hover::after { width: 60%; }
-
-        nav a.active {
-            color: var(--accent);
-            border-color: rgba(196,70,58,0.25);
-        }
+        nav a.active { color: var(--accent); border-color: rgba(196,70,58,0.25); }
 
         .nav-status {
             display: flex;
@@ -239,7 +231,33 @@
             letter-spacing: 0.1em;
         }
 
-        /* ===== 主内容区 ===== */
+        .db-status {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-left: 1rem;
+            padding-left: 1rem;
+            border-left: 1px solid var(--border);
+        }
+
+        .db-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--db-err);
+            transition: background 0.4s ease;
+        }
+
+        .db-dot.connected { background: var(--db-ok); box-shadow: 0 0 6px rgba(74,140,92,0.4); }
+
+        .db-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.45rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--fg-muted);
+            transition: color 0.4s ease;
+        }
+
         main {
             position: relative;
             z-index: 10;
@@ -248,7 +266,6 @@
             margin: 0 auto;
         }
 
-        /* ===== Willkommen & Stimmung ===== */
         .section-willkommen {
             padding: 3rem 2rem 2rem;
             text-align: center;
@@ -339,14 +356,8 @@
             transition: all 0.4s ease;
         }
 
-        .stimmung-item:hover .stimmung-ring {
-            border-color: var(--gold-dim);
-            transform: scale(1.1);
-        }
-
-        .stimmung-item:hover .stimmung-ring::before {
-            border-color: rgba(184,148,62,0.1);
-        }
+        .stimmung-item:hover .stimmung-ring { border-color: var(--gold-dim); transform: scale(1.1); }
+        .stimmung-item:hover .stimmung-ring::before { border-color: rgba(184,148,62,0.1); }
 
         .stimmung-label {
             font-family: 'JetBrains Mono', monospace;
@@ -356,7 +367,6 @@
             color: var(--fg-muted);
         }
 
-        /* ===== 网格布局 ===== */
         .grid-main {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -365,7 +375,6 @@
             padding: 1rem 2rem 3rem;
         }
 
-        /* ===== 通用面板 ===== */
         .panel {
             background: var(--card);
             border: 1px solid var(--card-border);
@@ -376,9 +385,7 @@
             transition: border-color 0.4s ease;
         }
 
-        .panel:hover {
-            border-color: rgba(180, 148, 62, 0.3);
-        }
+        .panel:hover { border-color: rgba(180, 148, 62, 0.3); }
 
         .panel::before {
             content: '';
@@ -434,7 +441,6 @@
             font-weight: 300;
         }
 
-        /* ===== Wortfragment-Selektor ===== */
         .panel-selektor { grid-column: 1; grid-row: 1; }
 
         .fragment-tags {
@@ -475,11 +481,7 @@
         .fragment-tag[data-type="staub"]::before { background: rgba(138,126,112,0.1); }
         .fragment-tag[data-type="atem"]::before { background: rgba(196,70,58,0.1); }
 
-        .fragment-tag:hover {
-            border-color: var(--gold-dim);
-            color: var(--fg);
-        }
-
+        .fragment-tag:hover { border-color: var(--gold-dim); color: var(--fg); }
         .fragment-tag:hover::before { opacity: 1; }
 
         .fragment-tag.selected {
@@ -538,7 +540,6 @@
             text-align: right;
         }
 
-        /* ===== Das Echo der LeserIn ===== */
         .panel-echo { grid-column: 2; grid-row: 1; }
 
         .echo-visual {
@@ -589,7 +590,6 @@
             margin-top: 0.3rem;
         }
 
-        /* ===== Geschichte ===== */
         .panel-geschichte {
             grid-column: 1 / 3;
             grid-row: 2;
@@ -650,7 +650,6 @@
         }
 
         .geschichts-text .highlight:hover { color: var(--accent-glow); }
-
         .geschichts-text .dim { color: var(--fg-muted); }
 
         .geschichts-controls {
@@ -669,7 +668,6 @@
             letter-spacing: 0.15em;
         }
 
-        /* ===== QR-Scanner ===== */
         .panel-qr { grid-column: 1; grid-row: 3; }
 
         .qr-viewport {
@@ -718,11 +716,7 @@
             opacity: 0.3;
         }
 
-        .qr-cell {
-            background: var(--fg-muted);
-            border-radius: 1px;
-        }
-
+        .qr-cell { background: var(--fg-muted); border-radius: 1px; }
         .qr-cell.empty { background: transparent; }
 
         .qr-status {
@@ -736,7 +730,6 @@
 
         .qr-status .scanning { color: var(--accent); }
 
-        /* ===== Story-State & Memory ===== */
         .panel-memory { grid-column: 2; grid-row: 3; }
 
         .memory-nodes {
@@ -757,15 +750,8 @@
             cursor: default;
         }
 
-        .memory-node:hover {
-            border-color: var(--card-border);
-            background: rgba(10,8,6,0.7);
-        }
-
-        .memory-node.active {
-            border-color: rgba(196,70,58,0.3);
-            background: rgba(196,70,58,0.05);
-        }
+        .memory-node:hover { border-color: var(--card-border); background: rgba(10,8,6,0.7); }
+        .memory-node.active { border-color: rgba(196,70,58,0.3); background: rgba(196,70,58,0.05); }
 
         .node-indicator {
             width: 8px; height: 8px;
@@ -779,31 +765,11 @@
         .node-indicator.empty { background: var(--border); }
 
         .node-info { flex: 1; }
+        .node-name { font-size: 0.8rem; color: var(--fg); font-weight: 400; }
+        .node-detail { font-family: 'JetBrains Mono', monospace; font-size: 0.45rem; color: var(--fg-muted); letter-spacing: 0.05em; margin-top: 0.15rem; }
+        .node-weight { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: var(--gold-dim); }
 
-        .node-name {
-            font-size: 0.8rem;
-            color: var(--fg);
-            font-weight: 400;
-        }
-
-        .node-detail {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.45rem;
-            color: var(--fg-muted);
-            letter-spacing: 0.05em;
-            margin-top: 0.15rem;
-        }
-
-        .node-weight {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.55rem;
-            color: var(--gold-dim);
-        }
-
-        /* ===== Eingabe-Panel ===== */
-        .section-eingabe {
-            padding: 0 2rem 3rem;
-        }
+        .section-eingabe { padding: 0 2rem 3rem; }
 
         .eingabe-panel {
             background: var(--card);
@@ -822,9 +788,7 @@
             opacity: 0.2;
         }
 
-        .eingabe-area {
-            margin-top: 1rem;
-        }
+        .eingabe-area { margin-top: 1rem; }
 
         .eingabe-textarea {
             width: 100%;
@@ -841,14 +805,8 @@
             transition: border-color 0.3s ease;
         }
 
-        .eingabe-textarea::placeholder {
-            color: rgba(138,126,112,0.4);
-            font-style: italic;
-        }
-
-        .eingabe-textarea:focus {
-            border-color: var(--gold-dim);
-        }
+        .eingabe-textarea::placeholder { color: rgba(138,126,112,0.4); font-style: italic; }
+        .eingabe-textarea:focus { border-color: var(--gold-dim); }
 
         .eingabe-actions {
             display: flex;
@@ -859,11 +817,7 @@
             gap: 0.8rem;
         }
 
-        .eingabe-meta {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
+        .eingabe-meta { display: flex; align-items: center; gap: 1.5rem; }
 
         .meta-item {
             font-family: 'JetBrains Mono', monospace;
@@ -876,11 +830,7 @@
         }
 
         .meta-item i { font-size: 0.55rem; color: var(--gold-dim); }
-
-        .btn-group {
-            display: flex;
-            gap: 0.6rem;
-        }
+        .btn-group { display: flex; gap: 0.6rem; }
 
         .btn {
             font-family: 'JetBrains Mono', monospace;
@@ -907,31 +857,17 @@
             z-index: 0;
         }
 
-        .btn:hover {
-            border-color: var(--accent);
-            color: var(--fg);
-        }
-
+        .btn:hover { border-color: var(--accent); color: var(--fg); }
         .btn:hover::before { transform: translateX(0); }
-
         .btn span { position: relative; z-index: 1; }
 
-        .btn-primary {
-            border-color: var(--accent);
-            color: var(--accent-glow);
-        }
-
+        .btn-primary { border-color: var(--accent); color: var(--accent-glow); }
         .btn-primary::before { opacity: 1; }
         .btn-primary span { color: var(--fg); }
 
-        .btn-ghost:hover {
-            border-color: var(--gold-dim);
-            color: var(--gold);
-        }
-
+        .btn-ghost:hover { border-color: var(--gold-dim); color: var(--gold); }
         .btn-ghost::before { display: none; }
 
-        /* ===== Toast ===== */
         .toast-container {
             position: fixed;
             top: 80px; right: 2rem;
@@ -958,10 +894,8 @@
         }
 
         .toast.show { transform: translateX(0); }
-
         .toast i { color: var(--gold); font-size: 0.7rem; }
 
-        /* ===== Footer ===== */
         footer {
             position: relative;
             z-index: 10;
@@ -976,20 +910,16 @@
             letter-spacing: 0.1em;
         }
 
-        /* ===== 响应式 ===== */
         @media (max-width: 900px) {
-            .grid-main {
-                grid-template-columns: 1fr;
-            }
+            .grid-main { grid-template-columns: 1fr; }
             .panel-selektor { grid-column: 1; grid-row: 1; }
             .panel-echo { grid-column: 1; grid-row: 2; }
             .panel-geschichte { grid-column: 1; grid-row: 3; }
             .panel-qr { grid-column: 1; grid-row: 4; }
             .panel-memory { grid-column: 1; grid-row: 5; }
-
             nav { display: none; }
             .nav-status { display: none; }
-
+            .db-status { display: none; }
             header { padding: 1rem 1.2rem 2rem; }
             .section-willkommen { padding: 2rem 1.2rem 1.5rem; }
             .grid-main { padding: 1rem 1.2rem 2rem; }
@@ -997,7 +927,6 @@
             .eingabe-panel { padding: 1.2rem; }
         }
 
-        /* ===== 减少动效 ===== */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
@@ -1005,7 +934,6 @@
             }
         }
 
-        /* ===== 入场动画 ===== */
         .fade-in {
             opacity: 0;
             transform: translateY(20px);
@@ -1019,12 +947,10 @@
     </style>
 </head>
 <body>
-    <!-- 氛围层 -->
     <div class="atmosphere"></div>
     <div class="grain-overlay"></div>
     <div class="particles-container" id="particles"></div>
 
-    <!-- Header & Navigation -->
     <header>
         <div class="logo-group">
             <div class="logo-icon"><span>B</span></div>
@@ -1043,13 +969,15 @@
             <div class="status-dot"></div>
             <span class="status-text">LESEMODUS AKTIV</span>
         </div>
+        <div class="db-status" id="dbStatus">
+            <div class="db-dot" id="dbDot"></div>
+            <span class="db-label" id="dbLabel">OFFLINE</span>
+        </div>
     </header>
 
-    <!-- Toast 容器 -->
     <div class="toast-container" id="toastContainer"></div>
 
     <main>
-        <!-- Willkommen & Stimmung -->
         <section class="section-willkommen fade-in" id="willkommen">
             <div class="willkommen-label">Kapitel III — Die begierige Nacht</div>
             <h1 class="willkommen-title">Buch der <em>Begierde</em></h1>
@@ -1081,19 +1009,14 @@
             </div>
         </section>
 
-        <!-- 主网格 -->
         <div class="grid-main">
-            <!-- Wortfragment-Selektor -->
             <div class="panel panel-selektor fade-in" id="selektor">
                 <div class="panel-header">
                     <span class="panel-tag"><i class="fas fa-puzzle-piece"></i> Wortfragment — Selektor</span>
                     <span class="panel-id">MOD.04</span>
                 </div>
                 <div class="panel-title">Wähle dein Fragment</div>
-                <p class="panel-desc">
-                    Jedes Wortfragment trägt eine eigene Resonanz. Die Kombination 
-                    bestimmt die Stimmung des nächsten Abschnitts.
-                </p>
+                <p class="panel-desc">Jedes Wortfragment trägt eine eigene Resonanz. Die Kombination bestimmt die Stimmung des nächsten Abschnitts.</p>
                 <div class="fragment-tags" id="fragmentTags">
                     <div class="fragment-tag" data-type="samt">Samt</div>
                     <div class="fragment-tag" data-type="kälte">Kälte</div>
@@ -1110,17 +1033,13 @@
                 </div>
             </div>
 
-            <!-- Das Echo der LeserIn -->
             <div class="panel panel-echo fade-in">
                 <div class="panel-header">
                     <span class="panel-tag"><i class="fas fa-wave-square"></i> Das Echo der LeserIn</span>
                     <span class="panel-id">ALG.07</span>
                 </div>
                 <div class="panel-title">Dein Echo im Text</div>
-                <p class="panel-desc">
-                    Der Algorithmus misst die Resonanz deiner Lesebewegungen 
-                    und formt daraus das Echo deiner Anwesenheit.
-                </p>
+                <p class="panel-desc">Der Algorithmus misst die Resonanz deiner Lesebewegungen und formt daraus das Echo deiner Anwesenheit.</p>
                 <div class="echo-visual" id="echoVisual"></div>
                 <div class="echo-metrics">
                     <div class="metric">
@@ -1138,7 +1057,6 @@
                 </div>
             </div>
 
-            <!-- Geschichte -->
             <div class="panel panel-geschichte fade-in" id="geschichte">
                 <div class="panel-header">
                     <span class="panel-tag"><i class="fas fa-scroll"></i> Geschichte — Simuliertes Dokument</span>
@@ -1151,7 +1069,7 @@
                         das jede Bewegung verschluckte. In den Straßen gab es nur das 
                         gedämpfte</span> <span class="highlight" data-note="Atem: Lebendigkeit im Dunkeln">Atmen</span>
                         <span class="dim"> der Laternen und das flüchtige</span> 
-                        <span class="highlight" data-note="Schatten: Das Verborgene">Echo von Schritten</highlight>
+                        <span class="highlight" data-note="Schatten: Das Verborgene">Echo von Schritten</span>
                         <span class="dim">, die sich nicht zuordnen ließen.</span>
                     </div>
                     <span class="doc-page-num">S. 47 / 312</span>
@@ -1163,17 +1081,13 @@
                 </div>
             </div>
 
-            <!-- QR-Scanner -->
             <div class="panel panel-qr fade-in">
                 <div class="panel-header">
                     <span class="panel-tag"><i class="fas fa-qrcode"></i> QR — Scanner</span>
                     <span class="panel-id">EXT.02</span>
                 </div>
                 <div class="panel-title">Physisches verknüpfen</div>
-                <p class="panel-desc" style="text-align:center; font-size:0.8rem;">
-                    Scanne das QR-Muster, um ein physisches Objekt 
-                    mit der aktuellen Geschichte zu verbinden.
-                </p>
+                <p class="panel-desc" style="text-align:center; font-size:0.8rem;">Scanne das QR-Muster, um ein physisches Objekt mit der aktuellen Geschichte zu verbinden.</p>
                 <div class="qr-viewport" id="qrViewport">
                     <div class="qr-corner tl"></div>
                     <div class="qr-corner tr"></div>
@@ -1187,16 +1101,13 @@
                 </div>
             </div>
 
-            <!-- Story-State & Memory -->
             <div class="panel panel-memory fade-in">
                 <div class="panel-header">
                     <span class="panel-tag"><i class="fas fa-brain"></i> Story-State & Memory</span>
                     <span class="panel-id">MEM.09</span>
                 </div>
                 <div class="panel-title">Gedächtnis des Textes</div>
-                <p class="panel-desc" style="font-size:0.8rem; margin-bottom:0.5rem;">
-                    Verknüpfte Erinnerungspuren, die den Verlauf der Geschichte beeinflussen.
-                </p>
+                <p class="panel-desc" style="font-size:0.8rem; margin-bottom:0.5rem;">Verknüpfte Erinnerungspuren, die den Verlauf der Geschichte beeinflussen.</p>
                 <div class="memory-nodes" id="memoryNodes">
                     <div class="memory-node active">
                         <div class="node-indicator filled"></div>
@@ -1242,7 +1153,6 @@
             </div>
         </div>
 
-        <!-- Eingabe-Panel -->
         <section class="section-eingabe fade-in" id="eingabe">
             <div class="eingabe-panel">
                 <div class="panel-header">
@@ -1257,7 +1167,7 @@
                     <div class="eingabe-meta">
                         <span class="meta-item"><i class="fas fa-font"></i> <span id="charCount">0</span> Zeichen</span>
                         <span class="meta-item"><i class="fas fa-clock"></i> <span id="timeStamp">--:--:--</span></span>
-                        <span class="meta-item"><i class="fas fa-fingerprint"></i> LeserIn #<span id="readerId">7842</span></span>
+                        <span class="meta-item"><i class="fas fa-fingerprint"></i> LeserIn #<span id="readerId">----</span></span>
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-ghost" onclick="clearEingabe()"><span>Löschen</span></button>
@@ -1270,102 +1180,323 @@
     </main>
 
     <footer>
-        <span>Buch der Begierde — Prototyp v0.3.1</span>
+        <span>Buch der Begierde — Prototyp v0.4.0</span>
         <span>Interaktive Leseumgebung</span>
     </footer>
 
     <script>
-        // ===== 粒子系统 =====
+        // ===================================================================
+        // DATENBANK — Supabase
+        // ===================================================================
+        var SUPABASE_URL = 'https://mntjworywbkfpwvakieq.supabase.co';
+        var SUPABASE_KEY = 'sb_publishable_TmokpnDNR4zVkJxdcbsBEw_qZd4J9l3';
+
+        var db = null;
+        var dbVerbunden = false;
+        var leserinId = null;
+
+        // ===================================================================
+        // COOKIE
+        // ===================================================================
+        function getOrCreateCookie() {
+            var name = 'bdb_cid';
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var c = cookies[i].trim();
+                if (c.indexOf(name + '=') === 0) {
+                    return c.substring(name.length + 1);
+                }
+            }
+            var id = 'L_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 9);
+            var expiry = new Date();
+            expiry.setFullYear(expiry.getFullYear() + 2);
+            document.cookie = name + '=' + id + ';expires=' + expiry.toUTCString() + ';path=/;SameSite=Lax';
+            return id;
+        }
+
+        // ===================================================================
+        // DB-Status-Anzeige
+        // ===================================================================
+        function setDbStatus(ok) {
+            dbVerbunden = ok;
+            var dot = document.getElementById('dbDot');
+            var label = document.getElementById('dbLabel');
+            if (ok) {
+                dot.classList.add('connected');
+                label.textContent = 'VERBUNDEN';
+                label.style.color = 'var(--db-ok)';
+            } else {
+                dot.classList.remove('connected');
+                label.textContent = 'OFFLINE';
+                label.style.color = 'var(--fg-muted)';
+            }
+        }
+
+        // ===================================================================
+        // Supabase initialisieren (mit Fehlerabfang)
+        // ===================================================================
+        function initSupabase() {
+            try {
+                if (typeof supabase !== 'undefined' && supabase.createClient) {
+                    db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    return true;
+                }
+            } catch (e) {
+                console.warn('Supabase-Laden fehlgeschlagen:', e);
+            }
+            return false;
+        }
+
+        // ===================================================================
+        // LeserIn initialisieren
+        // ===================================================================
+        async function initLeserin() {
+            var cookieId = getOrCreateCookie();
+
+            if (!db) {
+                setDbStatus(false);
+                document.getElementById('readerId').textContent = 1000 + Math.floor(Math.random() * 9000);
+                return;
+            }
+
+            try {
+                var { data: vorhanden, error: suchFehler } = await db
+                    .from('leserinnen')
+                    .select('*')
+                    .eq('cookie_id', cookieId)
+                    .single();
+
+                if (!suchFehler && vorhanden) {
+                    await db.from('leserinnen')
+                        .update({ last_active: new Date().toISOString() })
+                        .eq('cookie_id', cookieId);
+
+                    leserinId = vorhanden.id;
+                    document.getElementById('readerId').textContent = vorhanden.id.substring(0, 8).toUpperCase();
+                    zustandWiederherstellen(vorhanden);
+                    setDbStatus(true);
+                    return;
+                }
+
+                var { data: neu, error: insertFehler } = await db
+                    .from('leserinnen')
+                    .insert({ cookie_id: cookieId })
+                    .select()
+                    .single();
+
+                if (!insertFehler && neu) {
+                    leserinId = neu.id;
+                    document.getElementById('readerId').textContent = neu.id.substring(0, 8).toUpperCase();
+                    setDbStatus(true);
+                } else {
+                    throw insertFehler;
+                }
+            } catch (e) {
+                console.warn('DB-Fehler:', e);
+                setDbStatus(false);
+                document.getElementById('readerId').textContent = 1000 + Math.floor(Math.random() * 9000);
+            }
+        }
+
+        // ===================================================================
+        // Zustand wiederherstellen
+        // ===================================================================
+        function zustandWiederherstellen(datensatz) {
+            if (datensatz.fragmente && Array.isArray(datensatz.fragmente)) {
+                datensatz.fragmente.forEach(function(typ) {
+                    var tag = document.querySelector('.fragment-tag[data-type="' + typ + '"]');
+                    if (tag && !tag.classList.contains('selected')) {
+                        tag.classList.add('selected');
+                        selectedFragments.add(typ);
+                    }
+                });
+                animateEcho();
+            }
+
+            if (datensatz.aktuelle_seite != null && datensatz.aktuelle_seite !== undefined) {
+                var seite = Math.min(datensatz.aktuelle_seite, storyPages.length - 1);
+                if (seite !== currentPage) {
+                    currentPage = seite;
+                    document.getElementById('storyText').innerHTML = storyPages[currentPage];
+                    document.getElementById('pageIndicator').textContent = 'Seite ' + pageNumbers[currentPage] + ' von 312';
+                    document.querySelector('.doc-page-num').textContent = 'S. ' + pageNumbers[currentPage] + ' / 312';
+                }
+            }
+
+            if (datensatz.memory_state && typeof datensatz.memory_state === 'object') {
+                var nodes = document.querySelectorAll('.memory-node');
+                var mn = datensatz.memory_state.nodes;
+                if (mn && Array.isArray(mn)) {
+                    mn.forEach(function(knoten, i) {
+                        if (nodes[i]) {
+                            var indicator = nodes[i].querySelector('.node-indicator');
+                            indicator.className = 'node-indicator ' + knoten.state;
+                            if (knoten.state !== 'empty') nodes[i].classList.add('active');
+                            if (knoten.name) nodes[i].querySelector('.node-name').textContent = knoten.name;
+                            if (knoten.detail) nodes[i].querySelector('.node-detail').textContent = knoten.detail;
+                            if (knoten.weight) nodes[i].querySelector('.node-weight').textContent = knoten.weight;
+                        }
+                    });
+                }
+            }
+        }
+
+        // ===================================================================
+        // Zustand speichern
+        // ===================================================================
+        async function speichereZustand() {
+            if (!dbVerbunden || !leserinId) return;
+
+            var nodes = document.querySelectorAll('.memory-node');
+            var memoryNodes = [];
+            nodes.forEach(function(node) {
+                var ind = node.querySelector('.node-indicator');
+                var state = 'empty';
+                if (ind.classList.contains('filled')) state = 'filled';
+                else if (ind.classList.contains('partial')) state = 'partial';
+                memoryNodes.push({
+                    state: state,
+                    name: node.querySelector('.node-name').textContent,
+                    detail: node.querySelector('.node-detail').textContent,
+                    weight: node.querySelector('.node-weight').textContent
+                });
+            });
+
+            try {
+                await db.from('leserinnen').update({
+                    fragmente: Array.from(selectedFragments),
+                    aktuelle_seite: currentPage,
+                    memory_state: { nodes: memoryNodes },
+                    last_active: new Date().toISOString()
+                }).eq('id', leserinId);
+            } catch (e) {
+                console.warn('Speichern fehlgeschlagen:', e);
+            }
+        }
+
+        // ===================================================================
+        // Eingabe speichern
+        // ===================================================================
+        async function speichereEingabe(text) {
+            if (!dbVerbunden || !leserinId) return;
+
+            try {
+                var { data } = await db.from('leserinnen')
+                    .select('eingaben')
+                    .eq('id', leserinId)
+                    .single();
+
+                var eingaben = (data && data.eingaben) ? data.eingaben.slice() : [];
+                var zeit = new Date().toLocaleString('de-DE');
+                eingaben.push(zeit + ' | ' + text);
+
+                if (eingaben.length > 50) eingaben = eingaben.slice(-50);
+
+                await db.from('leserinnen').update({ eingaben: eingaben }).eq('id', leserinId);
+            } catch (e) {
+                console.warn('Eingabe speichern fehlgeschlagen:', e);
+            }
+        }
+
+        // ===================================================================
+        // Partikel
+        // ===================================================================
         function createParticles() {
-            const container = document.getElementById('particles');
-            const count = 25;
-            for (let i = 0; i < count; i++) {
-                const p = document.createElement('div');
+            var container = document.getElementById('particles');
+            for (var i = 0; i < 25; i++) {
+                var p = document.createElement('div');
                 p.classList.add('particle');
                 p.style.left = Math.random() * 100 + '%';
                 p.style.animationDuration = (15 + Math.random() * 25) + 's';
                 p.style.animationDelay = (Math.random() * 20) + 's';
-                p.style.width = (1 + Math.random() * 2) + 'px';
-                p.style.height = p.style.width;
+                var size = (1 + Math.random() * 2) + 'px';
+                p.style.width = size;
+                p.style.height = size;
                 container.appendChild(p);
             }
         }
         createParticles();
 
-        // ===== 入场动画=====
-        const fadeEls = document.querySelectorAll('.fade-in');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry, i) => {
+        // ===================================================================
+        // Einblend-Animation
+        // ===================================================================
+        var fadeEls = document.querySelectorAll('.fade-in');
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry, i) {
                 if (entry.isIntersecting) {
-                    // 错开动画时间
-                    setTimeout(() => {
+                    setTimeout(function() {
                         entry.target.classList.add('visible');
                     }, i * 120);
                     observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.1 });
-        fadeEls.forEach(el => observer.observe(el));
+        fadeEls.forEach(function(el) { observer.observe(el); });
 
-        // ===== Toast 系统 =====
-        function showToast(message, icon = 'fa-check') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
+        // ===================================================================
+        // Toast
+        // ===================================================================
+        function showToast(message, icon) {
+            icon = icon || 'fa-check';
+            var container = document.getElementById('toastContainer');
+            var toast = document.createElement('div');
             toast.classList.add('toast');
-            toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+            toast.innerHTML = '<i class="fas ' + icon + '"></i> ' + message;
             container.appendChild(toast);
-            // 触发重排后添加 show 类
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
                     toast.classList.add('show');
                 });
             });
-            setTimeout(() => {
+            setTimeout(function() {
                 toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400);
+                setTimeout(function() { toast.remove(); }, 400);
             }, 3000);
         }
 
-        // ===== Wortfragment-Selektor =====
-        const fragmentTags = document.querySelectorAll('.fragment-tag');
-        let selectedFragments = new Set();
+        // ===================================================================
+        // Fragment-Selektor
+        // ===================================================================
+        var fragmentTags = document.querySelectorAll('.fragment-tag');
+        var selectedFragments = new Set();
 
-        fragmentTags.forEach(tag => {
-            tag.addEventListener('click', () => {
-                const type = tag.dataset.type;
+        fragmentTags.forEach(function(tag) {
+            tag.addEventListener('click', function() {
+                var type = tag.dataset.type;
                 if (tag.classList.contains('selected')) {
                     tag.classList.remove('selected');
                     selectedFragments.delete(type);
                 } else {
-                    // 最多选3个
                     if (selectedFragments.size >= 3) {
                         showToast('Maximal 3 Fragmente gleichzeitig', 'fa-exclamation-triangle');
                         return;
                     }
                     tag.classList.add('selected');
                     selectedFragments.add(type);
-                    // 触发 Echo 动画
                     animateEcho();
-                    // 更新 Memory
                     updateMemoryOnSelection(type);
                 }
+                speichereZustand();
             });
         });
 
-        // ===== Intensität Slider =====
-        const intensitySlider = document.getElementById('intensitySlider');
-        const intensityValue = document.getElementById('intensityValue');
-        intensitySlider.addEventListener('input', () => {
+        // ===================================================================
+        // Intensitaet
+        // ===================================================================
+        var intensitySlider = document.getElementById('intensitySlider');
+        var intensityValue = document.getElementById('intensityValue');
+        intensitySlider.addEventListener('input', function() {
             intensityValue.textContent = intensitySlider.value;
             animateEcho();
         });
 
-        // ===== Echo 可视化 =====
+        // ===================================================================
+        // Echo
+        // ===================================================================
         function initEcho() {
-            const container = document.getElementById('echoVisual');
-            const barCount = 32;
-            for (let i = 0; i < barCount; i++) {
-                const bar = document.createElement('div');
+            var container = document.getElementById('echoVisual');
+            for (var i = 0; i < 32; i++) {
+                var bar = document.createElement('div');
                 bar.classList.add('echo-bar');
                 bar.style.height = (10 + Math.random() * 50) + 'px';
                 container.appendChild(bar);
@@ -1374,78 +1505,59 @@
         initEcho();
 
         function animateEcho() {
-            const bars = document.querySelectorAll('.echo-bar');
-            const intensity = parseInt(intensitySlider.value) / 10;
-            const fragmentCount = selectedFragments.size;
+            var bars = document.querySelectorAll('.echo-bar');
+            var intensity = parseInt(intensitySlider.value) / 10;
+            var fragmentCount = selectedFragments.size;
 
-            bars.forEach((bar, i) => {
-                const base = 8;
-                const wave = Math.sin(i * 0.4 + Date.now() * 0.002) * 20;
-                const boost = (fragmentCount * 15 + intensity * 30);
-                const noise = Math.random() * 15;
-                const h = Math.max(3, base + wave + boost + noise);
+            bars.forEach(function(bar, i) {
+                var base = 8;
+                var wave = Math.sin(i * 0.4 + Date.now() * 0.002) * 20;
+                var boost = (fragmentCount * 15 + intensity * 30);
+                var noise = Math.random() * 15;
+                var h = Math.max(3, base + wave + boost + noise);
                 bar.style.height = h + 'px';
                 bar.style.opacity = 0.4 + (h / 100) * 0.6;
             });
 
-            // 更新指标
-            const resonanz = (0.3 + fragmentCount * 0.15 + intensity * 0.1).toFixed(2);
-            const tiefe = (0.1 + fragmentCount * 0.12 + intensity * 0.05 + Math.random() * 0.05).toFixed(2);
-            const drift = (0.05 + Math.random() * 0.15).toFixed(2);
-            document.getElementById('metricResonanz').textContent = resonanz;
-            document.getElementById('metricTiefe').textContent = tiefe;
-            document.getElementById('metricDrift').textContent = drift;
+            document.getElementById('metricResonanz').textContent = (0.3 + fragmentCount * 0.15 + intensity * 0.1).toFixed(2);
+            document.getElementById('metricTiefe').textContent = (0.1 + fragmentCount * 0.12 + intensity * 0.05 + Math.random() * 0.05).toFixed(2);
+            document.getElementById('metricDrift').textContent = (0.05 + Math.random() * 0.15).toFixed(2);
         }
 
-        // 持续动画 Echo
         setInterval(animateEcho, 600);
 
-        // ===== Memory 更新 =====
+        // ===================================================================
+        // Memory
+        // ===================================================================
         function updateMemoryOnSelection(type) {
-            const nodes = document.querySelectorAll('.memory-node');
-            // 如果选择了对应 fragment，激活 dormant 节点
-            const typeMap = {
-                'samt': 1,
-                'kälte': 2,
-                'wärme': 1,
-                'licht': 3,
-                'schatten': 3,
-                'staub': 2,
-                'atem': 4
+            var nodes = document.querySelectorAll('.memory-node');
+            var typeMap = {
+                'samt': 1, 'kälte': 2, 'wärme': 1,
+                'licht': 3, 'schatten': 3, 'staub': 2, 'atem': 4
             };
-
-            const targetIdx = typeMap[type];
+            var targetIdx = typeMap[type];
             if (targetIdx && nodes[targetIdx]) {
-                const node = nodes[targetIdx];
-                const indicator = node.querySelector('.node-indicator');
+                var node = nodes[targetIdx];
+                var indicator = node.querySelector('.node-indicator');
                 if (indicator.classList.contains('empty')) {
                     indicator.classList.remove('empty');
                     indicator.classList.add('partial');
                     node.classList.add('active');
-                    const weightEl = node.querySelector('.node-weight');
-                    weightEl.textContent = (Math.random() * 0.3 + 0.1).toFixed(2);
-                    showToast(`Erinnerungspur aktiviert: ${node.querySelector('.node-name').textContent}`, 'fa-brain');
+                    node.querySelector('.node-weight').textContent = (Math.random() * 0.3 + 0.1).toFixed(2);
+                    showToast('Erinnerungspur aktiviert: ' + node.querySelector('.node-name').textContent, 'fa-brain');
                 }
             }
         }
 
-        // ===== QR Pattern 生成 =====
+        // ===================================================================
+        // QR
+        // ===================================================================
         function generateQRPattern() {
-            const pattern = document.getElementById('qrPattern');
-            const size = 7;
-            // 固定图案模拟 QR
-            const grid = [
-                1,1,1,0,1,1,1,
-                1,0,1,0,1,0,1,
-                1,1,1,0,1,1,1,
-                0,0,0,0,0,0,0,
-                1,1,1,0,1,0,1,
-                1,0,1,0,0,1,1,
-                1,1,1,0,1,1,0
-            ];
+            var pattern = document.getElementById('qrPattern');
+            var grid = [1,1,1,0,1,1,1,1,0,1,0,1,0,1,1,1,1,0,1,1,1,0,0,0,0,0,0,0,1,1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,0,1,1,0];
             pattern.innerHTML = '';
-            grid.forEach(v => {
-                const cell = document.createElement('div');
+            grid.forEach(function(v) {
+                var cell = document.createElement('div');
                 cell.classList.add('qr-cell');
                 if (v === 0) cell.classList.add('empty');
                 pattern.appendChild(cell);
@@ -1453,38 +1565,38 @@
         }
         generateQRPattern();
 
-        // QR 模拟扫描完成
-        setTimeout(() => {
-            const status = document.getElementById('qrStatus');
+        setTimeout(function() {
+            var status = document.getElementById('qrStatus');
             status.innerHTML = '<i class="fas fa-check-circle" style="color: var(--gold);"></i> Muster erkannt — Verknüpfung aktiv';
             status.style.color = 'var(--gold)';
-            const scanLine = document.getElementById('qrScanLine');
-            scanLine.style.animationPlayState = 'paused';
-            scanLine.style.opacity = '0';
+            document.getElementById('qrScanLine').style.animationPlayState = 'paused';
+            document.getElementById('qrScanLine').style.opacity = '0';
             showToast('QR-Muster verknüpft', 'fa-qrcode');
         }, 6000);
 
-        // ===== 故事翻页 =====
-        const storyPages = [
-            `<span class="dim">Die Nacht legte sich über die Stadt wie ein</span> <span class="highlight" data-note="Samt: Weichheit und Verführung">Samtgewebe</span><span class="dim">, das jede Bewegung verschluckte. In den Straßen gab es nur das gedämpfte</span> <span class="highlight" data-note="Atem: Lebendigkeit im Dunkeln">Atmen</span> <span class="dim">der Laternen und das flüchtige</span> <span class="highlight" data-note="Schatten: Das Verborgene">Echo von Schritten</span><span class="dim">, die sich nicht zuordnen ließen.</span>`,
-            `<span class="dim">Sie stand am Fenster, die Hand auf dem kalten Glas. Draußen bewegte sich etwas zwischen den</span> <span class="highlight" data-note="Schatten: Zwischenraum der Wahrnehmung">Schatten</span><span class="dim">— nicht ganz menschlich, nicht ganz</span> <span class="highlight" data-note="Staub: Zerfall und Vergänglichkeit">Staub</span><span class="dim>. Die Kälte kroch durch die Ritzen, und mit ihr ein Geruch nach verbranntem</span> <span class="highlight" data-note="Wärme: Aschewärme der Erinnerung">Amber</span><span class="dim">.</span>`,
-            `<span class="dim">Er fand den Brief hinter dem looseen Brett. Die Schrift war</span> <span class="highlight" data-note="Licht: Durchscheinende Tinte">durchscheinend</span><span class="dim">, als hätte jemand sie mit Licht statt Tinte geschrieben. Jedes Wort fühlte sich an wie ein</span> <span class="highlight" data-note="Atem: Hauch auf der Haut">Atemzug</span><span class="dim">gegen den Nacken — nah und unerträglich fern zugleich.</span>`,
-            `<span class="dim">Im Spiegel sah sie ein Gesicht, das nicht ganz das ihre war. Die</span> <span class="highlight" data-note="Kälte: Eisige Selbstbegegnung">Kälte</span> <span class="dim">daran war real, die Augen darker als sonst. Hinter ihr, im</span> <span class="highlight" data-note="Schatten: Doppelgänger-Motiv">Schatten</span><span class="dim">des Zimmers, bewegte sich etwas langsam auf sie zu.</span>`
+        // ===================================================================
+        // Geschichte
+        // ===================================================================
+        var storyPages = [
+            '<span class="dim">Die Nacht legte sich über die Stadt wie ein</span> <span class="highlight" data-note="Samt: Weichheit und Verführung">Samtgewebe</span><span class="dim">, das jede Bewegung verschluckte. In den Straßen gab es nur das gedämpfte</span> <span class="highlight" data-note="Atem: Lebendigkeit im Dunkeln">Atmen</span> <span class="dim">der Laternen und das flüchtige</span> <span class="highlight" data-note="Schatten: Das Verborgene">Echo von Schritten</span><span class="dim">, die sich nicht zuordnen ließen.</span>',
+            '<span class="dim">Sie stand am Fenster, die Hand auf dem kalten Glas. Draußen bewegte sich etwas zwischen den</span> <span class="highlight" data-note="Schatten: Zwischenraum der Wahrnehmung">Schatten</span><span class="dim">— nicht ganz menschlich, nicht ganz</span> <span class="highlight" data-note="Staub: Zerfall und Vergänglichkeit">Staub</span><span class="dim">. Die Kälte kroch durch die Ritzen, und mit ihr ein Geruch nach verbranntem</span> <span class="highlight" data-note="Wärme: Aschewärme der Erinnerung">Amber</span><span class="dim">.</span>',
+            '<span class="dim">Er fand den Brief hinter dem losen Brett. Die Schrift war</span> <span class="highlight" data-note="Licht: Durchscheinende Tinte">durchscheinend</span><span class="dim">, als hätte jemand sie mit Licht statt Tinte geschrieben. Jedes Wort fühlte sich an wie ein</span> <span class="highlight" data-note="Atem: Hauch auf der Haut">Atemzug</span><span class="dim">gegen den Nacken — nah und unerträglich fern zugleich.</span>',
+            '<span class="dim">Im Spiegel sah sie ein Gesicht, das nicht ganz das ihre war. Die</span> <span class="highlight" data-note="Kälte: Eisige Selbstbegegnung">Kälte</span> <span class="dim">daran war real, die Augen dunkler als sonst. Hinter ihr, im</span> <span class="highlight" data-note="Schatten: Doppelgänger-Motiv">Schatten</span><span class="dim">des Zimmers, bewegte sich etwas langsam auf sie zu.</span>'
         ];
-        let currentPage = 0;
-        const pageNumbers = [47, 48, 52, 61];
+        var currentPage = 0;
+        var pageNumbers = [47, 48, 52, 61];
 
         function updateStory() {
-            const storyText = document.getElementById('storyText');
+            var storyText = document.getElementById('storyText');
             storyText.style.opacity = '0';
             storyText.style.transform = 'translateY(8px)';
-            setTimeout(() => {
+            setTimeout(function() {
                 storyText.innerHTML = storyPages[currentPage];
-                document.getElementById('pageIndicator').textContent = `Seite ${pageNumbers[currentPage]} von 312`;
-                storyText.querySelector('.doc-page-num, .doc-page-num') ||
-                (document.querySelector('.doc-page-num').textContent = `S. ${pageNumbers[currentPage]} / 312`);
+                document.getElementById('pageIndicator').textContent = 'Seite ' + pageNumbers[currentPage] + ' von 312';
+                document.querySelector('.doc-page-num').textContent = 'S. ' + pageNumbers[currentPage] + ' / 312';
                 storyText.style.opacity = '1';
                 storyText.style.transform = 'translateY(0)';
+                speichereZustand();
             }, 300);
         }
 
@@ -1502,36 +1614,37 @@
             animateEcho();
         }
 
-        // 高亮词点击显示注释
-        document.getElementById('storyText').addEventListener('click', (e) => {
+        document.getElementById('storyText').addEventListener('click', function(e) {
             if (e.target.classList.contains('highlight')) {
-                const note = e.target.dataset.note;
+                var note = e.target.dataset.note;
                 if (note) showToast(note, 'fa-bookmark');
             }
         });
 
-        // ===== Eingabe-Panel =====
-        const eingabeText = document.getElementById('eingabeText');
-        const charCount = document.getElementById('charCount');
-        const timeStamp = document.getElementById('timeStamp');
+        // ===================================================================
+        // Eingabe
+        // ===================================================================
+        var eingabeText = document.getElementById('eingabeText');
+        var charCount = document.getElementById('charCount');
+        var timeStamp = document.getElementById('timeStamp');
 
-        eingabeText.addEventListener('input', () => {
+        eingabeText.addEventListener('input', function() {
             charCount.textContent = eingabeText.value.length;
         });
 
-        // 时间戳实时更新
         function updateTime() {
-            const now = new Date();
-            timeStamp.textContent = now.toTimeString().split(' ')[0];
+            var now = new Date();
+            var tag = String(now.getDate()).padStart(2, '0');
+            var monat = String(now.getMonth() + 1).padStart(2, '0');
+            var jahr = now.getFullYear();
+            var uhr = now.toTimeString().split(' ')[0];
+            timeStamp.textContent = tag + '.' + monat + '.' + jahr + ' — ' + uhr;
         }
         setInterval(updateTime, 1000);
         updateTime();
 
-        // 随机读者 ID
-        document.getElementById('readerId').textContent = 1000 + Math.floor(Math.random() * 9000);
-
         function bestaetigenAction() {
-            const text = eingabeText.value.trim();
+            var text = eingabeText.value.trim();
             if (!text) {
                 showToast('Schreibe zuerst etwas, bevor du bestätigst', 'fa-exclamation-circle');
                 return;
@@ -1540,29 +1653,29 @@
                 showToast('Mindestens 5 Zeichen erforderlich', 'fa-exclamation-circle');
                 return;
             }
-            // 激活一个空的 memory node
-            const emptyNodes = document.querySelectorAll('.memory-node .node-indicator.empty');
+
+            var emptyNodes = document.querySelectorAll('.memory-node .node-indicator.empty');
             if (emptyNodes.length > 0) {
-                const node = emptyNodes[0].closest('.memory-node');
+                var node = emptyNodes[0].closest('.memory-node');
                 emptyNodes[0].classList.remove('empty');
                 emptyNodes[0].classList.add('partial');
                 node.classList.add('active');
                 node.querySelector('.node-weight').textContent = (Math.random() * 0.4 + 0.2).toFixed(2);
                 node.querySelector('.node-name').textContent = text.substring(0, 35) + (text.length > 35 ? '...' : '');
-                node.querySelector('.node-detail').textContent = `Eingabe — Verknüpft`;
+                node.querySelector('.node-detail').textContent = 'Eingabe — Verknüpft';
             }
+
             showToast('Deine Zeile wurde ins Gedächtnis aufgenommen', 'fa-feather');
+            speichereEingabe(text);
+            speichereZustand();
             eingabeText.value = '';
             charCount.textContent = '0';
             animateEcho();
         }
 
         function fortsetzenAction() {
-            const text = eingabeText.value.trim();
-            if (!text) {
-                nextPage();
-                return;
-            }
+            var text = eingabeText.value.trim();
+            if (!text) { nextPage(); return; }
             bestaetigenAction();
             setTimeout(nextPage, 500);
         }
@@ -1573,42 +1686,46 @@
             showToast('Eingabe gelöscht', 'fa-eraser');
         }
 
-        // ===== 导航高亮 =====
-        const navLinks = document.querySelectorAll('nav a');
-        const sections = ['willkommen', 'selektor', 'geschichte', 'eingabe'];
+        // ===================================================================
+        // Navigation
+        // ===================================================================
+        var navLinks = document.querySelectorAll('nav a');
+        var sections = ['willkommen', 'selektor', 'geschichte', 'eingabe'];
 
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(id => {
-                const el = document.getElementById(id);
-                if (el && el.getBoundingClientRect().top < 200) {
-                    current = id;
-                }
+        window.addEventListener('scroll', function() {
+            var current = '';
+            sections.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el && el.getBoundingClientRect().top < 200) current = id;
             });
-            navLinks.forEach(link => {
+            navLinks.forEach(function(link) {
                 link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.add('active');
-                }
+                if (link.getAttribute('href') === '#' + current) link.classList.add('active');
             });
         });
 
-        // ===== 鼠标跟随光效（微妙） =====
-        const panels = document.querySelectorAll('.panel');
-        panels.forEach(panel => {
-            panel.addEventListener('mousemove', (e) => {
-                const rect = panel.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                panel.style.background = `radial-gradient(circle 200px at ${x}px ${y}px, rgba(184,148,62,0.03), transparent), var(--card)`;
+        // ===================================================================
+        // Maus-Lichteffekt
+        // ===================================================================
+        var panels = document.querySelectorAll('.panel');
+        panels.forEach(function(panel) {
+            panel.addEventListener('mousemove', function(e) {
+                var rect = panel.getBoundingClientRect();
+                var x = e.clientX - rect.left;
+                var y = e.clientY - rect.top;
+                panel.style.background = 'radial-gradient(circle 200px at ' + x + 'px ' + y + 'px, rgba(184,148,62,0.03), transparent), var(--card)';
             });
-            panel.addEventListener('mouseleave', () => {
+            panel.addEventListener('mouseleave', function() {
                 panel.style.background = 'var(--card)';
             });
         });
 
-        // ===== 初始触发一次 Echo =====
+        // ===================================================================
+        // START
+        // ===================================================================
         setTimeout(animateEcho, 500);
+        initSupabase();
+        initLeserin();
     </script>
 </body>
 </html>
