@@ -141,31 +141,55 @@
 
         updSum();
 
-        // Datenbank (async, separat)
+        // Datenbank (async, separat) mit automatischer Wiederverbindung
         (async function(){
             var dbG=document.getElementById('gridDB');
-            dbG.innerHTML='<div class="card"><div class="card-icon"><i class="fas fa-circle-notch fa-spin"></i></div><div class="card-name">Verbindungstest</div><div class="card-value small" style="color:var(--fg-muted)">Pruefe Verbindung...</div></div>';
-
             var connected=false, ms=0;
-            try{
-                if(typeof supabase==='undefined'||!supabase.createClient)throw new Error('Bibliothek nicht geladen');
-                var t0=performance.now();
-                var cl=supabase.createClient('https://mntjworywbkfpwvakieq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1udGp3b3J5d2JrZnB3dmFraWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMTczMjAsImV4cCI6MjA5MDg5MzMyMH0.4LTwi6IY6WoiQTQfy0612j-8xi1C1Ly1zjMQJ5bOps0');
-                var r=await cl.from('leserinnen').select('id',{count:'exact',head:true});
-                ms=Math.round(performance.now()-t0);
-                if(r.error)throw r.error;
-                connected=true;ok++;
-            }catch(e){err++;ms=0;}
+            var maxRetries=3, retryDelay=1500, attempt=0;
 
-            var sb=connected?badge('ok'):badge('err');
-            var pc=connected?'var(--ok)':'var(--fg-muted)';
-            dbG.innerHTML=
-                mc('fa-database','Supabase',(connected?'Verbunden':'Fehler')+' '+sb,true)+
-                mc('fa-bolt','Antwortzeit',connected?'<span style="color:'+pc+'">'+ms+' ms</span>':'—',true)+
-                mc('fa-server','Endpunkt','mntjworywbkfpwvakieq.supabase.co',true)+
-                mc('fa-shield-alt','Modus','Anon (lesen/schreiben)',true);
+            async function testDB(){
+                try{
+                    if(typeof supabase==='undefined'||!supabase.createClient)throw new Error('Bibliothek nicht geladen');
+                    var t0=performance.now();
+                    var cl=supabase.createClient('https://mntjworywbkfpwvakieq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1udGp3b3J5d2JrZnB3dmFraWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMTczMjAsImV4cCI6MjA5MDg5MzMyMH0.4LTwi6IY6WoiQTQfy0612j-8xi1C1Ly1zjMQJ5bOps0');
+                    var r=await cl.from('leserinnen').select('id',{count:'exact',head:true});
+                    ms=Math.round(performance.now()-t0);
+                    if(r.error)throw r.error;
+                    return true;
+                }catch(e){
+                    return false;
+                }
+            }
 
-            updSum();
+            async function conectWithRetry(){
+                attempt=0;
+                while(attempt<=maxRetries){
+                    dbG.innerHTML='<div class="card"><div class="card-icon"><i class="fas fa-circle-notch fa-spin"></i></div><div class="card-name">Verbindungstest</div><div class="card-value small" style="color:var(--fg-muted)">Pruefe Verbindung'+(attempt>0?' (Versuch '+(attempt)+'/'+maxRetries+')':'')+' ...</div></div>';
+                    
+                    connected=await testDB();
+                    if(connected){ok++;break;}
+                    
+                    if(attempt<maxRetries){
+                        err++;
+                        attempt++;
+                        await new Promise(r=>setTimeout(r,retryDelay));
+                    }else{
+                        err++;break;
+                    }
+                }
+
+                var sb=connected?badge('ok'):badge('err');
+                var pc=connected?'var(--ok)':'var(--fg-muted)';
+                dbG.innerHTML=
+                    mc('fa-database','Supabase',(connected?'Verbunden':'Fehler')+' '+sb,true)+
+                    mc('fa-bolt','Antwortzeit',connected?'<span style="color:'+pc+'">'+ms+' ms</span>':'—',true)+
+                    mc('fa-server','Endpunkt','mntjworywbkfpwvakieq.supabase.co',true)+
+                    mc('fa-shield-alt','Modus','Anon (lesen/schreiben)',true);
+
+                updSum();
+            }
+
+            await conectWithRetry();
         })();
     });
     </script>
