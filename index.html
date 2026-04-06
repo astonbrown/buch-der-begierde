@@ -130,13 +130,19 @@
             position: relative;
             transform-style: preserve-3d;
             transform: rotateX(12deg) rotateY(-20deg);
-            animation: bookSettle 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+            animation: bookSettle 5.5s ease-out 0.3s forwards;
         }
 
-        @keyframes bookSettle {
-            0% { transform: rotateX(12deg) rotateY(-20deg) scale(0.88); }
-            60% { transform: rotateX(12deg) rotateY(-18deg) scale(1.02); }
-            100% { transform: rotateX(12deg) rotateY(-20deg) scale(1); }
+                @keyframes bookSettle {
+            0% { transform: rotateX(12deg) rotateY(-20deg) translateX(0) scale(0.88); }
+            24% { transform: rotateX(12deg) rotateY(-18deg) translateX(0) scale(1.02); }
+            36% { transform: rotateX(12deg) rotateY(-20deg) translateX(0) scale(1); }
+            56% { transform: rotateX(12deg) rotateY(-20deg) translateX(35px) scale(1); }
+            76% { transform: rotateX(12deg) rotateY(-20deg) translateX(35px) scale(1); }
+            100% { transform: rotateX(12deg) rotateY(-20deg) translateX(0) scale(1); }
+        }
+
+        @keyframes coverOpen {
         }
 
         /* ===== Buchruecken ===== */
