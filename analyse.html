@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geraeteanalyse — Buch der Begierde</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0806;
+            --fg: #e8ddd0;
+            --fg-muted: #8a7e70;
+            --accent: #c4463a;
+            --gold: #b8943e;
+            --gold-dim: #7a6329;
+            --card: rgba(18, 14, 10, 0.85);
+            --card-border: rgba(180, 148, 62, 0.15);
+            --border: rgba(138, 126, 112, 0.12);
+            --ok: #4a8c5c;
+            --warn: #8c7a4a;
+            --err: #8c4a4a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 256px 256px;
+        }
+
+        header {
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .back-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--fg-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover { color: var(--gold); }
+
+        .header-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.5rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--fg-muted);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title em { color: var(--accent); font-style: italic; }
+
+        .page-desc {
+            font-size: 0.9rem;
+            color: var(--fg-muted);
+            font-weight: 300;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.45rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            padding: 1.2rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover { border-color: rgba(180, 148, 62, 0.3); }
+
+        .card-icon {
+            font-size: 0.8rem;
+            color: var(--gold-dim);
+            margin-bottom: 0.6rem;
+        }
+
+        .card-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--fg-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--fg);
+            word-break: break-all;
+        }
+
+        .card-value.small {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--fg-muted);
+            line-height: 1.6;
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.5rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.25rem 0.7rem;
+            border: 1px solid;
+        }
+
+        .status-badge.ok { color: var(--ok); border-color: rgba(74,140,92,0.3); background: rgba(74,140,92,0.06); }
+        .status-badge.warn { color: var(--warn); border-color: rgba(140,122,74,0.3); background: rgba(140,122,74,0.06); }
+        .status-badge.err { color: var(--err); border-color: rgba(140,74,74,0.3); background: rgba(140,74,74,0.06); }
+
+        .summary-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 1.5rem;
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .summary-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.4rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--fg-muted);
+            margin-top: 0.2rem;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.4rem;
+            color: rgba(138,126,112,0.4);
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            main { padding: 2rem 1.2rem; }
+            .grid { grid-template-columns: 1fr; }
+            .summary-bar { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain-overlay"></div>
+
+    <header>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Zurueck</a>
+        <span class="header-title">Geraeteanalyse</span>
+    </header>
+
+    <main>
+        <h1 class="page-title">Technische <em>Unterstuetzung</em></h1>
+        <p class="page-desc">Analyse der Faehigkeiten deines Geraetes fuer das interaktive Leseerlebnis.</p>
+
+        <div class="summary-bar" id="summaryBar"></div>
+
+        <div class="section-label">Bildschirm & Anzeige</div>
+        <div class="grid" id="gridDisplay"></div>
+
+        <div class="section-label">System & Leistung</div>
+        <div class="grid" id="gridSystem"></div>
+
+        <div class="section-label">Netzwerk & Speicher</div>
+        <div class="grid" id="gridNetwork"></div>
+
+        <div class="section-label">Browser & APIs</div>
+        <div class="grid" id="gridAPIs"></div>
+    </main>
+
+    <footer>Buch der Begierde — Geraeteanalyse</footer>
+
+    <script>
+        function badge(status) {
+            var labels = { ok: 'Unterstuetzt', warn: 'Eingeschraenkt', err: 'Nicht verfuegbar' };
+            return '<span class="status-badge ' + status + '">' + labels[status] + '</span>';
+        }
+
+        function card(icon, name, value, isSmall) {
+            return '<div class="card"><div class="card-icon"><i class="fas ' + icon + '"></i></div><div class="card-name">' + name + '</div><div class="card-value' + (isSmall ? ' small' : '') + '">' + value + '</div></div>';
+        }
+
+        var ok = 0, warn = 0, err = 0;
+
+        // ===== Bildschirm =====
+        var dGrid = document.getElementById('gridDisplay');
+        var sw = screen.width, sh = screen.height;
+        var dpr = window.devicePixelRatio || 1;
+
+        dGrid.innerHTML += card('fa-expand', 'Bildschirm', sw + ' x ' + sh + ' px');
+        dGrid.innerHTML += card('fa-search-plus', 'Pixelverhaeltnis', dpr.toFixed(1) + 'x');
+
+        var colorDepth = screen.colorDepth;
+        var colorStatus = colorDepth >= 24 ? 'ok' : 'warn';
+        if (colorStatus === 'ok') ok++; else warn++;
+        dGrid.innerHTML += card('fa-palette', 'Farbtiefe', colorDepth + ' bit ' + badge(colorStatus), true);
+
+        var orientation = (sw > sh) ? 'Landscape' : 'Portrait';
+        dGrid.innerHTML += card('fa-mobile-alt', 'Ausrichtung', orientation);
+
+        dGrid.innerHTML += card('fa-ruler-combined', 'Viewport', window.innerWidth + ' x ' + window.innerHeight + ' px');
+
+        // ===== System =====
+        var sGrid = document.getElementById('gridSystem');
+
+        var cores = navigator.hardwareConcurrency || '?';
+        sGrid.innerHTML += card('fa-microchip', 'CPU-Kerne', cores);
+
+        var mem = navigator.deviceMemory;
+        if (mem) {
+            sGrid.innerHTML += card('fa-memory', 'Arbeitsspeicher', mem + ' GB');
+        } else {
+            sGrid.innerHTML += card('fa-memory', 'Arbeitsspeicher', 'Nicht erkennbar ' + badge('warn'), true);
+            warn++;
+        }
+
+        var touch = 'ontouchstart' in window;
+        sGrid.innerHTML += card('fa-hand-pointer', 'Touchscreen', touch ? 'Ja' : 'Nein');
+        if (touch) ok++; else warn++;
+
+        var maxTouch = navigator.maxTouchPoints || 0;
+        sGrid.innerHTML += card('fa-fingerprint', 'Touch-Punkte', maxTouch);
+
+        // ===== Netzwerk =====
+        var nGrid = document.getElementById('gridNetwork');
+
+        var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (conn) {
+            nGrid.innerHTML += card('fa-wifi', 'Verbindungstyp', conn.effectiveType ? conn.effectiveType.toUpperCase() : 'Unbekannt');
+            if (conn.downlink) nGrid.innerHTML += card('fa-tachometer-alt', 'Geschwindigkeit', conn.downlink + ' Mbps');
+            if (conn.rtt != null) nGrid.innerHTML += card('fa-clock', 'Latenz (RTT)', conn.rtt + ' ms');
+        } else {
+            nGrid.innerHTML += card('fa-wifi', 'Netzwerkinfo', 'Nicht verfuegbar ' + badge('warn'), true);
+            warn++;
+        }
+
+        var online = navigator.onLine;
+        var onlineStatus = online ? 'ok' : 'err';
+        if (onlineStatus === 'ok') ok++; else err++;
+        nGrid.innerHTML += card('fa-globe', 'Online-Status', online ? 'Verbunden' : 'Offline ' + badge(onlineStatus));
+
+        var cookies = navigator.cookieEnabled;
+        var cookieStatus = cookies ? 'ok' : 'err';
+        if (cookieStatus === 'ok') ok++; else err++;
+        nGrid.innerHTML += card('fa-cookie-bite', 'Cookies', cookies ? 'Aktiviert' : 'Deaktiviert ' + badge(cookieStatus));
+
+        // ===== APIs =====
+        var aGrid = document.getElementById('gridAPIs');
+
+        // WebGL
+        var webgl = false;
+        try { var c = document.createElement('canvas'); webgl = !!(c.getContext('webgl') || c.getContext('experimental-webgl')); } catch(e) {}
+        var webglStatus = webgl ? 'ok' : 'err';
+        if (webglStatus === 'ok') ok++; else err++;
+        aGrid.innerHTML += card('fa-cube', 'WebGL', webgl ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge(webglStatus));
+
+        // Audio
+        var audio = false;
+        try { audio = !!(window.AudioContext || window.webkitAudioContext); } catch(e) {}
+        var audioStatus = audio ? 'ok' : 'warn';
+        if (audioStatus === 'ok') ok++; else warn++;
+        aGrid.innerHTML += card('fa-volume-up', 'Web Audio API', audio ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge(audioStatus));
+
+        // Service Worker
+        var swSupport = 'serviceWorker' in navigator;
+        var swStatus = swSupport ? 'ok' : 'warn';
+        if (swStatus === 'ok') ok++; else warn++;
+        aGrid.innerHTML += card('fa-cog', 'Service Worker', swSupport ? 'Unterstuetzt' : 'Nicht unterstuetzt ' + badge(swStatus));
+
+        // Notifications
+        var notif = 'Notification' in window;
+        var notifStatus = notif ? 'ok' : 'warn';
+        if (notifStatus === 'ok') ok++; else warn++;
+        aGrid.innerHTML += card('fa-bell', 'Benachrichtigungen', notif ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge(notifStatus));
+
+        // Clipboard
+        var clip = !!(navigator.clipboard);
+        var clipStatus = clip ? 'ok' : 'warn';
+        if (clipStatus === 'ok') ok++; else warn++;
+        aGrid.innerHTML += card('fa-clipboard', 'Clipboard API', clip ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge(clipStatus));
+
+        // Geolocation
+        var geo = 'geolocation' in navigator;
+        var geoStatus = geo ? 'ok' : 'warn';
+        if (geoStatus === 'ok') ok++; else warn++;
+        aGrid.innerHTML += card('fa-map-marker-alt', 'Geolocation', geo ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge(geoStatus));
+
+        // Battery (async)
+        if (navigator.getBattery) {
+            navigator.getBattery().then(function(b) {
+                var level = Math.round(b.level * 100);
+                var charging = b.charging ? 'Ladend' : 'Entladen';
+                nGrid.innerHTML += card('fa-battery-three-quarters', 'Akkustand', level + '% — ' + charging);
+            }).catch(function() {
+                nGrid.innerHTML += card('fa-battery-empty', 'Akkustand', 'Nicht lesbar ' + badge('warn'), true);
+                warn++;
+            });
+        } else {
+            nGrid.innerHTML += card('fa-battery-empty', 'Akkustand', 'Nicht verfuegbar ' + badge('warn'), true);
+            warn++;
+        }
+
+        // User Agent
+        var ua = navigator.userAgent;
+        var browser = 'Unbekannt';
+        var os = 'Unbekannt';
+
+        if (ua.indexOf('Firefox') > -1) browser = 'Firefox';
+        else if (ua.indexOf('Edg') > -1) browser = 'Edge';
+        else if (ua.indexOf('Chrome') > -1) browser = 'Chrome';
+        else if (ua.indexOf('Safari') > -1) browser = 'Safari';
+
+        if (ua.indexOf('Windows') > -1) os = 'Windows';
+        else if (ua.indexOf('Mac') > -1) os = 'macOS';
+        else if (ua.indexOf('Linux') > -1) os = 'Linux';
+        else if (ua.indexOf('Android') > -1) os = 'Android';
+        else if (ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1) os = 'iOS';
+
+        aGrid.innerHTML += card('fa-compass', 'Browser', browser);
+        aGrid.innerHTML += card('fa-laptop', 'Betriebssystem', os);
+
+        // ===== Summary =====
+        var total = ok + warn + err;
+        var pct = total > 0 ? Math.round((ok / total) * 100) : 0;
+
+        document.getElementById('summaryBar').innerHTML =
+            '<div class="summary-item"><div class="summary-value">' + ok + '</div><div class="summary-label">Unterstuetzt</div></div>' +
+            '<div class="summary-item"><div class="summary-value" style="color:var(--warn)">' + warn + '</div><div class="summary-label">Eingeschraenkt</div></div>' +
+            '<div class="summary-item"><div class="summary-value" style="color:var(--err)">' + err + '</div><div class="summary-label">Fehlt</div></div>' +
+            '<div class="summary-item"><div class="summary-value">' + pct + '%</div><div class="summary-label">Kompatibilitaet</div></div>';
+    </script>
+</body>
+</html>
