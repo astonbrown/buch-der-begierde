@@ -6,248 +6,73 @@
     <title>Geraeteanalyse — Buch der Begierde</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --bg: #0a0806;
-            --fg: #e8ddd0;
-            --fg-muted: #8a7e70;
-            --accent: #c4463a;
-            --gold: #b8943e;
-            --gold-dim: #7a6329;
-            --card: rgba(18, 14, 10, 0.85);
-            --card-border: rgba(180, 148, 62, 0.15);
-            --border: rgba(138, 126, 112, 0.12);
-            --ok: #4a8c5c;
-            --warn: #8c7a4a;
-            --err: #8c4a4a;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Cormorant Garamond', serif;
-            background: var(--bg);
-            color: var(--fg);
-            min-height: 100vh;
-        }
-        .grain-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 256px 256px;
-        }
-        header {
-            padding: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-        }
-        .back-link {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--fg-muted);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: color 0.3s ease;
-        }
-        .back-link:hover { color: var(--gold); }
-        .header-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.5rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: var(--fg-muted);
-        }
-        main {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-        }
-        .page-title {
-            font-size: 2rem;
-            font-weight: 300;
-            margin-bottom: 0.5rem;
-        }
-        .page-title em { color: var(--accent); font-style: italic; }
-        .page-desc {
-            font-size: 0.9rem;
-            color: var(--fg-muted);
-            font-weight: 300;
-            margin-bottom: 2.5rem;
-            line-height: 1.7;
-        }
-        .section-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.45rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: var(--gold-dim);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-        .section-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-        }
-        .card {
-            background: var(--card);
-            border: 1px solid var(--card-border);
-            padding: 1.2rem;
-            transition: border-color 0.3s ease;
-        }
-        .card:hover { border-color: rgba(180, 148, 62, 0.3); }
-        .card-icon {
-            font-size: 0.8rem;
-            color: var(--gold-dim);
-            margin-bottom: 0.6rem;
-        }
-        .card-name {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--fg-muted);
-            margin-bottom: 0.5rem;
-        }
-        .card-value {
-            font-size: 1rem;
-            font-weight: 400;
-            color: var(--fg);
-            word-break: break-all;
-        }
-        .card-value.small {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--fg-muted);
-            line-height: 1.6;
-        }
-        .status-badge {
-            display: inline-block;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.5rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            padding: 0.25rem 0.7rem;
-            border: 1px solid;
-        }
-        .status-badge.ok { color: var(--ok); border-color: rgba(74,140,92,0.3); background: rgba(74,140,92,0.06); }
-        .status-badge.warn { color: var(--warn); border-color: rgba(140,122,74,0.3); background: rgba(140,122,74,0.06); }
-        .status-badge.err { color: var(--err); border-color: rgba(140,74,74,0.3); background: rgba(140,74,74,0.06); }
-        .summary-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1.2rem 1.5rem;
-            background: var(--card);
-            border: 1px solid var(--card-border);
-            margin-bottom: 2.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .summary-item { text-align: center; }
-        .summary-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--gold);
-        }
-        .summary-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.4rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--fg-muted);
-            margin-top: 0.2rem;
-        }
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 1.5rem 2rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.4rem;
-            color: rgba(138,126,112,0.4);
-            letter-spacing: 0.1em;
-            text-align: center;
-        }
-        @media (max-width: 600px) {
-            main { padding: 2rem 1.2rem; }
-            .grid { grid-template-columns: 1fr; }
-            .summary-bar { flex-direction: column; align-items: flex-start; }
-        }
+        :root{--bg:#0a0806;--fg:#e8ddd0;--fg-muted:#8a7e70;--accent:#c4463a;--gold:#b8943e;--gold-dim:#7a6329;--card:rgba(18,14,10,0.85);--card-border:rgba(180,148,62,0.15);--border:rgba(138,126,112,0.12);--ok:#4a8c5c;--warn:#8c7a4a;--err:#8c4a4a}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Cormorant Garamond',serif;background:var(--bg);color:var(--fg);min-height:100vh}
+        .grain-overlay{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:256px 256px}
+        header{padding:2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+        .back-link{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-muted);text-decoration:none;display:flex;align-items:center;gap:.5rem;transition:color .3s ease}
+        .back-link:hover{color:var(--gold)}
+        .header-title{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:var(--fg-muted)}
+        main{max-width:900px;margin:0 auto;padding:3rem 2rem}
+        .page-title{font-size:2rem;font-weight:300;margin-bottom:.5rem}
+        .page-title em{color:var(--accent);font-style:italic}
+        .page-desc{font-size:.9rem;color:var(--fg-muted);font-weight:300;margin-bottom:2.5rem;line-height:1.7}
+        .section-label{font-family:'JetBrains Mono',monospace;font-size:.45rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:1rem;display:flex;align-items:center;gap:.8rem}
+        .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;margin-bottom:2.5rem}
+        .card{background:var(--card);border:1px solid var(--card-border);padding:1.2rem;transition:border-color .3s ease}
+        .card:hover{border-color:rgba(180,148,62,.3)}
+        .card-icon{font-size:.8rem;color:var(--gold-dim);margin-bottom:.6rem}
+        .card-name{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:.5rem}
+        .card-value{font-size:1rem;font-weight:400;color:var(--fg);word-break:break-all}
+        .card-value.small{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--fg-muted);line-height:1.6}
+        .status-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .7rem;border:1px solid}
+        .status-badge.ok{color:var(--ok);border-color:rgba(74,140,92,.3);background:rgba(74,140,92,.06)}
+        .status-badge.warn{color:var(--warn);border-color:rgba(140,122,74,.3);background:rgba(140,122,74,.06)}
+        .status-badge.err{color:var(--err);border-color:rgba(140,74,74,.3);background:rgba(140,74,74,.06)}
+        .summary-bar{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;background:var(--card);border:1px solid var(--card-border);margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
+        .summary-item{text-align:center}
+        .summary-value{font-size:1.5rem;font-weight:600;color:var(--gold)}
+        .summary-label{font-family:'JetBrains Mono',monospace;font-size:.4rem;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-muted);margin-top:.2rem}
+        footer{border-top:1px solid var(--border);padding:1.5rem 2rem;font-family:'JetBrains Mono',monospace;font-size:.4rem;color:rgba(138,126,112,.4);letter-spacing:.1em;text-align:center}
+        @media(max-width:600px){main{padding:2rem 1.2rem}.grid{grid-template-columns:1fr}.summary-bar{flex-direction:column;align-items:flex-start}}
     </style>
 </head>
 <body>
     <div class="grain-overlay"></div>
-
     <header>
         <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Zurueck</a>
         <span class="header-title">Geraeteanalyse</span>
     </header>
-
     <main>
         <h1 class="page-title">Technische <em>Unterstuetzung</em></h1>
         <p class="page-desc">Analyse der Faehigkeiten deines Geraetes fuer das interaktive Leseerlebnis.</p>
-
-        <div class="summary-bar" id="summaryBar">
-            <div class="summary-item"><div class="summary-value">—</div><div class="summary-label">Lade...</div></div>
-        </div>
-
-        <div class="section-label">Bildschirm und Anzeige</div>
-        <div class="grid" id="gridDisplay"></div>
-
-        <div class="section-label">System und Leistung</div>
-        <div class="grid" id="gridSystem"></div>
-
-        <div class="section-label">Netzwerk und Speicher</div>
-        <div class="grid" id="gridNetwork"></div>
-
-        <div class="section-label">Datenbank</div>
-        <div class="grid" id="gridDB">
-            <div class="card">
-                <div class="card-icon"><i class="fas fa-circle-notch fa-spin"></i></div>
-                <div class="card-name">Verbindungstest</div>
-                <div class="card-value small" style="color:var(--fg-muted)">Pruefe Verbindung...</div>
-            </div>
-        </div>
-
-        <div class="section-label">Browser und APIs</div>
-        <div class="grid" id="gridAPIs"></div>
+        <div class="summary-bar" id="summaryBar"><div class="summary-item"><div class="summary-value">—</div><div class="summary-label">Lade...</div></div></div>
+        <div class="section-label">Bildschirm und Anzeige</div><div class="grid" id="gridDisplay"></div>
+        <div class="section-label">System und Leistung</div><div class="grid" id="gridSystem"></div>
+        <div class="section-label">Netzwerk und Speicher</div><div class="grid" id="gridNetwork"></div>
+        <div class="section-label">Datenbank</div><div class="grid" id="gridDB"></div>
+        <div class="section-label">Browser und APIs</div><div class="grid" id="gridAPIs"></div>
     </main>
-
     <footer>Buch der Begierde — Geraeteanalyse</footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" async></script>
     <script>
-        var ok = 0;
-        var warn = 0;
-        var err = 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        var ok = 0, warn = 0, err = 0;
 
-        function badge(status) {
-            var labels = { ok: 'Unterstuetzt', warn: 'Eingeschraenkt', err: 'Nicht verfuegbar' };
-            return '<span class="status-badge ' + status + '">' + labels[status] + '</span>';
+        function badge(s) {
+            var t = {ok:'Unterstuetzt',warn:'Eingeschraenkt',err:'Nicht verfuegbar'};
+            return '<span class="status-badge ' + s + '">' + t[s] + '</span>';
         }
 
-        function makeCard(icon, name, value, isSmall) {
-            return '<div class="card"><div class="card-icon"><i class="fas ' + icon + '"></i></div><div class="card-name">' + name + '</div><div class="card-value' + (isSmall ? ' small' : '') + '">' + value + '</div></div>';
+        function mc(icon, name, value, sm) {
+            return '<div class="card"><div class="card-icon"><i class="fas ' + icon + '"></i></div><div class="card-name">' + name + '</div><div class="card-value' + (sm ? ' small' : '') + '">' + value + '</div></div>';
         }
 
-        function updateSummary() {
+        function updSum() {
             var total = ok + warn + err;
             var pct = total > 0 ? Math.round((ok / total) * 100) : 0;
             document.getElementById('summaryBar').innerHTML =
@@ -257,148 +82,92 @@
                 '<div class="summary-item"><div class="summary-value">' + pct + '%</div><div class="summary-label">Kompatibilitaet</div></div>';
         }
 
-        // ===== Bildschirm =====
-        var sw = screen.width;
-        var sh = screen.height;
-        var dpr = window.devicePixelRatio || 1;
-        var dGrid = document.getElementById('gridDisplay');
-        dGrid.innerHTML += makeCard('fa-expand', 'Bildschirm', sw + ' x ' + sh + ' px');
-        dGrid.innerHTML += makeCard('fa-search-plus', 'Pixelverhaeltnis', dpr.toFixed(1) + 'x');
-        var colorDepth = screen.colorDepth;
-        if (colorDepth >= 24) { ok++; } else { warn++; }
-        dGrid.innerHTML += makeCard('fa-palette', 'Farbtiefe', colorDepth + ' bit ' + badge(colorDepth >= 24 ? 'ok' : 'warn'), true);
-        dGrid.innerHTML += makeCard('fa-mobile-alt', 'Ausrichtung', sw > sh ? 'Landscape' : 'Portrait');
-        dGrid.innerHTML += makeCard('fa-ruler-combined', 'Viewport', window.innerWidth + ' x ' + window.innerHeight + ' px');
+        // Bildschirm
+        var sw = screen.width, sh = screen.height, dpr = window.devicePixelRatio || 1;
+        var dG = document.getElementById('gridDisplay');
+        dG.innerHTML += mc('fa-expand','Bildschirm',sw+' x '+sh+' px');
+        dG.innerHTML += mc('fa-search-plus','Pixelverhaeltnis',dpr.toFixed(1)+'x');
+        var cd = screen.colorDepth; if(cd>=24){ok++;}else{warn++;}
+        dG.innerHTML += mc('fa-palette','Farbtiefe',cd+' bit '+badge(cd>=24?'ok':'warn'),true);
+        dG.innerHTML += mc('fa-mobile-alt','Ausrichtung',sw>sh?'Landscape':'Portrait');
+        dG.innerHTML += mc('fa-ruler-combined','Viewport',window.innerWidth+' x '+window.innerHeight+' px');
 
-        // ===== System =====
-        var sGrid = document.getElementById('gridSystem');
-        sGrid.innerHTML += makeCard('fa-microchip', 'CPU-Kerne', navigator.hardwareConcurrency || '?');
+        // System
+        var sG = document.getElementById('gridSystem');
+        sG.innerHTML += mc('fa-microchip','CPU-Kerne',navigator.hardwareConcurrency||'?');
         var mem = navigator.deviceMemory;
-        if (mem) {
-            sGrid.innerHTML += makeCard('fa-memory', 'Arbeitsspeicher', mem + ' GB');
-        } else {
-            sGrid.innerHTML += makeCard('fa-memory', 'Arbeitsspeicher', 'Nicht erkennbar ' + badge('warn'), true);
-            warn++;
-        }
-        var touch = 'ontouchstart' in window;
-        if (touch) { ok++; } else { warn++; }
-        sGrid.innerHTML += makeCard('fa-hand-pointer', 'Touchscreen', touch ? 'Ja' : 'Nein');
-        sGrid.innerHTML += makeCard('fa-fingerprint', 'Touch-Punkte', navigator.maxTouchPoints || 0);
+        if(mem){sG.innerHTML+=mc('fa-memory','Arbeitsspeicher',mem+' GB');}else{sG.innerHTML+=mc('fa-memory','Arbeitsspeicher','Nicht erkennbar '+badge('warn'),true);warn++;}
+        var touch='ontouchstart' in window;if(touch){ok++;}else{warn++;}
+        sG.innerHTML+=mc('fa-hand-pointer','Touchscreen',touch?'Ja':'Nein');
+        sG.innerHTML+=mc('fa-fingerprint','Touch-Punkte',navigator.maxTouchPoints||0);
 
-        // ===== Netzwerk =====
-        var nGrid = document.getElementById('gridNetwork');
-        var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (conn) {
-            nGrid.innerHTML += makeCard('fa-wifi', 'Verbindungstyp', conn.effectiveType ? conn.effectiveType.toUpperCase() : 'Unbekannt');
-            if (conn.downlink) nGrid.innerHTML += makeCard('fa-tachometer-alt', 'Geschwindigkeit', conn.downlink + ' Mbps');
-            if (conn.rtt != null) nGrid.innerHTML += makeCard('fa-clock', 'Latenz', conn.rtt + ' ms');
-        } else {
-            nGrid.innerHTML += makeCard('fa-wifi', 'Netzwerkinfo', 'Nicht verfuegbar ' + badge('warn'), true);
-            warn++;
-        }
-        if (navigator.onLine) { ok++; } else { err++; }
-        nGrid.innerHTML += makeCard('fa-globe', 'Online-Status', navigator.onLine ? 'Verbunden' : 'Offline ' + badge(navigator.onLine ? 'ok' : 'err'));
-        if (navigator.cookieEnabled) { ok++; } else { err++; }
-        nGrid.innerHTML += makeCard('fa-cookie-bite', 'Cookies', navigator.cookieEnabled ? 'Aktiviert' : 'Deaktiviert ' + badge(navigator.cookieEnabled ? 'ok' : 'err'));
+        // Netzwerk
+        var nG = document.getElementById('gridNetwork');
+        var conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+        if(conn){
+            nG.innerHTML+=mc('fa-wifi','Verbindungstyp',conn.effectiveType?conn.effectiveType.toUpperCase():'Unbekannt');
+            if(conn.downlink)nG.innerHTML+=mc('fa-tachometer-alt','Geschwindigkeit',conn.downlink+' Mbps');
+            if(conn.rtt!=null)nG.innerHTML+=mc('fa-clock','Latenz',conn.rtt+' ms');
+        }else{nG.innerHTML+=mc('fa-wifi','Netzwerkinfo','Nicht verfuegbar '+badge('warn'),true);warn++;}
+        if(navigator.onLine){ok++;}else{err++;}
+        nG.innerHTML+=mc('fa-globe','Online-Status',navigator.onLine?'Verbunden':'Offline '+badge(navigator.onLine?'ok':'err'));
+        if(navigator.cookieEnabled){ok++;}else{err++;}
+        nG.innerHTML+=mc('fa-cookie-bite','Cookies',navigator.cookieEnabled?'Aktiviert':'Deaktiviert '+badge(navigator.cookieEnabled?'ok':'err'));
+        if(navigator.getBattery){navigator.getBattery().then(function(b){nG.innerHTML+=mc('fa-battery-three-quarters','Akkustand',Math.round(b.level*100)+'% — '+(b.charging?'Ladend':'Entladen'));}).catch(function(){nG.innerHTML+=mc('fa-battery-empty','Akkustand','Nicht lesbar '+badge('warn'),true);warn++;});}else{nG.innerHTML+=mc('fa-battery-empty','Akkustand','Nicht verfuegbar '+badge('warn'),true);warn++;}
 
-        // Akku
-        if (navigator.getBattery) {
-            navigator.getBattery().then(function(b) {
-                nGrid.innerHTML += makeCard('fa-battery-three-quarters', 'Akkustand', Math.round(b.level * 100) + '% — ' + (b.charging ? 'Ladend' : 'Entladen'));
-            }).catch(function() {
-                nGrid.innerHTML += makeCard('fa-battery-empty', 'Akkustand', 'Nicht lesbar ' + badge('warn'), true);
-                warn++;
-            });
-        } else {
-            nGrid.innerHTML += makeCard('fa-battery-empty', 'Akkustand', 'Nicht verfuegbar ' + badge('warn'), true);
-            warn++;
-        }
+        // Browser
+        var ua=navigator.userAgent, browser='Unbekannt', os='Unbekannt';
+        if(ua.indexOf('Firefox')>-1)browser='Firefox';else if(ua.indexOf('Edg')>-1)browser='Edge';else if(ua.indexOf('Chrome')>-1)browser='Chrome';else if(ua.indexOf('Safari')>-1)browser='Safari';
+        if(ua.indexOf('Windows')>-1)os='Windows';else if(ua.indexOf('Mac')>-1)os='macOS';else if(ua.indexOf('Linux')>-1)os='Linux';else if(ua.indexOf('Android')>-1)os='Android';else if(ua.indexOf('iPhone')>-1||ua.indexOf('iPad')>-1)os='iOS';
+        var aG=document.getElementById('gridAPIs');
+        aG.innerHTML+=mc('fa-compass','Browser',browser);
+        aG.innerHTML+=mc('fa-laptop','Betriebssystem',os);
 
-        // ===== Browser =====
-        var ua = navigator.userAgent;
-        var browser = 'Unbekannt';
-        var os = 'Unbekannt';
-        if (ua.indexOf('Firefox') > -1) browser = 'Firefox';
-        else if (ua.indexOf('Edg') > -1) browser = 'Edge';
-        else if (ua.indexOf('Chrome') > -1) browser = 'Chrome';
-        else if (ua.indexOf('Safari') > -1) browser = 'Safari';
-        if (ua.indexOf('Windows') > -1) os = 'Windows';
-        else if (ua.indexOf('Mac') > -1) os = 'macOS';
-        else if (ua.indexOf('Linux') > -1) os = 'Linux';
-        else if (ua.indexOf('Android') > -1) os = 'Android';
-        else if (ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1) os = 'iOS';
+        // APIs
+        var wgl=false;try{var cv=document.createElement('canvas');wgl=!!(cv.getContext('webgl')||cv.getContext('experimental-webgl'));}catch(e){}
+        if(wgl){ok++;}else{err++;}
+        aG.innerHTML+=mc('fa-cube','WebGL',wgl?'Verfuegbar':'Nicht verfuegbar '+badge(wgl?'ok':'err'));
+        var aud=false;try{aud=!!(window.AudioContext||window.webkitAudioContext);}catch(e){}
+        if(aud){ok++;}else{warn++;}
+        aG.innerHTML+=mc('fa-volume-up','Web Audio API',aud?'Verfuegbar':'Nicht verfuegbar '+badge(aud?'ok':'warn'));
+        if('serviceWorker' in navigator){ok++;}else{warn++;}
+        aG.innerHTML+=mc('fa-cog','Service Worker','serviceWorker' in navigator?'Unterstuetzt':'Nicht unterstuetzt '+badge('serviceWorker' in navigator?'ok':'warn'));
+        if('Notification' in window){ok++;}else{warn++;}
+        aG.innerHTML+=mc('fa-bell','Benachrichtigungen','Notification' in window?'Verfuegbar':'Nicht verfuegbar '+badge('Notification' in window?'ok':'warn'));
+        if(navigator.clipboard){ok++;}else{warn++;}
+        aG.innerHTML+=mc('fa-clipboard','Clipboard API',navigator.clipboard?'Verfuegbar':'Nicht verfuegbar '+badge(navigator.clipboard?'ok':'warn'));
+        if('geolocation' in navigator){ok++;}else{warn++;}
+        aG.innerHTML+=mc('fa-map-marker-alt','Geolocation','geolocation' in navigator?'Verfuegbar':'Nicht verfuegbar '+badge('geolocation' in navigator?'ok':'warn'));
 
-        var aGrid = document.getElementById('gridAPIs');
-        aGrid.innerHTML += makeCard('fa-compass', 'Browser', browser);
-        aGrid.innerHTML += makeCard('fa-laptop', 'Betriebssystem', os);
+        updSum();
 
-        // WebGL
-        var webgl = false;
-        try { var c = document.createElement('canvas'); webgl = !!(c.getContext('webgl') || c.getContext('experimental-webgl')); } catch(e) {}
-        if (webgl) { ok++; } else { err++; }
-        aGrid.innerHTML += makeCard('fa-cube', 'WebGL', webgl ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge(webgl ? 'ok' : 'err'));
+        // Datenbank (async, separat)
+        (async function(){
+            var dbG=document.getElementById('gridDB');
+            dbG.innerHTML='<div class="card"><div class="card-icon"><i class="fas fa-circle-notch fa-spin"></i></div><div class="card-name">Verbindungstest</div><div class="card-value small" style="color:var(--fg-muted)">Pruefe Verbindung...</div></div>';
 
-        // Audio
-        var audio = false;
-        try { audio = !!(window.AudioContext || window.webkitAudioContext); } catch(e) {}
-        if (audio) { ok++; } else { warn++; }
-        aGrid.innerHTML += makeCard('fa-volume-up', 'Web Audio API', audio ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge(audio ? 'ok' : 'warn'));
+            var connected=false, ms=0;
+            try{
+                if(typeof supabase==='undefined'||!supabase.createClient)throw new Error('Bibliothek nicht geladen');
+                var t0=performance.now();
+                var cl=supabase.createClient('https://mntjworywbkfpwvakieq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1udGp3b3J5d2JrZnB3dmFraWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMTczMjAsImV4cCI6MjA5MDg5MzMyMH0.4LTwi6IY6WoiQTQfy0612j-8xi1C1Ly1zjMQJ5bOps0');
+                var r=await cl.from('leserinnen').select('id',{count:'exact',head:true});
+                ms=Math.round(performance.now()-t0);
+                if(r.error)throw r.error;
+                connected=true;ok++;
+            }catch(e){err++;ms=0;}
 
-        // Service Worker
-        if ('serviceWorker' in navigator) { ok++; } else { warn++; }
-        aGrid.innerHTML += makeCard('fa-cog', 'Service Worker', 'serviceWorker' in navigator ? 'Unterstuetzt' : 'Nicht unterstuetzt ' + badge('serviceWorker' in navigator ? 'ok' : 'warn'));
+            var sb=connected?badge('ok'):badge('err');
+            var pc=connected?'var(--ok)':'var(--fg-muted)';
+            dbG.innerHTML=
+                mc('fa-database','Supabase',(connected?'Verbunden':'Fehler')+' '+sb,true)+
+                mc('fa-bolt','Antwortzeit',connected?'<span style="color:'+pc+'">'+ms+' ms</span>':'—',true)+
+                mc('fa-server','Endpunkt','mntjworywbkfpwvakieq.supabase.co',true)+
+                mc('fa-shield-alt','Modus','Anon (lesen/schreiben)',true);
 
-        // Notifications
-        if ('Notification' in window) { ok++; } else { warn++; }
-        aGrid.innerHTML += makeCard('fa-bell', 'Benachrichtigungen', 'Notification' in window ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge('Notification' in window ? 'ok' : 'warn'));
-
-        // Clipboard
-        if (navigator.clipboard) { ok++; } else { warn++; }
-        aGrid.innerHTML += makeCard('fa-clipboard', 'Clipboard API', navigator.clipboard ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge(navigator.clipboard ? 'ok' : 'warn'));
-
-        // Geolocation
-        if ('geolocation' in navigator) { ok++; } else { warn++; }
-        aGrid.innerHTML += makeCard('fa-map-marker-alt', 'Geolocation', 'geolocation' in navigator ? 'Verfuegbar' : 'Nicht verfuegbar ' + badge('geolocation' in navigator ? 'ok' : 'warn'));
-
-        // ===== Datenbank =====
-        var dbGrid = document.getElementById('gridDB');
-        var dbUrl = 'https://mntjworywbkfpwvakieq.supabase.co';
-        var dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1udGp3b3J5d2JrZnB3dmFraWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMTczMjAsImV4cCI6MjA5MDg5MzMyMH0.4LTwi6IY6WoiQTQfy0612j-8xi1C1Ly1zjMQJ5bOps0';
-
-        (async function() {
-            var dbConnected = false;
-            var pingMs = 0;
-
-            try {
-                if (typeof supabase === 'undefined' || !supabase.createClient) throw new Error('Bibliothek nicht geladen');
-
-                var start = performance.now();
-                var client = supabase.createClient(dbUrl, dbKey);
-                var result = await client.from('leserinnen').select('id', { count: 'exact', head: true });
-                pingMs = Math.round(performance.now() - start);
-
-                if (result.error) throw result.error;
-                dbConnected = true;
-                ok++;
-            } catch(e) {
-                err++;
-                pingMs = 0;
-            }
-
-            var statusBadge = dbConnected ? badge('ok') : badge('err');
-            var pingColor = dbConnected ? 'var(--ok)' : 'var(--fg-muted)';
-
-            dbGrid.innerHTML =
-                makeCard('fa-database', 'Supabase', (dbConnected ? 'Verbunden' : 'Fehler') + ' ' + statusBadge, true) +
-                makeCard('fa-bolt', 'Antwortzeit', dbConnected ? '<span style="color:' + pingColor + '">' + pingMs + ' ms</span>' : '—', true) +
-                makeCard('fa-server', 'Endpunkt', dbUrl.replace('https://', ''), true) +
-                makeCard('fa-shield-alt', 'Modus', 'Anon (lesen/schreiben)', true);
-
-            updateSummary();
+            updSum();
         })();
-
-        // ===== Summary (initial, wird von DB-Test aktualisiert) =====
-        updateSummary();
+    });
     </script>
 </body>
 </html>
