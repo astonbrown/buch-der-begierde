@@ -221,7 +221,7 @@
             .summary-bar { flex-direction: column; align-items: flex-start; }
         }
     </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <body>
     <div class="grain-overlay"></div>
 
@@ -324,6 +324,12 @@
         var cookieStatus = cookies ? 'ok' : 'err';
         if (cookieStatus === 'ok') ok++; else err++;
         nGrid.innerHTML += card('fa-cookie-bite', 'Cookies', cookies ? 'Aktiviert' : 'Deaktiviert ' + badge(cookieStatus));
+
+<!-- ===== Datenbank ===== -->
+        <div class="section-label">Datenbank</div>
+        <div class="grid" id="gridDB">
+            <div class="card"><div class="card-icon"><i class="fas fa-circle-notch fa-spin"></i></div><div class="card-name">Verbindungstest</div><div class="card-value small" style="color:var(--fg-muted)">Pruefe Verbindung...</div></div>
+        </div>
 
         // ===== APIs =====
         var aGrid = document.getElementById('gridAPIs');
