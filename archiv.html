@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archiv — Buch der Begierde</title>
+    <meta name="description" content="Erkunde dein Gedächtnis. Visualisierung aller Memory-Knoten und ihrer Verbindungen.">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Stylesheets (modular) -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/atmosphere.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+
+    <!-- Atmosphäre & Grain -->
+    <div class="atmosphere"></div>
+    <div class="grain-overlay"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Page Transition Overlay -->
+    <div class="page-transition" id="pageTransition"></div>
+
+    <!-- ===== Header ===== -->
+    <header>
+        <a href="index.html" class="logo-group" style="text-decoration:none;">
+            <div class="logo-icon"><span>B</span></div>
+            <div class="logo-text">
+                <strong>Buch der Begierde</strong>
+                <span>Gedächtnis-Archiv</span>
+            </div>
+        </a>
+        <nav>
+            <a href="lesen.html">Lesen</a>
+            <a href="hoeren.html">Hören</a>
+            <a href="schreiben.html">Schreiben</a>
+            <a href="archiv.html" class="active">Archiv</a>
+            <a href="analyse.html">Analyse</a>
+        </nav>
+        <div class="db-status">
+            <div class="db-dot" id="dbDot"></div>
+            <span class="db-label" id="dbLabel">OFFLINE</span>
+        </div>
+    </header>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== Main ===== -->
+    <main>
+
+        <!-- Willkommen -->
+        <section class="section-willkommen fade-in">
+            <div class="willkommen-label">Epilog</div>
+            <h1 class="willkommen-title">Dein <em>Gedächtnis</em> erforschen</h1>
+            <p class="willkommen-subtitle">
+                Alle Momente, die du gelesen, gehört oder geschrieben hast,
+                liegen hier archiviert. Beobachte die Netzwerke deiner Erinnerung.
+            </p>
+        </section>
+
+        <!-- Summary Stats -->
+        <div class="archiv-summary fade-in">
+            <div class="summary-item">
+                <div class="summary-value" id="archivNodeCount">0</div>
+                <div class="summary-label">Memory-Knoten</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="archivConnectionCount">0</div>
+                <div class="summary-label">Verbindungen</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="archivAverageWeight">0.00</div>
+                <div class="summary-label">Ø Gewicht</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="archivStorageSize">—</div>
+                <div class="summary-label">Speichergröße</div>
+            </div>
+        </div>
+
+        <!-- ===== Knoten-Liste ===== -->
+        <section class="archiv-section fade-in" style="margin-top:3rem;">
+            <h2 class="section-title">
+                <i class="fas fa-cube"></i> Gedächtnis-Knoten
+            </h2>
+            <p class="section-desc">
+                Jeder Knoten repräsentiert eine Erinnerung. Sein Gewicht zeigt die Stärke,
+                sein Zustand die Frische der Erinnerung.
+            </p>
+
+            <div class="archiv-controls">
+                <select id="archivFilterType" class="archiv-filter">
+                    <option value="">Alle Typen</option>
+                    <option value="episodic">Episodisch (Ereignisse)</option>
+                    <option value="sensory">Sensorisch (Sinne)</option>
+                    <option value="emotional">Emotional (Gefühle)</option>
+                    <option value="conceptual">Konzeptionell (Ideen)</option>
+                </select>
+                <button class="btn btn-ghost" id="btnArchivExport">
+                    <i class="fas fa-download"></i> Exportieren
+                </button>
+            </div>
+
+            <div class="archiv-node-list" id="archivNodeList">
+                <!-- Wird von app-archiv.js mit Knoten-Karten gefüllt -->
+                <p style="grid-column:1/-1; text-align:center; color:var(--text-dim);">
+                    Lade die Seite, um dein Gedächtnis zu erkunden...
+                </p>
+            </div>
+        </section>
+
+        <!-- ===== Verbindungs-Graph ===== -->
+        <section class="archiv-section fade-in" style="margin-top:3rem;">
+            <h2 class="section-title">
+                <i class="fas fa-diagram-project"></i> Verbindungs-Graph
+            </h2>
+            <p class="section-desc">
+                Visualisierung der Assoziationen zwischen deinen Erinnerungen.
+                Verwandte Gedanken sind näher beieinander.
+            </p>
+
+            <div class="archiv-graph-container">
+                <canvas id="archivGraphCanvas" width="800" height="500"></canvas>
+                <small style="display:block; margin-top:1rem; color:var(--text-dim);">
+                    💡 Hinweis: Der Graph wird von den Knoten und ihren Verbindungen generiert.
+                    Dicke Linien = starke Assoziationen.
+                </small>
+            </div>
+        </section>
+
+        <!-- ===== Info Panel ===== -->
+        <section class="archiv-section fade-in" style="margin-top:3rem;">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-tag"><i class="fas fa-book-open"></i> Wie das Archiv funktioniert</span>
+                </div>
+                <div class="panel-content">
+                    <h3 style="margin-top:0;">Knoten-Typen</h3>
+                    <ul>
+                        <li><strong>Episodisch:</strong> Seiten-Besuche, Lesepausen, Ereignisse (Verfall: langsam)</li>
+                        <li><strong>Sensorisch:</strong> Die 7 Wortfragmente, Sinneswahrnehmungen (Verfall: mittel)</li>
+                        <li><strong>Emotional:</strong> Deine Schreib-Einträge, Gefühlslagen (Verfall: langsam)</li>
+                        <li><strong>Konzeptionell:</strong> Abstrakte Konzepte, Metaphern (Verfall: sehr langsam)</li>
+                    </ul>
+
+                    <h3>Gewicht &amp; Zustand</h3>
+                    <ul>
+                        <li><strong>Gefüllt (1.0–0.5):</strong> Frische, aktive Erinnerung</li>
+                        <li><strong>Teilweise (0.5–0.15):</strong> Verblassende Erinnerung</li>
+                        <li><strong>Verfallen (&lt;0.15):</strong> Schwache Spur, fast vergessen</li>
+                        <li><strong>Leer (&lt;0.01):</strong> Aus dem Gedächtnis gelöscht</li>
+                    </ul>
+
+                    <h3>Verfall &amp; Verfall-Timer</h3>
+                    <p>
+                        Das Gedächtnis verliert mit der Zeit an Kraft. Je länger du eine Erinnerung
+                        nicht benutzt, desto schwächer wird sie. Dies geschieht automatisch im Hintergrund.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== Entry-Point ===== -->
+    <script type="module" src="js/app-archiv.js"></script>
+</body>
+</html>
