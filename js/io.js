@@ -21,6 +21,7 @@ const IOManager = (() => {
     let _timeInterval = null;
     let _listeners = [];
     let _pendingText = '';
+    let _inputHandler = null;
 
     function _emit(event, data) {
         _listeners.forEach(fn => {
@@ -66,9 +67,10 @@ const IOManager = (() => {
         _readerIdEl = document.getElementById(els.readerIdId);
 
         if (_textareaEl && _charCountEl) {
-            _textareaEl.addEventListener('input', () => {
+            _inputHandler = () => {
                 _charCountEl.textContent = _textareaEl.value.length;
-            });
+            };
+            _textareaEl.addEventListener('input', _inputHandler);
         }
 
         _updateTime();
@@ -141,10 +143,22 @@ const IOManager = (() => {
     function off(fn) { _listeners = _listeners.filter(l => l !== fn); }
 
     /**
-     * Zerstört das IOManager (Timer stoppen).
+     * Zerstört das IOManager (Timer stoppen, Event-Listener entfernen).
      */
     function destroy() {
-        if (_timeInterval) clearInterval(_timeInterval);
+        if (_timeInterval) {
+            clearInterval(_timeInterval);
+            _timeInterval = null;
+        }
+        if (_textareaEl && _inputHandler) {
+            _textareaEl.removeEventListener('input', _inputHandler);
+            _inputHandler = null;
+        }
+        _textareaEl = null;
+        _charCountEl = null;
+        _timeStampEl = null;
+        _readerIdEl = null;
+        _listeners = [];
     }
 
     return Object.freeze({

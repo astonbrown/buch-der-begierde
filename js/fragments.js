@@ -90,6 +90,9 @@ const FragmentSelector = (() => {
         MemoryEngine.reinforce(node.id, _intensity * 0.01 * def.intensityMultiplier);
     }
 
+    let _tagClickHandlers = new Map();
+    let _sliderInputHandler = null;
+
     /**
      * Initialisiert den Selektor und bindet die DOM-Events.
      * @param {string} tagSelector - CSS-Selector für Fragment-Tags
@@ -97,12 +100,17 @@ const FragmentSelector = (() => {
      * @param {string} valueId - ID des Intensitäts-Wert-Displays
      */
     function init(tagSelector, sliderId, valueId) {
+        // Cleanup falls bereits initialisiert
+        if (_tagElements.length > 0) {
+            destroy();
+        }
+
         _tagElements = Array.from(document.querySelectorAll(tagSelector));
         _sliderEl = document.getElementById(sliderId);
         _valueEl = document.getElementById(valueId);
 
         _tagElements.forEach(tag => {
-            tag.addEventListener('click', () => {
+            const clickHandler = () => {
                 const type = tag.dataset.type;
                 if (_selected.has(type)) {
                     // Abwählen
@@ -121,18 +129,42 @@ const FragmentSelector = (() => {
                     EchoEngine.onFragmentChange();
                     _emit('fragment:selected', type);
                 }
-            });
+            };
+            tag.addEventListener('click', clickHandler);
+            _tagClickHandlers.set(tag, clickHandler);
         });
 
         // Intensitäts-Slider
         if (_sliderEl && _valueEl) {
-            _sliderEl.addEventListener('input', () => {
+            _sliderInputHandler = () => {
                 _intensity = parseInt(_sliderEl.value);
                 _valueEl.textContent = _intensity;
                 EchoEngine.onFragmentChange();
                 _emit('intensity:changed', _intensity);
-            });
+            };
+            _sliderEl.addEventListener('input', _sliderInputHandler);
         }
+    }
+
+    /**
+     * Räumt die Fragment-Selektor auf (Event-Listener, State).
+     */
+    function destroy() {
+        // Entferne Tag-Click-Listener
+        _tagClickHandlers.forEach((handler, tag) => {
+            tag.removeEventListener('click', handler);
+        });
+        _tagClickHandlers.clear();
+
+        // Entferne Slider-Input-Listener
+        if (_sliderEl && _sliderInputHandler) {
+            _sliderEl.removeEventListener('input', _sliderInputHandler);
+            _sliderInputHandler = null;
+        }
+
+        _tagElements = [];
+        _sliderEl = null;
+        _valueEl = null;
     }
 
     function on(fn) { _listeners.push(fn); }
@@ -174,7 +206,7 @@ const FragmentSelector = (() => {
     }
 
     return Object.freeze({
-        init, on, off,
+        init, destroy, on, off,
         getSelected, getSelectedArray, getIntensity,
         restore, clear
     });

@@ -27,18 +27,24 @@ const EchoEngine = (() => {
         _timeInterval: null
     };
 
+    let _clickHandler = null;
+    let _scrollHandler = null;
+    let _metricsInterval = null;
+
     /* --- Helpers --------------------------------------------------- */
 
     function _initTracking() {
         // Klicks zählen
-        document.addEventListener('click', () => { interactions.clicks++; });
+        _clickHandler = () => { interactions.clicks++; };
+        document.addEventListener('click', _clickHandler);
 
         // Scroll-Distanz messen
-        window.addEventListener('scroll', () => {
+        _scrollHandler = () => {
             const y = window.scrollY;
             interactions.scrollDistance += Math.abs(y - interactions._lastScroll);
             interactions._lastScroll = y;
-        });
+        };
+        window.addEventListener('scroll', _scrollHandler);
 
         // Zeit zählen (alle 1000ms)
         interactions._timeInterval = setInterval(() => {
@@ -47,8 +53,19 @@ const EchoEngine = (() => {
     }
 
     function _stopTracking() {
+        // Entferne Event-Listener
+        if (_clickHandler) {
+            document.removeEventListener('click', _clickHandler);
+            _clickHandler = null;
+        }
+        if (_scrollHandler) {
+            window.removeEventListener('scroll', _scrollHandler);
+            _scrollHandler = null;
+        }
+        // Stoppe Timer
         if (interactions._timeInterval) {
             clearInterval(interactions._timeInterval);
+            interactions._timeInterval = null;
         }
     }
 
@@ -178,7 +195,7 @@ const EchoEngine = (() => {
         _animId = requestAnimationFrame(_render);
 
         // Metriken alle 600ms berechnen
-        setInterval(_calculateMetrics, 600);
+        _metricsInterval = setInterval(_calculateMetrics, 600);
 
         return true;
     }
@@ -195,7 +212,12 @@ const EchoEngine = (() => {
      */
     function destroy() {
         if (_animId) cancelAnimationFrame(_animId);
+        _animId = null;
         _stopTracking();
+        if (_metricsInterval) {
+            clearInterval(_metricsInterval);
+            _metricsInterval = null;
+        }
         _bars = [];
         _ctx = null;
         _canvas = null;

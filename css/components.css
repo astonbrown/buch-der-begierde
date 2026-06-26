@@ -348,3 +348,171 @@
     opacity: 1;
     pointer-events: all;
 }
+
+/* ===== Hören-Steuerung ===== */
+.hoeren-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem 0;
+}
+
+.hoeren-status {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.hoeren-slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 1rem 0;
+}
+
+.hoeren-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hoeren-slider-label {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    min-width: 100px;
+}
+
+.hoeren-slider-row .intensity-slider {
+    flex: 1;
+}
+
+.hoeren-slider-value {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--accent);
+    min-width: 2.5rem;
+    text-align: right;
+}
+
+.hoeren-preview {
+    background: rgba(14,11,8,0.9);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 1.5rem 0;
+    font-size: 1rem;
+    line-height: 2;
+    color: var(--fg);
+    font-weight: 300;
+    min-height: 120px;
+}
+
+/* ===== Schreiben — Vorschläge ===== */
+.suggestions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 1rem 0;
+}
+
+.suggestion-item {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--fg-muted);
+    padding: 0.9rem 1.1rem;
+    border: 1px solid var(--border);
+    background: rgba(10,8,6,0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    line-height: 1.6;
+}
+
+.suggestion-item:hover,
+.suggestion-item:focus {
+    border-color: var(--gold-dim);
+    color: var(--fg);
+    background: rgba(184,148,62,0.05);
+    outline: none;
+}
+
+.suggestion-empty {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    text-align: center;
+    padding: 1.5rem;
+}
+
+/* ===== Archiv — Knotenkarten ===== */
+.archive-empty {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--fg-muted);
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.archive-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    padding: 1.2rem;
+    transition: border-color 0.3s ease;
+}
+
+.archive-card:hover { border-color: rgba(180,148,62,0.3); }
+
+.archive-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.7rem;
+}
+
+.archive-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+}
+
+.archive-dot.filled { background: var(--accent); box-shadow: 0 0 8px rgba(196,70,58,0.3); }
+.archive-dot.partial { background: var(--gold-dim); }
+.archive-dot.decayed { background: rgba(138,126,112,0.4); }
+.archive-dot.empty { background: var(--border); }
+
+.archive-type,
+.archive-source {
+    font-family: var(--font-mono);
+    font-size: 0.45rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.archive-type { color: var(--gold-dim); }
+.archive-source { color: var(--fg-muted); margin-left: auto; }
+
+.archive-name {
+    font-size: 1rem;
+    color: var(--fg);
+    font-weight: 400;
+    margin-bottom: 0.6rem;
+}
+
+.archive-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.05em;
+}

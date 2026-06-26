@@ -171,7 +171,7 @@ const StoryEngine = (() => {
 
     function getCurrent() { return _findPage(_currentPageId); }
     function getAllPages() { return _pages.slice(); }
-    function getTotalPages() { return CONFIG.STORY_TOTAL_PAGES; }
+    function getTotalPages() { return _pages.length; }
 
     return Object.freeze({
         loadPages, addPage,

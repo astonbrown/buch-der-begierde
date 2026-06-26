@@ -65,6 +65,7 @@ const SchreibenEngine = (() => {
     let _suggestionsEl = null;
     let _listeners = [];
     let _activeFragmentType = null;
+    let _textareaInputHandler = null;
 
     function _emit(event, data) {
         _listeners.forEach(fn => {
@@ -152,9 +153,10 @@ const SchreibenEngine = (() => {
         _suggestionsEl = document.getElementById(els.suggestionsId);
 
         if (_textareaEl && _charCountEl) {
-            _textareaEl.addEventListener('input', () => {
+            _textareaInputHandler = () => {
                 _charCountEl.textContent = _textareaEl.value.length;
-            });
+            };
+            _textareaEl.addEventListener('input', _textareaInputHandler);
         }
 
         _updateSuggestions(null);
@@ -234,6 +236,23 @@ const SchreibenEngine = (() => {
         showToast('Eingabe gelöscht', 'fa-eraser');
     }
 
+    /**
+     * Räumt die Schreib-Engine auf (Event-Listener, State).
+     */
+    function destroy() {
+        // Entferne Event-Listener von Textarea
+        if (_textareaEl && _textareaInputHandler) {
+            _textareaEl.removeEventListener('input', _textareaInputHandler);
+            _textareaInputHandler = null;
+        }
+        // Suggestion-Items werden bei jedem Render neu erstellt, daher kein Cleanup nötig
+        _textareaEl = null;
+        _charCountEl = null;
+        _suggestionsEl = null;
+        _listeners = [];
+        _activeFragmentType = null;
+    }
+
     function on(fn) { _listeners.push(fn); }
     function off(fn) { _listeners = _listeners.filter(l => l !== fn); }
 
@@ -241,7 +260,7 @@ const SchreibenEngine = (() => {
     function getSuggestionTypes() { return Object.keys(SUGGESTIONS); }
 
     return Object.freeze({
-        init, setActiveFragment, submit, clearInput,
+        init, setActiveFragment, submit, clearInput, destroy,
         on, off, getSuggestionTypes
     });
 })();
