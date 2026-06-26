@@ -1,0 +1,48 @@
+/* ===================================================================
+ * variables.css — Zentrale CSS Custom Properties
+ * Alle Farb- und Typografie-Konstanten für das gesamte Projekt.
+ * =================================================================== */
+
+:root {
+    /* --- Hintergrund --- */
+    --bg: #0a0806;
+    --bg-deep: #060403;
+
+    /* --- Vordergrund --- */
+    --fg: #e8ddd0;
+    --fg-muted: #8a7e70;
+
+    /* --- Akzent --- */
+    --accent: #c4463a;
+    --accent-glow: #e05548;
+
+    /* --- Gold / Bronze --- */
+    --gold: #b8943e;
+    --gold-dim: #7a6329;
+
+    /* --- Karten & Flächen --- */
+    --card: rgba(18, 14, 10, 0.85);
+    --card-border: rgba(180, 148, 62, 0.15);
+
+    /* --- Rahmen --- */
+    --border: rgba(138, 126, 112, 0.12);
+
+    /* --- Fragment-Farben --- */
+    --samt: #6b2d3e;
+    --kälte: #3a5c6b;
+    --wärme: #8b5e2f;
+    --licht: #9b8a5e;
+    --schatten: #2a1f1a;
+
+    /* --- Datenbank-Status --- */
+    --db-ok: #4a8c5c;
+    --db-err: #8c4a4a;
+
+    /* --- Typografie --- */
+    --font-serif: 'Cormorant Garamond', serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* --- Transitions --- */
+    --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
