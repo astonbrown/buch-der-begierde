@@ -3,652 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BUCH DER BEGIERDE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        :root {
-            --bg: #0a0806;
-            --bg-deep: #060403;
-            --fg: #e8ddd0;
-            --fg-muted: #8a7e70;
-            --accent: #c4463a;
-            --gold: #b8943e;
-            --gold-dim: #7a6329;
-            --border: rgba(138, 126, 112, 0.12);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html {
-            scroll-behavior: smooth;
-            scrollbar-width: thin;
-            scrollbar-color: var(--gold-dim) var(--bg-deep);
-        }
-
-           body {
-            font-family: 'Cormorant Garamond', serif;
-            background: var(--bg);
-            color: var(--fg);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-        }
-
-        /* ===== Atmosphaere ===== */
-        .atmosphere {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .atmosphere::before {
-            content: '';
-            position: absolute;
-            top: -30%; left: -20%;
-            width: 70%; height: 70%;
-            background: radial-gradient(ellipse, rgba(196, 70, 58, 0.04) 0%, transparent 70%);
-            animation: driftSlow 25s ease-in-out infinite alternate;
-        }
-
-        .atmosphere::after {
-            content: '';
-            position: absolute;
-            bottom: -20%; right: -15%;
-            width: 60%; height: 60%;
-            background: radial-gradient(ellipse, rgba(184, 148, 62, 0.03) 0%, transparent 70%);
-            animation: driftSlow 30s ease-in-out infinite alternate-reverse;
-        }
-
-        @keyframes driftSlow {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(60px, 40px) scale(1.15); }
-        }
-
-        .grain-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 256px 256px;
-        }
-
-        /* ===== Schwebende Partikel ===== */
-        .particles {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 2px; height: 2px;
-            background: var(--gold);
-            border-radius: 50%;
-            opacity: 0;
-            animation: floatUp linear infinite;
-        }
-
-        @keyframes floatUp {
-            0% { opacity: 0; transform: translateY(100vh) scale(0.5); }
-            10% { opacity: 0.5; }
-            90% { opacity: 0.3; }
-            100% { opacity: 0; transform: translateY(-10vh) scale(1.2); }
-        }
-
-        /* ===== Buch-Szene ===== */
-        .book-scene {
-            position: relative;
-            z-index: 10;
-            perspective: 2000px;
-            margin-bottom: 3rem;
-            opacity: 0;
-            animation: sceneIn 1s ease-out 0.3s forwards, bookMove 2.5s cubic-bezier(0.4, 0, 0.2, 1) 1.2s forwards;
-        }
-
-        @keyframes sceneIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes bookMove {
-            0%, 15% { transform: translateX(0); }
-            100% { transform: translateX(75px); }
-        }
-
-        .book-3d {
-            width: 260px;
-            height: 380px;
-            position: relative;
-            transform-style: preserve-3d;
-            transform: rotateX(12deg) rotateY(-20deg);
-            animation: bookSettle 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
-        }
-
-        @keyframes bookSettle {
-            0% { transform: rotateX(12deg) rotateY(-20deg) translateX(-18px) scale(0.88); }
-            60% { transform: rotateX(12deg) rotateY(-18deg) translateX(-15px) scale(1.02); }
-            100% { transform: rotateX(12deg) rotateY(-20deg) translateX(-18px) scale(1); }
-        }
-
-        /* ===== Buchruecken ===== */
-        .book-spine {
-            position: absolute;
-            left: 0; top: 0;
-            width: 28px; height: 100%;
-            transform: rotateY(90deg) translateX(-14px);
-            transform-origin: left center;
-            background: linear-gradient(to right, #0d0a08, #151010, #0d0a08);
-            border: 1px solid rgba(184, 148, 62, 0.2);
-            border-right: none;
-            z-index: 20;
-        }
-
-        /* ===== Buchseiten ===== */
-        .book-pages {
-            position: absolute;
-            left: 14px; top: 0;
-            width: calc(100% - 14px); height: 100%;
-            background: linear-gradient(135deg, #110e0b, #0c0a08);
-            border: 1px solid var(--border);
-            border-left: none;
-            z-index: 5;
-            display: flex;
-            overflow: hidden;
-        }
-
-        .page-left {
-            width: 50%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            border-right: 1px solid var(--border);
-            opacity: 0;
-            animation: pageFadeIn 1.2s ease-out 2.8s forwards;
-        }
-
-        .page-right {
-            width: 50%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            opacity: 0;
-            animation: pageFadeIn 1.2s ease-out 3.4s forwards;
-        }
-
-        @keyframes pageFadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        .page-chapter {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.5rem;
-            letter-spacing: 0.4em;
-            text-transform: uppercase;
-            color: var(--gold-dim);
-            margin-bottom: 1rem;
-        }
-
-        .page-title {
-            font-size: 1.3rem;
-            font-weight: 300;
-            color: var(--fg);
-            text-align: center;
-            line-height: 1.5;
-            font-style: italic;
-        }
-
-        .page-text {
-            font-size: 0.85rem;
-            font-weight: 300;
-            color: var(--fg-muted);
-            text-align: center;
-            line-height: 1.9;
-            max-width: 180px;
-        }
-
-        /* ===== Buchdeckel ===== */
-        .book-cover {
-            position: absolute;
-            inset: 0;
-            transform-origin: left center;
-            transform-style: preserve-3d;
-            z-index: 15;
-            animation: coverOpen 2.5s cubic-bezier(0.4, 0, 0.2, 1) 1.2s forwards;
-        }
-
-        @keyframes coverOpen {
-            0% { transform: rotateY(0deg); }
-            15% { transform: rotateY(-8deg); }
-            100% { transform: rotateY(-168deg); }
-        }
-
-        .cover-front {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(160deg, #1a1410 0%, #0e0b08 40%, #151010 100%);
-            border: 1px solid rgba(184, 148, 62, 0.25);
-            backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            padding: 2.5rem;
-        }
-
-        .cover-front::before {
-            content: '';
-            position: absolute;
-            inset: 8px;
-            border: 1px solid rgba(184, 148, 62, 0.08);
-            pointer-events: none;
-        }
-
-        .cover-back {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(160deg, #0e0b08, #0a0806);
-            border: 1px solid var(--border);
-            backface-visibility: hidden;
-            transform: rotateY(180deg);
-        }
-
-        .cover-diamond {
-            width: 50px; height: 50px;
-            border: 1.5px solid var(--gold-dim);
-            transform: rotate(45deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .cover-diamond span {
-            transform: rotate(-45deg);
-            font-size: 1rem;
-            color: var(--gold);
-            font-family: 'Cormorant Garamond', serif;
-            font-weight: 600;
-        }
-
-        .cover-title {
-            font-size: 1.4rem;
-            font-weight: 300;
-            color: var(--fg);
-            letter-spacing: 0.12em;
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        .cover-title em {
-            color: var(--accent);
-            font-style: italic;
-        }
-
-        .cover-line {
-            width: 60px; height: 1px;
-            background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
-        }
-
-        .cover-subtitle {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.45rem;
-            letter-spacing: 0.35em;
-            text-transform: uppercase;
-            color: var(--fg-muted);
-        }
-
-        /* ===== Schatten unter dem Buch ===== */
-        .book-shadow {
-            position: absolute;
-            bottom: -30px;
-            left: 10%;
-            width: 80%;
-            height: 30px;
-            background: radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%);
-            filter: blur(8px);
-            animation: shadowIn 1s ease-out 0.3s forwards;
-            opacity: 0;
-        }
-
-        @keyframes shadowIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        /* ===== Menu ===== */
-        .intro-menu {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 2.5rem;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: menuIn 1s ease-out 4.5s forwards;
-        }
-
-        @keyframes menuIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .menu-btn {
-            width: 68px; height: 68px;
-            border-radius: 50%;
-            border: 1px solid rgba(184, 148, 62, 0.2);
-            background: rgba(10, 8, 6, 0.6);
-            color: var(--gold-dim);
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-btn::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            border: 1px solid transparent;
-            transition: all 0.4s ease;
-        }
-
-        .menu-btn:hover {
-            color: var(--gold);
-            border-color: var(--gold-dim);
-            background: rgba(184, 148, 62, 0.06);
-            transform: scale(1.12);
-            box-shadow: 0 0 40px rgba(184, 148, 62, 0.1);
-        }
-
-        .menu-btn:hover::before {
-            border-color: rgba(184, 148, 62, 0.08);
-        }
-
-        .menu-btn:active {
-            transform: scale(1.05);
-        }
-
-        .menu-label {
-            position: absolute;
-            bottom: -22px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.4rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--fg-muted);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
-        .menu-btn:hover .menu-label {
-            opacity: 1;
-        }
-
-        /* ===== Footer ===== */
-        .intro-footer {
-            position: fixed;
-            bottom: 0; left: 0;
-            width: 100%;
-            z-index: 10;
-            padding: 1.5rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.4rem;
-            color: rgba(138, 126, 112, 0.4);
-            letter-spacing: 0.1em;
-            opacity: 0;
-            animation: footerIn 1s ease-out 5.5s forwards;
-        }
-
-        @keyframes footerIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        .intro-footer a {
-            color: rgba(138, 126, 112, 0.5);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .intro-footer a:hover {
-            color: var(--gold-dim);
-        }
-
-        /* ===== Ueberblendung ===== */
-        .page-transition {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 9000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s ease;
-        }
-
-        .page-transition.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        /* ===== Toast ===== */
-        .toast-container {
-            position: fixed;
-            top: 20px; right: 20px;
-            z-index: 9500;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .toast {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.55rem;
-            letter-spacing: 0.08em;
-            padding: 0.7rem 1.2rem;
-            background: rgba(18, 14, 10, 0.95);
-            border: 1px solid rgba(184, 148, 62, 0.15);
-            color: var(--fg);
-            backdrop-filter: blur(12px);
-            transform: translateX(120%);
-            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .toast.show { transform: translateX(0); }
-        .toast i { color: var(--gold); font-size: 0.6rem; }
-
-        /* ===== Responsive ===== */
-        @media (max-width: 600px) {
-            .book-3d {
-                width: 200px;
-                height: 300px;
-            }
-
-            .book-spine { width: 22px; }
-            .book-spine { transform: rotateY(90deg) translateX(-11px); }
-            .book-pages { left: 11px; width: calc(100% - 11px); }
-
-            .cover-diamond { width: 40px; height: 40px; }
-            .cover-diamond span { font-size: 0.8rem; }
-            .cover-title { font-size: 1.1rem; }
-            .cover-subtitle { font-size: 0.4rem; }
-
-            .page-chapter { font-size: 0.4rem; }
-            .page-title { font-size: 1rem; }
-            .page-text { font-size: 0.75rem; }
-
-            .menu-btn { width: 56px; height: 56px; font-size: 1.1rem; }
-            .intro-menu { gap: 2rem; }
-            .intro-footer { font-size: 0.35rem; padding: 1rem 1.5rem; }
-
-            .book-scene {
-                animation: sceneIn 1s ease-out 0.3s forwards, bookMoveSmall 2.5s cubic-bezier(0.4, 0, 0.2, 1) 1.2s forwards;
-            }
-        }
-
-        @keyframes bookMoveSmall {
-            0%, 15% { transform: translateX(0); }
-            100% { transform: translateX(-60px); }
-        }
-
-        @media (max-height: 700px) {
-            .book-3d { width: 200px; height: 280px; }
-            .book-scene { margin-bottom: 2rem; }
-            .intro-menu { gap: 1.5rem; }
-        }
-
-        /* ===== Reduzierte Bewegung ===== */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-    </style>
+    <title>Buch der Begierde — Ein interaktives Leseerlebnis</title>
+    <meta name="description" content="Ein interaktives, literarisches Web-Artefakt. Wortfragmente, Resonanz, dynamische Erinnerungen.">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Stylesheets (modular) -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/atmosphere.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
-<body>
+<body class="landing-body">
+
+    <!-- Atmosphäre & Grain -->
     <div class="atmosphere"></div>
     <div class="grain-overlay"></div>
     <div class="particles" id="particles"></div>
 
+    <!-- Page Transition Overlay -->
+    <div class="page-transition" id="pageTransition"></div>
+
+    <!-- ===== Buch-Szene ===== -->
     <div class="book-scene">
         <div class="book-3d">
+
+            <!-- Buchrücken -->
             <div class="book-spine"></div>
+
+            <!-- Buchseiten (sichtbar wenn Deckel offen) -->
             <div class="book-pages">
                 <div class="page-left">
-                    <div class="page-chapter">Kapitel III</div>
-                    <div class="page-title">Die begierige Nacht</div>
+                    <div class="page-chapter">Kapitel I</div>
+                    <div class="page-title">Die Nacht legte sich über die Stadt&hellip;</div>
                 </div>
                 <div class="page-right">
-                    <div class="page-text">Deine Worte formen die Geschichte. Jedes Fragment hinterlaesst seine Spur im Gedaechnis des Textes.</div>
+                    <div class="page-text">
+                        &hellip;wie ein Samtgewebe, das jede Bewegung verschluckte.
+                        Ich stand am Fenster und beobachtete das Licht der Laternen.
+                    </div>
                 </div>
             </div>
+
+            <!-- Buchdeckel (öffnet sich) -->
             <div class="book-cover">
                 <div class="cover-front">
                     <div class="cover-diamond"><span>B</span></div>
+                    <h1 class="cover-title">Buch der <em>Begierde</em></h1>
                     <div class="cover-line"></div>
-                    <div class="cover-title">Buch der <em>Begierde</em></div>
-                    <div class="cover-line"></div>
-                    <div class="cover-subtitle">Interaktives Leseerlebnis</div>
+                    <div class="cover-subtitle">Ein interaktives Leseerlebnis</div>
                 </div>
                 <div class="cover-back"></div>
             </div>
-            <div class="book-shadow"></div>
+
         </div>
+        <!-- Schatten unter dem Buch -->
+        <div class="book-shadow"></div>
     </div>
 
-    <div class="intro-menu" id="introMenu">
-        <button class="menu-btn" id="btnLesen" aria-label="Lesen">
+    <!-- ===== Menu ===== -->
+    <nav class="intro-menu">
+        <button class="menu-btn" id="menuLesen" aria-label="Lesen — betritt die Geschichte">
             <i class="fas fa-book-open"></i>
             <span class="menu-label">Lesen</span>
         </button>
-        <button class="menu-btn" id="btnHoeren" aria-label="Hoeren">
-            <i class="fas fa-headphones"></i>
-            <span class="menu-label">Hoeren</span>
+        <button class="menu-btn" id="menuHoeren" aria-label="Hören — Geschichte als Stimme">
+            <i class="fas fa-volume-up"></i>
+            <span class="menu-label">Hören</span>
         </button>
-        <button class="menu-btn" id="btnSchreiben" aria-label="Schreiben">
-            <i class="fas fa-pen-fancy"></i>
+        <button class="menu-btn" id="menuSchreiben" aria-label="Schreiben — eigene Zeile hinzufügen">
+            <i class="fas fa-feather"></i>
             <span class="menu-label">Schreiben</span>
         </button>
-    </div>
+        <button class="menu-btn" id="menuArchiv" aria-label="Archiv — Gedächtnis-Explorer">
+            <i class="fas fa-archive"></i>
+            <span class="menu-label">Archiv</span>
+        </button>
+    </nav>
 
-    <div class="intro-footer">
-        <span>&copy; 2026 Buch der Begierde</span>
-        <a href="analyse.html">Geraeteanalyse <i class="fas fa-arrow-right" style="font-size:0.35rem; margin-left:0.3rem;"></i></a>
-    </div>
+    <!-- ===== Footer ===== -->
+    <footer class="intro-footer">
+        <span>Buch der Begierde · v0.5.0</span>
+        <span><a href="analyse.html">Geräteanalyse</a> · Vanilla ES6</span>
+    </footer>
 
-    <div class="page-transition" id="pageTransition"></div>
-    <div class="toast-container" id="toastContainer"></div>
-
-    <script>
-        // ===== Partikel =====
-        var container = document.getElementById('particles');
-        for (var i = 0; i < 20; i++) {
-            var p = document.createElement('div');
-            p.classList.add('particle');
-            p.style.left = Math.random() * 100 + '%';
-            p.style.animationDuration = (18 + Math.random() * 25) + 's';
-            p.style.animationDelay = (Math.random() * 20) + 's';
-            var size = (1 + Math.random() * 2) + 'px';
-            p.style.width = size;
-            p.style.height = size;
-            container.appendChild(p);
-        }
-
-        // ===== Toast =====
-        function showToast(message, icon) {
-            icon = icon || 'fa-info-circle';
-            var tc = document.getElementById('toastContainer');
-            var toast = document.createElement('div');
-            toast.classList.add('toast');
-            toast.innerHTML = '<i class="fas ' + icon + '"></i> ' + message;
-            tc.appendChild(toast);
-            requestAnimationFrame(function() {
-                requestAnimationFrame(function() {
-                    toast.classList.add('show');
-                });
-            });
-            setTimeout(function() {
-                toast.classList.remove('show');
-                setTimeout(function() { toast.remove(); }, 400);
-            }, 3000);
-        }
-
-        // ===== Seitenwechsel =====
-        function navigateTo(url) {
-            var transition = document.getElementById('pageTransition');
-            transition.classList.add('active');
-            setTimeout(function() {
-                window.location.href = url;
-            }, 800);
-        }
-
-        // ===== Menu-Events =====
-        document.getElementById('btnLesen').addEventListener('click', function() {
-            navigateTo('lesen.html');
-        });
-
-        document.getElementById('btnHoeren').addEventListener('click', function() {
-            showToast('Hoeren — kommt in einem spaeteren Kapitel', 'fa-headphones');
-        });
-
-        document.getElementById('btnSchreiben').addEventListener('click', function() {
-            showToast('Schreiben — kommt in einem spaeteren Kapitel', 'fa-pen-fancy');
-        });
-    </script>
+    <!-- ===== Entry-Point ===== -->
+    <script type="module" src="js/app-landing.js"></script>
 </body>
 </html>

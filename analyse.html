@@ -3,195 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geraeteanalyse — Buch der Begierde</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        :root{--bg:#0a0806;--fg:#e8ddd0;--fg-muted:#8a7e70;--accent:#c4463a;--gold:#b8943e;--gold-dim:#7a6329;--card:rgba(18,14,10,0.85);--card-border:rgba(180,148,62,0.15);--border:rgba(138,126,112,0.12);--ok:#4a8c5c;--warn:#8c7a4a;--err:#8c4a4a}
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Cormorant Garamond',serif;background:var(--bg);color:var(--fg);min-height:100vh}
-        .grain-overlay{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:256px 256px}
-        header{padding:2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-        .back-link{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-muted);text-decoration:none;display:flex;align-items:center;gap:.5rem;transition:color .3s ease}
-        .back-link:hover{color:var(--gold)}
-        .header-title{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:var(--fg-muted)}
-        main{max-width:900px;margin:0 auto;padding:3rem 2rem}
-        .page-title{font-size:2rem;font-weight:300;margin-bottom:.5rem}
-        .page-title em{color:var(--accent);font-style:italic}
-        .page-desc{font-size:.9rem;color:var(--fg-muted);font-weight:300;margin-bottom:2.5rem;line-height:1.7}
-        .section-label{font-family:'JetBrains Mono',monospace;font-size:.45rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:1rem;display:flex;align-items:center;gap:.8rem}
-        .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
-        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;margin-bottom:2.5rem}
-        .card{background:var(--card);border:1px solid var(--card-border);padding:1.2rem;transition:border-color .3s ease}
-        .card:hover{border-color:rgba(180,148,62,.3)}
-        .card-icon{font-size:.8rem;color:var(--gold-dim);margin-bottom:.6rem}
-        .card-name{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:.5rem}
-        .card-value{font-size:1rem;font-weight:400;color:var(--fg);word-break:break-all}
-        .card-value.small{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--fg-muted);line-height:1.6}
-        .status-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .7rem;border:1px solid}
-        .status-badge.ok{color:var(--ok);border-color:rgba(74,140,92,.3);background:rgba(74,140,92,.06)}
-        .status-badge.warn{color:var(--warn);border-color:rgba(140,122,74,.3);background:rgba(140,122,74,.06)}
-        .status-badge.err{color:var(--err);border-color:rgba(140,74,74,.3);background:rgba(140,74,74,.06)}
-        .summary-bar{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;background:var(--card);border:1px solid var(--card-border);margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
-        .summary-item{text-align:center}
-        .summary-value{font-size:1.5rem;font-weight:600;color:var(--gold)}
-        .summary-label{font-family:'JetBrains Mono',monospace;font-size:.4rem;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-muted);margin-top:.2rem}
-        footer{border-top:1px solid var(--border);padding:1.5rem 2rem;font-family:'JetBrains Mono',monospace;font-size:.4rem;color:rgba(138,126,112,.4);letter-spacing:.1em;text-align:center}
-        @media(max-width:600px){main{padding:2rem 1.2rem}.grid{grid-template-columns:1fr}.summary-bar{flex-direction:column;align-items:flex-start}}
-    </style>
+    <title>Geräteanalyse — Buch der Begierde</title>
+    <meta name="description" content="Diagnose deines Lesegeräts: Browser, Display, Leistung, APIs.">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Stylesheets (modular) -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/atmosphere.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
 </head>
 <body>
+
+    <!-- Atmosphäre & Grain -->
+    <div class="atmosphere"></div>
     <div class="grain-overlay"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== Header ===== -->
     <header>
-        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Zurueck</a>
-        <span class="header-title">Geraeteanalyse</span>
+        <a href="index.html" class="logo-group" style="text-decoration:none;">
+            <div class="logo-icon"><span>B</span></div>
+            <div class="logo-text">
+                <strong>Buch der Begierde</strong>
+                <span>Geräteanalyse</span>
+            </div>
+        </a>
+        <nav>
+            <a href="lesen.html">Lesen</a>
+            <a href="hoeren.html">Hören</a>
+            <a href="schreiben.html">Schreiben</a>
+            <a href="archiv.html">Archiv</a>
+            <a href="analyse.html" class="active">Analyse</a>
+        </nav>
     </header>
+
+    <!-- ===== Main ===== -->
     <main>
-        <h1 class="page-title">Technische <em>Unterstuetzung</em></h1>
-        <p class="page-desc">Analyse der Faehigkeiten deines Geraetes fuer das interaktive Leseerlebnis.</p>
-        <div class="summary-bar" id="summaryBar"><div class="summary-item"><div class="summary-value">—</div><div class="summary-label">Lade...</div></div></div>
-        <div class="section-label">Bildschirm und Anzeige</div><div class="grid" id="gridDisplay"></div>
-        <div class="section-label">System und Leistung</div><div class="grid" id="gridSystem"></div>
-        <div class="section-label">Netzwerk und Speicher</div><div class="grid" id="gridNetwork"></div>
-        <div class="section-label">Datenbank</div><div class="grid" id="gridDB"></div>
-        <div class="section-label">Browser und APIs</div><div class="grid" id="gridAPIs"></div>
+        <div class="section-label" style="margin-top:2rem;">Diagnose deines Lesegeräts</div>
+        <p class="panel-desc" style="margin-bottom:2rem; max-width:600px;">
+            Diese Seite sammelt technische Daten deines Browsers und Geräts, um die Kompatibilität mit allen Modulen des Buchs der Begierde zu prüfen.
+        </p>
+
+        <!-- Summary Bar -->
+        <div class="summary-bar">
+            <div class="summary-item">
+                <div class="summary-value" id="sumStatus">OK</div>
+                <div class="summary-label">Status</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="sumBrowser">—</div>
+                <div class="summary-label">Browser</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="sumResolution">—</div>
+                <div class="summary-label">Auflösung</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="sumFeatures">—</div>
+                <div class="summary-label">APIs</div>
+            </div>
+        </div>
+
+        <!-- Browser & System -->
+        <div class="section-label">Browser &amp; System</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon"><i class="fas fa-globe"></i></div><div class="card-name">Browser</div><div class="card-value" id="anaBrowser">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fab fa-windows"></i></div><div class="card-name">Betriebssystem</div><div class="card-value" id="anaOs">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-language"></i></div><div class="card-name">Sprache</div><div class="card-value" id="anaLanguage">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-cookie-bite"></i></div><div class="card-name">Cookies</div><div class="card-value" id="anaCookie">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-wifi"></i></div><div class="card-name">Verbindung</div><div class="card-value" id="anaOnline">—</div></div>
+        </div>
+
+        <!-- Display -->
+        <div class="section-label">Bildschirm &amp; Anzeige</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon"><i class="fas fa-desktop"></i></div><div class="card-name">Auflösung</div><div class="card-value" id="anaResolution">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-expand"></i></div><div class="card-name">Viewport</div><div class="card-value" id="anaViewport">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-palette"></i></div><div class="card-name">Farbtiefe</div><div class="card-value" id="anaColorDepth">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-th"></i></div><div class="card-name">Pixel-Ratio</div><div class="card-value" id="anaPixelRatio">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-compass"></i></div><div class="card-name">Ausrichtung</div><div class="card-value" id="anaOrientation">—</div></div>
+        </div>
+
+        <!-- Performance -->
+        <div class="section-label">Leistung &amp; Hardware</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon"><i class="fas fa-microchip"></i></div><div class="card-name">CPU-Kerne</div><div class="card-value" id="anaCores">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-memory"></i></div><div class="card-name">Arbeitsspeicher</div><div class="card-value" id="anaMemory">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-signal"></i></div><div class="card-name">Verbindungstyp</div><div class="card-value" id="anaConnType">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-tachometer-alt"></i></div><div class="card-name">Downlink</div><div class="card-value" id="anaDownlink">—</div></div>
+        </div>
+
+        <!-- Features & APIs -->
+        <div class="section-label">Funktionen &amp; APIs</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon"><i class="fas fa-cube"></i></div><div class="card-name">WebGL</div><div class="card-value" id="anaWebgl">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-volume-up"></i></div><div class="card-name">Web Speech</div><div class="card-value" id="anaWebSpeech">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-camera"></i></div><div class="card-name">Media Devices</div><div class="card-value" id="anaMediaDevices">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-cogs"></i></div><div class="card-name">Service Worker</div><div class="card-value" id="anaServiceWorker">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-database"></i></div><div class="card-name">LocalStorage</div><div class="card-value" id="anaLocalStorage">—</div></div>
+        </div>
+
+        <!-- Datenbank-Test -->
+        <div class="section-label">Datenbank-Verbindung</div>
+        <div class="summary-bar" style="flex-direction:column; align-items:stretch;">
+            <p class="panel-desc" style="margin-bottom:1rem;">
+                Teste die Verbindung zum Supabase-Backend, das LeserIn-Daten und Eingaben speichert.
+            </p>
+            <button class="btn btn-primary" id="dbTestBtn" style="align-self:flex-start;"><span><i class="fas fa-plug"></i> Verbindung testen</span></button>
+        </div>
+
     </main>
-    <footer>Buch der Begierde — Geraeteanalyse</footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" async></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var ok = 0, warn = 0, err = 0;
+    <!-- ===== Footer ===== -->
+    <footer>
+        <span>Buch der Begierde · Geräteanalyse</span>
+        <span>Vanilla ES6</span>
+    </footer>
 
-        function badge(s) {
-            var t = {ok:'Unterstuetzt',warn:'Eingeschraenkt',err:'Nicht verfuegbar'};
-            return '<span class="status-badge ' + s + '">' + t[s] + '</span>';
-        }
-
-        function mc(icon, name, value, sm) {
-            return '<div class="card"><div class="card-icon"><i class="fas ' + icon + '"></i></div><div class="card-name">' + name + '</div><div class="card-value' + (sm ? ' small' : '') + '">' + value + '</div></div>';
-        }
-
-        function updSum() {
-            var total = ok + warn + err;
-            var pct = total > 0 ? Math.round((ok / total) * 100) : 0;
-            document.getElementById('summaryBar').innerHTML =
-                '<div class="summary-item"><div class="summary-value">' + ok + '</div><div class="summary-label">Unterstuetzt</div></div>' +
-                '<div class="summary-item"><div class="summary-value" style="color:var(--warn)">' + warn + '</div><div class="summary-label">Eingeschraenkt</div></div>' +
-                '<div class="summary-item"><div class="summary-value" style="color:var(--err)">' + err + '</div><div class="summary-label">Fehlt</div></div>' +
-                '<div class="summary-item"><div class="summary-value">' + pct + '%</div><div class="summary-label">Kompatibilitaet</div></div>';
-        }
-
-        // Bildschirm
-        var sw = screen.width, sh = screen.height, dpr = window.devicePixelRatio || 1;
-        var dG = document.getElementById('gridDisplay');
-        dG.innerHTML += mc('fa-expand','Bildschirm',sw+' x '+sh+' px');
-        dG.innerHTML += mc('fa-search-plus','Pixelverhaeltnis',dpr.toFixed(1)+'x');
-        var cd = screen.colorDepth; if(cd>=24){ok++;}else{warn++;}
-        dG.innerHTML += mc('fa-palette','Farbtiefe',cd+' bit '+badge(cd>=24?'ok':'warn'),true);
-        dG.innerHTML += mc('fa-mobile-alt','Ausrichtung',sw>sh?'Landscape':'Portrait');
-        dG.innerHTML += mc('fa-ruler-combined','Viewport',window.innerWidth+' x '+window.innerHeight+' px');
-
-        // System
-        var sG = document.getElementById('gridSystem');
-        sG.innerHTML += mc('fa-microchip','CPU-Kerne',navigator.hardwareConcurrency||'?');
-        var mem = navigator.deviceMemory;
-        if(mem){sG.innerHTML+=mc('fa-memory','Arbeitsspeicher',mem+' GB');}else{sG.innerHTML+=mc('fa-memory','Arbeitsspeicher','Nicht erkennbar '+badge('warn'),true);warn++;}
-        var touch='ontouchstart' in window;if(touch){ok++;}else{warn++;}
-        sG.innerHTML+=mc('fa-hand-pointer','Touchscreen',touch?'Ja':'Nein');
-        sG.innerHTML+=mc('fa-fingerprint','Touch-Punkte',navigator.maxTouchPoints||0);
-
-        // Netzwerk
-        var nG = document.getElementById('gridNetwork');
-        var conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-        if(conn){
-            nG.innerHTML+=mc('fa-wifi','Verbindungstyp',conn.effectiveType?conn.effectiveType.toUpperCase():'Unbekannt');
-            if(conn.downlink)nG.innerHTML+=mc('fa-tachometer-alt','Geschwindigkeit',conn.downlink+' Mbps');
-            if(conn.rtt!=null)nG.innerHTML+=mc('fa-clock','Latenz',conn.rtt+' ms');
-        }else{nG.innerHTML+=mc('fa-wifi','Netzwerkinfo','Nicht verfuegbar '+badge('warn'),true);warn++;}
-        if(navigator.onLine){ok++;}else{err++;}
-        nG.innerHTML+=mc('fa-globe','Online-Status',navigator.onLine?'Verbunden':'Offline '+badge(navigator.onLine?'ok':'err'));
-        if(navigator.cookieEnabled){ok++;}else{err++;}
-        nG.innerHTML+=mc('fa-cookie-bite','Cookies',navigator.cookieEnabled?'Aktiviert':'Deaktiviert '+badge(navigator.cookieEnabled?'ok':'err'));
-        if(navigator.getBattery){navigator.getBattery().then(function(b){nG.innerHTML+=mc('fa-battery-three-quarters','Akkustand',Math.round(b.level*100)+'% — '+(b.charging?'Ladend':'Entladen'));}).catch(function(){nG.innerHTML+=mc('fa-battery-empty','Akkustand','Nicht lesbar '+badge('warn'),true);warn++;});}else{nG.innerHTML+=mc('fa-battery-empty','Akkustand','Nicht verfuegbar '+badge('warn'),true);warn++;}
-
-        // Browser
-        var ua=navigator.userAgent, browser='Unbekannt', os='Unbekannt';
-        if(ua.indexOf('Firefox')>-1)browser='Firefox';else if(ua.indexOf('Edg')>-1)browser='Edge';else if(ua.indexOf('Chrome')>-1)browser='Chrome';else if(ua.indexOf('Safari')>-1)browser='Safari';
-        if(ua.indexOf('Windows')>-1)os='Windows';else if(ua.indexOf('Mac')>-1)os='macOS';else if(ua.indexOf('Linux')>-1)os='Linux';else if(ua.indexOf('Android')>-1)os='Android';else if(ua.indexOf('iPhone')>-1||ua.indexOf('iPad')>-1)os='iOS';
-        var aG=document.getElementById('gridAPIs');
-        aG.innerHTML+=mc('fa-compass','Browser',browser);
-        aG.innerHTML+=mc('fa-laptop','Betriebssystem',os);
-
-        // APIs
-        var wgl=false;try{var cv=document.createElement('canvas');wgl=!!(cv.getContext('webgl')||cv.getContext('experimental-webgl'));}catch(e){}
-        if(wgl){ok++;}else{err++;}
-        aG.innerHTML+=mc('fa-cube','WebGL',wgl?'Verfuegbar':'Nicht verfuegbar '+badge(wgl?'ok':'err'));
-        var aud=false;try{aud=!!(window.AudioContext||window.webkitAudioContext);}catch(e){}
-        if(aud){ok++;}else{warn++;}
-        aG.innerHTML+=mc('fa-volume-up','Web Audio API',aud?'Verfuegbar':'Nicht verfuegbar '+badge(aud?'ok':'warn'));
-        if('serviceWorker' in navigator){ok++;}else{warn++;}
-        aG.innerHTML+=mc('fa-cog','Service Worker','serviceWorker' in navigator?'Unterstuetzt':'Nicht unterstuetzt '+badge('serviceWorker' in navigator?'ok':'warn'));
-        if('Notification' in window){ok++;}else{warn++;}
-        aG.innerHTML+=mc('fa-bell','Benachrichtigungen','Notification' in window?'Verfuegbar':'Nicht verfuegbar '+badge('Notification' in window?'ok':'warn'));
-        if(navigator.clipboard){ok++;}else{warn++;}
-        aG.innerHTML+=mc('fa-clipboard','Clipboard API',navigator.clipboard?'Verfuegbar':'Nicht verfuegbar '+badge(navigator.clipboard?'ok':'warn'));
-        if('geolocation' in navigator){ok++;}else{warn++;}
-        aG.innerHTML+=mc('fa-map-marker-alt','Geolocation','geolocation' in navigator?'Verfuegbar':'Nicht verfuegbar '+badge('geolocation' in navigator?'ok':'warn'));
-
-        updSum();
-
-        // Datenbank (async, separat) mit automatischer Wiederverbindung
-        (async function(){
-            var dbG=document.getElementById('gridDB');
-            var connected=false, ms=0;
-            var maxRetries=3, retryDelay=1500, attempt=0;
-
-            async function testDB(){
-                try{
-                    if(typeof supabase==='undefined'||!supabase.createClient)throw new Error('Bibliothek nicht geladen');
-                    var t0=performance.now();
-                    var cl=supabase.createClient('https://mntjworywbkfpwvakieq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1udGp3b3J5d2JrZnB3dmFraWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMTczMjAsImV4cCI6MjA5MDg5MzMyMH0.4LTwi6IY6WoiQTQfy0612j-8xi1C1Ly1zjMQJ5bOps0');
-                    var r=await cl.from('leserinnen').select('id',{count:'exact',head:true});
-                    ms=Math.round(performance.now()-t0);
-                    if(r.error)throw r.error;
-                    return true;
-                }catch(e){
-                    return false;
-                }
-            }
-
-            async function conectWithRetry(){
-                attempt=0;
-                while(attempt<=maxRetries){
-                    dbG.innerHTML='<div class="card"><div class="card-icon"><i class="fas fa-circle-notch fa-spin"></i></div><div class="card-name">Verbindungstest</div><div class="card-value small" style="color:var(--fg-muted)">Pruefe Verbindung'+(attempt>0?' (Versuch '+(attempt)+'/'+maxRetries+')':'')+' ...</div></div>';
-                    
-                    connected=await testDB();
-                    if(connected){ok++;break;}
-                    
-                    if(attempt<maxRetries){
-                        err++;
-                        attempt++;
-                        await new Promise(r=>setTimeout(r,retryDelay));
-                    }else{
-                        err++;break;
-                    }
-                }
-
-                var sb=connected?badge('ok'):badge('err');
-                var pc=connected?'var(--ok)':'var(--fg-muted)';
-                dbG.innerHTML=
-                    mc('fa-database','Supabase',(connected?'Verbunden':'Fehler')+' '+sb,true)+
-                    mc('fa-bolt','Antwortzeit',connected?'<span style="color:'+pc+'">'+ms+' ms</span>':'—',true)+
-                    mc('fa-server','Endpunkt','mntjworywbkfpwvakieq.supabase.co',true)+
-                    mc('fa-shield-alt','Modus','Anon (lesen/schreiben)',true);
-
-                updSum();
-            }
-
-            await conectWithRetry();
-        })();
-    });
-    </script>
+    <!-- ===== Entry-Point ===== -->
+    <script type="module" src="js/app-analyse.js"></script>
 </body>
 </html>
