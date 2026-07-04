@@ -1,38 +1,45 @@
-/* ===================================================================
+//* ===================================================================
  * variables.css — Zentrale CSS Custom Properties
  * Alle Farb- und Typografie-Konstanten für das gesamte Projekt.
  * =================================================================== */
 
 :root {
     /* --- Hintergrund --- */
-    --bg: #0a0806;
-    --bg-deep: #060403;
+    --bg: #1a160f;
+    --bg-deep: #0f0a05;
 
     /* --- Vordergrund --- */
-    --fg: #e8ddd0;
-    --fg-muted: #8a7e70;
+    --fg: #e8d9b5;
+    --fg-muted: #c9b58f;
 
     /* --- Akzent --- */
-    --accent: #c4463a;
-    --accent-glow: #e05548;
+    --accent: #7a1f1f;
+    --accent-dark: #3a1b1b;
 
     /* --- Gold / Bronze --- */
-    --gold: #b8943e;
-    --gold-dim: #7a6329;
+    --gold: #c9a44c;
+    --gold-dim: #8a6d32;
 
     /* --- Karten & Flächen --- */
-    --card: rgba(18, 14, 10, 0.85);
-    --card-border: rgba(180, 148, 62, 0.15);
+    --card: rgba(232, 217, 181, 0.96);
+    --card-border: rgba(109, 83, 35, 0.55);
 
     /* --- Rahmen --- */
-    --border: rgba(138, 126, 112, 0.12);
+    --border: rgba(109, 83, 35, 0.22);
+
+    /* --- Holz / Pergament --- */
+    --wood: #3a2a1a;
+    --paper: #e8d9b5;
+    --paper-shadow: rgba(22, 14, 5, 0.18);
 
     /* --- Fragment-Farben --- */
     --samt: #6b2d3e;
     --kälte: #3a5c6b;
     --wärme: #8b5e2f;
-    --licht: #9b8a5e;
+    --licht: #d0b16e;
     --schatten: #2a1f1a;
+    --staub: #9a7f5a;
+    --atem: #c4463a;
 
     /* --- Datenbank-Status --- */
     --db-ok: #4a8c5c;
@@ -40,6 +47,7 @@
 
     /* --- Typografie --- */
     --font-serif: 'Cormorant Garamond', serif;
+    --font-display: 'Cinzel', serif;
     --font-mono: 'JetBrains Mono', monospace;
 
     /* --- Transitions --- */
