@@ -1,172 +1,75 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hören — Buch der Begierde</title>
-    <meta name="description" content="Lausche der Geschichte. Stelle Geschwindigkeit und Tonhöhe ein, folge der Erzählung.">
-
-    <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Stylesheets (modular) -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/atmosphere.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/layout.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hören — Buch der Begierde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/layout.css">
 </head>
 <body>
 
-    <!-- Atmosphäre & Grain -->
-    <div class="atmosphere"></div>
-    <div class="grain-overlay"></div>
-    <div class="particles" id="particles"></div>
+<header>
+  <div class="logo-group">
+    <a href="index.html" class="logo-icon"><span>B</span></a>
+    <div class="logo-text"><strong>Buch der Begierde</strong><span>Hören</span></div>
+  </div>
+  <nav>
+    <a href="lesen.html" id="navLesen">Lesen</a>
+    <a href="hoeren.html" class="active" id="navHoeren">Hören</a>
+    <a href="schreiben.html" id="navSchreiben">Schreiben</a>
+  </nav>
+</header>
 
-    <!-- Page Transition Overlay -->
-    <div class="page-transition" id="pageTransition"></div>
+<main style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);">
+  <div class="panel" style="max-width:600px;width:90%;animation:fadeInUp 0.8s ease;">
+    <div class="panel-header">
+      <span class="panel-tag"><i>◈</i> Stimme</span>
+    </div>
+    <h2 class="panel-title" style="text-align:center;">Steuerung der Stimme</h2>
+    <p class="panel-desc" style="text-align:center;">Spielen, pausieren, unterbrechen und fortsetzen. Deine Kontrolle über die Erzählung.</p>
 
-    <!-- ===== Header ===== -->
-    <header>
-        <a href="index.html" class="logo-group" style="text-decoration:none;">
-            <div class="logo-icon"><span>B</span></div>
-            <div class="logo-text">
-                <strong>Buch der Begierde</strong>
-                <span>Hören — Stimmen-Modul</span>
-            </div>
-        </a>
-        <nav>
-            <a href="lesen.html">Lesen</a>
-            <a href="hoeren.html" class="active">Hören</a>
-            <a href="schreiben.html">Schreiben</a>
-            <a href="archiv.html">Archiv</a>
-            <a href="analyse.html">Analyse</a>
-        </nav>
-        <div class="db-status">
-            <div class="db-dot" id="dbDot"></div>
-            <span class="db-label" id="dbLabel">OFFLINE</span>
-        </div>
-    </header>
+    <div class="hoeren-controls">
+      <button class="btn btn-primary" id="btnPlay">▶ Spielen</button>
+      <button class="btn" id="btnPause">⏸ Pausieren</button>
+      <button class="btn" id="btnResume">⏵ Fortsetzen</button>
+      <button class="btn btn-ghost" id="btnStop">■ Stoppen</button>
+    </div>
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
+    <div class="hoeren-slider-group">
+      <div class="hoeren-slider-row">
+        <span class="hoeren-slider-label">Geschwindigkeit</span>
+        <input type="range" class="intensity-slider" id="rateSlider" min="0.1" max="10" step="0.1" value="1">
+        <span class="hoeren-slider-value" id="rateValue">1.0x</span>
+      </div>
+      <div class="hoeren-slider-row">
+        <span class="hoeren-slider-label">Tonhöhe</span>
+        <input type="range" class="intensity-slider" id="pitchSlider" min="0.1" max="2" step="0.1" value="1">
+        <span class="hoeren-slider-value" id="pitchValue">1.0</span>
+      </div>
+    </div>
 
-    <!-- ===== Main ===== -->
-    <main>
+    <div class="hoeren-preview" id="textPreview">
+      <em>Hier wird die Geschichte angezeigt, die abgespielt wird...</em>
+    </div>
 
-        <!-- Willkommen -->
-        <section class="section-willkommen fade-in">
-            <div class="willkommen-label">Kapitel III</div>
-            <h1 class="willkommen-title">Die <em>Stimme</em> der Geschichte</h1>
-            <p class="willkommen-subtitle">
-                Höre die Geschichte in deiner Stimme. Stelle die Geschwindigkeit und Tonhöhe ein,
-                und lass dich von der Erzählung leiten.
-            </p>
-        </section>
+    <div class="hoeren-status" id="hoerenStatus">Status: Bereit — Stimme: Deutsch (Standard)</div>
 
-        <!-- ===== Grid Main ===== -->
-        <div class="grid-main">
+    <div style="text-align:center;margin-top:1rem;">
+      <button class="btn btn-ghost" id="btnBack">← Zurück zum Lesen</button>
+    </div>
+  </div>
+</main>
 
-            <!-- Audio Player Controls -->
-            <div class="panel panel-audio-controls fade-in">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-volume-up"></i> Audio-Steuerung</span>
-                    <span class="panel-id">MOD.09</span>
-                </div>
-                <div class="panel-title">Steuerung der Stimme</div>
-                <p class="panel-desc">Spielen, pausieren, unterbrechen und fortsetzen. Deine Kontrolle über die Erzählung.</p>
-                <div class="audio-buttons">
-                    <button class="btn btn-primary" id="btnPlay" title="Erzählung abspielen">
-                        <i class="fas fa-play"></i> Abspielen
-                    </button>
-                    <button class="btn btn-ghost" id="btnPause" title="Erzählung pausieren" disabled>
-                        <i class="fas fa-pause"></i> Pausieren
-                    </button>
-                    <button class="btn btn-ghost" id="btnResume" title="Erzählung fortsetzen" disabled>
-                        <i class="fas fa-play"></i> Fortsetzen
-                    </button>
-                    <button class="btn btn-ghost" id="btnStop" title="Erzählung stoppen" disabled>
-                        <i class="fas fa-stop"></i> Stopp
-                    </button>
-                </div>
-            </div>
+<footer class="centered"><span>Buch der Begierde — v0.6.0</span></footer>
+<div class="page-transition" id="pageTransition"></div>
+<div class="toast-container" id="toastContainer"></div>
 
-            <!-- Speech Parameters -->
-            <div class="panel panel-parameters fade-in">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-sliders-h"></i> Stimmen-Parameter</span>
-                    <span class="panel-id">MOD.10</span>
-                </div>
-                <div class="panel-title">Geschwindigkeit &amp; Tonhöhe</div>
-                
-                <div class="parameter-group">
-                    <label for="rateSlider">Geschwindigkeit (Sprechgeschwindigkeit)</label>
-                    <div class="param-slider-group">
-                        <input type="range" class="param-slider" id="rateSlider" min="0.1" max="10" step="0.1" value="1.0">
-                        <span class="param-value" id="rateValue">1.0x</span>
-                    </div>
-                    <small>0.1 = sehr langsam · 1.0 = normal · 10 = sehr schnell</small>
-                </div>
-
-                <div class="parameter-group">
-                    <label for="pitchSlider">Tonhöhe (Stimmen-Register)</label>
-                    <div class="param-slider-group">
-                        <input type="range" class="param-slider" id="pitchSlider" min="0.1" max="2.0" step="0.1" value="1.0">
-                        <span class="param-value" id="pitchValue">1.0</span>
-                    </div>
-                    <small>0.1 = sehr tief · 1.0 = normal · 2.0 = sehr hoch</small>
-                </div>
-            </div>
-
-            <!-- Text Preview -->
-            <div class="panel panel-preview fade-in">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-eye"></i> Text-Vorschau</span>
-                    <span class="panel-id">MOD.11</span>
-                </div>
-                <div class="panel-title">Nächste Zeile</div>
-                <p class="panel-desc">Das wird vorgelesen:</p>
-                <div class="text-preview" id="textPreview">
-                    <!-- Text wird von app-hoeren.js aktualisiert -->
-                    <em>Hier wird die Geschichte angezeigt, die abgespielt wird...</em>
-                </div>
-            </div>
-
-            <!-- Status & Info -->
-            <div class="panel panel-hoeren-status fade-in">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-info-circle"></i> Status</span>
-                    <span class="panel-id">MOD.12</span>
-                </div>
-                <div class="panel-title">Audio-Status</div>
-                <div class="hoeren-status-display" id="hoerenStatus">
-                    <div class="status-item">
-                        <span class="status-label">Status:</span>
-                        <span class="status-value" id="hoerenStatusText">Bereit</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">Stimme:</span>
-                        <span class="status-value" id="hoerenVoiceInfo">Deutsch (Standard)</span>
-                    </div>
-                </div>
-                <small style="margin-top:1rem; color:var(--text-dim);">
-                    💡 Tipp: Die Web Speech Synthesis API läuft rein im Browser.
-                    Keine Netzwerk-Anfrage wird gemacht.
-                </small>
-            </div>
-
-        </div>
-
-    </main>
-
-    <!-- ===== Entry-Point ===== -->
-    <script type="module" src="js/app-hoeren.js"></script>
+<script type="module" src="js/app-hoeren.js"></script>
 </body>
 </html>

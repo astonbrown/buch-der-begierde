@@ -1,0 +1,12 @@
+{
+  "github.copilot.local.enabled": true,
+  "github.copilot.local.endpoint": "http://localhost:11434",
+  "github.copilot.local.model": "llama3.1",
+  "github.copilot.local.timeout": 4000,
+  "github.copilot.chat.enable": true,
+  "python.testing.pytestArgs": [
+    "."
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
+}

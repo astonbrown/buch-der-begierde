@@ -9,6 +9,7 @@ import { createParticles, initFadeInObserver } from './atmosphere.js';
 import { showToast } from './toast.js';
 import { setDbStatus } from './navigation.js';
 import DB from './db.js';
+import { createOllamaConfig, testOllamaConnection } from './config.js';
 
 /* ------------------------------------------------------------------
    Analyse-Funktionen — sammeln Geräte-Informationen
@@ -86,6 +87,7 @@ function _renderBrowser(d) {
     _setValue('anaLanguage', d.language);
     _setValue('anaCookie', d.cookieEnabled);
     _setValue('anaOnline', d.online);
+    _setValue('sumBrowser', d.browser);
 }
 
 function _renderDisplay(d) {
@@ -94,6 +96,7 @@ function _renderDisplay(d) {
     _setValue('anaColorDepth', d.colorDepth);
     _setValue('anaPixelRatio', d.pixelRatio);
     _setValue('anaOrientation', d.orientation);
+    _setValue('sumResolution', d.resolution);
 }
 
 function _renderPerformance(d) {
@@ -109,6 +112,17 @@ function _renderFeatures(d) {
     _setValue('anaMediaDevices', d.mediaDevices);
     _setValue('anaServiceWorker', d.serviceWorker);
     _setValue('anaLocalStorage', d.localStorage);
+    
+    // Count available features for summary
+    const featureCount = Object.values(d).filter(f => f === 'Verfügbar').length;
+    _setValue('sumFeatures', featureCount + '/5');
+}
+
+function _setOllamaStatus(message, ok) {
+    const el = document.getElementById('ollamaStatus');
+    if (!el) return;
+    el.textContent = message;
+    el.style.color = ok ? 'var(--accent, #8f6b3f)' : 'var(--accent-danger, #b33a3a)';
 }
 
 /* ------------------------------------------------------------------
@@ -141,6 +155,42 @@ async function initAnalyse() {
         });
     }
 
+    // Ollama-Konfiguration testen
+    const ollamaBtn = document.getElementById('ollamaTestBtn');
+    const ollamaEndpoint = document.getElementById('ollamaEndpoint');
+    const ollamaModel = document.getElementById('ollamaModel');
+    const ollamaConfig = createOllamaConfig();
+
+    if (ollamaEndpoint) ollamaEndpoint.value = ollamaConfig.endpoint;
+    if (ollamaModel) ollamaModel.value = ollamaConfig.model;
+
+    if (ollamaBtn) {
+        ollamaBtn.addEventListener('click', async () => {
+            const endpoint = ollamaEndpoint?.value?.trim() || '';
+            const model = ollamaModel?.value?.trim() || '';
+
+            if (endpoint) {
+                try {
+                    window.localStorage.setItem('bdb_ollama_endpoint', endpoint);
+                } catch {}
+            }
+            if (model) {
+                try {
+                    window.localStorage.setItem('bdb_ollama_model', model);
+                } catch {}
+            }
+
+            ollamaBtn.disabled = true;
+            ollamaBtn.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i> Teste...</span>';
+            const result = await testOllamaConnection({ endpoint, model });
+            _setOllamaStatus(result.message, result.ok);
+            showToast(result.message, result.ok ? 'fa-check-circle' : 'fa-exclamation-triangle');
+            ollamaBtn.disabled = false;
+            ollamaBtn.innerHTML = '<span><i class="fas fa-plug"></i> Verbindung testen</span>';
+        });
+    }
+
+    _setOllamaStatus('Noch nicht getestet.', false);
     showToast('Analyse abgeschlossen', 'fa-stethoscope');
 }
 

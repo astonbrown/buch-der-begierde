@@ -1,222 +1,182 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesen — Buch der Begierde</title>
-    <meta name="description" content="Betritt die Geschichte. Wähle Fragmente, beobachte dein Echo, schreibe deine Zeile.">
-
-    <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Supabase (vor Modulen geladen, damit global verfügbar) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Stylesheets (modular) -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/atmosphere.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/lesen.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesen — Buch der Begierde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/lesen.css">
 </head>
 <body>
 
-    <!-- Atmosphäre & Grain -->
-    <div class="atmosphere"></div>
-    <div class="grain-overlay"></div>
-    <div class="particles" id="particles"></div>
+<header>
+  <div class="logo-group">
+    <a href="index.html" class="logo-icon"><span>B</span></a>
+    <div class="logo-text">
+      <strong>Buch der Begierde</strong>
+      <span>Ein interaktives Leseerlebnis</span>
+    </div>
+  </div>
+  <nav>
+    <a href="lesen.html" class="active" id="navLesen">Lesen</a>
+    <a href="hoeren.html" id="navHoeren">Hören</a>
+    <a href="schreiben.html" id="navSchreiben">Schreiben</a>
+    <a href="archiv.html" id="navArchiv">Archiv</a>
+  </nav>
+  <div class="nav-status">
+    <span class="status-dot"></span>
+    <span class="status-text">Bereit</span>
+  </div>
+  <div class="db-status">
+    <span class="db-dot" id="dbDot"></span>
+    <span class="db-label" id="dbLabel">OFFLINE</span>
+  </div>
+</header>
 
-    <!-- Page Transition Overlay -->
-    <div class="page-transition" id="pageTransition"></div>
+<main>
+  <section class="section-willkommen fade-in">
+    <div class="willkommen-label">Wähle dein Fragment</div>
+    <h1 class="willkommen-title">Die <em>Geschichte</em> wartet</h1>
+    <p class="willkommen-subtitle">Jedes Fragment trägt eine eigene Resonanz. Die Kombination bestimmt Stimmung und Pfad des nächsten Abschnitts.</p>
+    <div class="stimmung-bar">
+      <div class="stimmung-item"><div class="stimmung-ring">🌙</div><span class="stimmung-label">Nacht</span></div>
+      <div class="stimmung-item"><div class="stimmung-ring">🔥</div><span class="stimmung-label">Glut</span></div>
+      <div class="stimmung-item"><div class="stimmung-ring">💨</div><span class="stimmung-label">Wind</span></div>
+      <div class="stimmung-item"><div class="stimmung-ring">💧</div><span class="stimmung-label">Tau</span></div>
+    </div>
+  </section>
 
-    <!-- ===== Header ===== -->
-    <header>
-        <a href="index.html" class="logo-group" id="logoLink" style="text-decoration:none;">
-            <div class="logo-icon"><span>B</span></div>
-            <div class="logo-text">
-                <strong>Buch der Begierde</strong>
-                <span>Interaktives Leseerlebnis</span>
-            </div>
-        </a>
-        <nav>
-            <a href="lesen.html" id="navLesen">Lesen</a>
-            <a href="hoeren.html" id="navHoeren">Hören</a>
-            <a href="schreiben.html" id="navSchreiben">Schreiben</a>
-            <a href="archiv.html" id="navArchiv">Archiv</a>
-            <a href="analyse.html" id="navAnalyse">Analyse</a>
-        </nav>
-        <div class="db-status">
-            <div class="db-dot" id="dbDot"></div>
-            <span class="db-label" id="dbLabel">OFFLINE</span>
+  <div class="grid-main">
+    <div class="panel panel-selektor fade-in">
+      <div class="panel-header">
+        <span class="panel-tag"><i>◈</i> Fragmente</span>
+        <span class="panel-id">01</span>
+      </div>
+      <h3 class="panel-title">Resonanz-Profile</h3>
+      <p class="panel-desc">Wähle bis zu drei Fragmente, die deine aktuelle Stimmung widerspiegeln.</p>
+      <div class="fragment-tags" id="fragmentTags">
+        <button class="fragment-tag" data-type="samt">Samt</button>
+        <button class="fragment-tag" data-type="kälte">Kälte</button>
+        <button class="fragment-tag" data-type="wärme">Wärme</button>
+        <button class="fragment-tag" data-type="licht">Licht</button>
+        <button class="fragment-tag" data-type="schatten">Schatten</button>
+        <button class="fragment-tag" data-type="staub">Staub</button>
+        <button class="fragment-tag" data-type="atem">Atem</button>
+      </div>
+      <div class="fragment-intensity">
+        <span class="intensity-label">Intensität</span>
+        <input type="range" class="intensity-slider" id="intensitySlider" min="1" max="10" value="5">
+        <span class="intensity-value" id="intensityValue">5</span>
+      </div>
+    </div>
+
+    <div class="panel panel-echo fade-in">
+      <div class="panel-header">
+        <span class="panel-tag"><i>◈</i> Echo</span>
+        <span class="panel-id">02</span>
+      </div>
+      <h3 class="panel-title">Dein Echo im Text</h3>
+      <p class="panel-desc">Der Algorithmus misst die Resonanz deiner Lesebewegungen.</p>
+      <div class="echo-visual"><canvas id="echoCanvas"></canvas></div>
+      <div class="echo-metrics">
+        <div class="metric"><div class="metric-value" id="metricResonanz">0.00</div><div class="metric-label">Resonanz</div></div>
+        <div class="metric"><div class="metric-value" id="metricTiefe">0.00</div><div class="metric-label">Tiefe</div></div>
+        <div class="metric"><div class="metric-value" id="metricDrift">0.00</div><div class="metric-label">Drift</div></div>
+      </div>
+    </div>
+
+    <div class="panel panel-geschichte fade-in">
+      <div class="panel-header">
+        <span class="panel-tag"><i>◈</i> Geschichte</span>
+        <span class="panel-id">03</span>
+      </div>
+      <div class="geschichts-doc">
+        <div class="geschichts-text" id="geschichtsText">
+          <p>Die Nacht legte sich über die Stadt wie ein Samtgewebe, das jede Bewegung verschluckte...</p>
         </div>
-    </header>
-
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- ===== Main ===== -->
-    <main>
-
-        <!-- Willkommen -->
-        <section class="section-willkommen fade-in" id="willkommen">
-            <div class="willkommen-label">Kapitel I</div>
-            <h1 class="willkommen-title">Die <em>Nacht</em> liest dich</h1>
-            <p class="willkommen-subtitle">
-                Wähle deine Fragmente. Beobachte, wie sie die Geschichte färben,
-                das Echo formen und dein Gedächtnis füllen.
-            </p>
-        </section>
-
-        <!-- ===== Grid Main ===== -->
-        <div class="grid-main">
-
-            <!-- Fragment-Selektor -->
-            <div class="panel panel-selektor fade-in" id="selektor">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-puzzle-piece"></i> Wortfragment — Selektor</span>
-                    <span class="panel-id">MOD.04</span>
-                </div>
-                <div class="panel-title">Wähle dein Fragment</div>
-                <p class="panel-desc">Jedes Fragment trägt eine eigene Resonanz. Die Kombination bestimmt Stimmung und Pfad des nächsten Abschnitts.</p>
-                <div class="fragment-tags" id="fragmentTags">
-                    <button class="fragment-tag" data-type="samt">Samt</button>
-                    <button class="fragment-tag" data-type="kälte">Kälte</button>
-                    <button class="fragment-tag" data-type="wärme">Wärme</button>
-                    <button class="fragment-tag" data-type="licht">Licht</button>
-                    <button class="fragment-tag" data-type="schatten">Schatten</button>
-                    <button class="fragment-tag" data-type="staub">Staub</button>
-                    <button class="fragment-tag" data-type="atem">Atem</button>
-                </div>
-                <div class="fragment-intensity">
-                    <span class="intensity-label">Intensität</span>
-                    <input type="range" class="intensity-slider" id="intensitySlider" min="1" max="10" value="5">
-                    <span class="intensity-value" id="intensityValue">5</span>
-                </div>
-            </div>
-
-            <!-- Echo -->
-            <div class="panel panel-echo fade-in">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-wave-square"></i> Das Echo der LeserIn</span>
-                    <span class="panel-id">ALG.07</span>
-                </div>
-                <div class="panel-title">Dein Echo im Text</div>
-                <p class="panel-desc">Der Algorithmus misst die Resonanz deiner Lesebewegungen und formt daraus das Echo deiner Anwesenheit.</p>
-                <div class="echo-visual">
-                    <canvas id="echoCanvas"></canvas>
-                </div>
-                <div class="echo-metrics">
-                    <div class="metric">
-                        <div class="metric-value" id="metricResonanz">0.00</div>
-                        <div class="metric-label">Resonanz</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value" id="metricTiefe">0.00</div>
-                        <div class="metric-label">Tiefe</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value" id="metricDrift">0.00</div>
-                        <div class="metric-label">Drift</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Geschichte -->
-            <div class="panel panel-geschichte fade-in" id="geschichte">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-scroll"></i> Geschichte — Simuliertes Dokument</span>
-                    <span class="panel-id">DOC.12</span>
-                </div>
-                <div class="geschichts-doc">
-                    <div class="geschichts-text" id="geschichtsText">
-                        <!-- Text wird von app-lesen.js gerendert -->
-                    </div>
-                    <div class="doc-page-num" id="docPageNum">— fiktiv —</div>
-                </div>
-                <div class="geschichts-controls">
-                    <button class="btn btn-ghost" id="btnPrev"><span><i class="fas fa-chevron-left"></i> Zurück</span></button>
-                    <span class="page-indicator" id="pageIndicator">Seite 47 / 312</span>
-                    <button class="btn btn-primary" id="btnNext"><span>Weiter <i class="fas fa-chevron-right"></i></span></button>
-                </div>
-            </div>
-
-            <!-- QR Scanner -->
-            <div class="panel panel-qr fade-in">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-qrcode"></i> QR — Scanner</span>
-                    <span class="panel-id">EXT.02</span>
-                </div>
-                <div class="panel-title">Physisches verknüpfen</div>
-                <p class="panel-desc" style="text-align:center;">Scanne das Muster, um ein physisches Objekt mit der Geschichte zu verbinden.</p>
-                <div class="qr-viewport" id="qrViewport">
-                    <div class="qr-corner tl"></div>
-                    <div class="qr-corner tr"></div>
-                    <div class="qr-corner bl"></div>
-                    <div class="qr-corner br"></div>
-                    <div class="qr-scan-line" id="qrScanLine"></div>
-                    <div class="qr-pattern" id="qrPattern"></div>
-                </div>
-                <div class="qr-status" id="qrStatus">
-                    <span class="scanning"><i class="fas fa-circle-notch fa-spin"></i></span> Initialisiere Scanner...
-                </div>
-            </div>
-
-            <!-- Memory -->
-            <div class="panel panel-memory fade-in">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-brain"></i> Story-State &amp; Memory</span>
-                    <span class="panel-id">MEM.09</span>
-                </div>
-                <div class="panel-title">Gedächtnis des Textes</div>
-                <p class="panel-desc">Verknüpfte Erinnerungspuren, die den Verlauf der Geschichte beeinflussen.</p>
-                <div class="memory-nodes" id="memoryNodes">
-                    <!-- Memory-Nodes werden von app-lesen.js gerendert -->
-                </div>
-            </div>
-
+        <span class="doc-page-num" id="pageIndicator">Seite 47 / 312</span>
+      </div>
+      <div class="geschichts-controls">
+        <div class="btn-group">
+          <button class="btn btn-ghost" id="btnPrev">◀ Zurück</button>
+          <button class="btn btn-primary" id="btnNext">Weiter ▶</button>
         </div>
+        <div class="branch-indicators">
+          <div class="branch-dot active"></div>
+          <div class="branch-dot available"></div>
+          <div class="branch-dot locked"></div>
+        </div>
+      </div>
+    </div>
 
-        <!-- ===== Eingabe ===== -->
-        <section class="section-eingabe fade-in" id="eingabe">
-            <div class="eingabe-panel">
-                <div class="panel-header">
-                    <span class="panel-tag"><i class="fas fa-pen-nib"></i> Eingabe — Panel</span>
-                    <span class="panel-id">INP.01</span>
-                </div>
-                <div class="panel-title">Schreibe deine Zeile</div>
-                <p class="panel-desc">Deine Worte werden zu Erinnerungsknoten im Gedächtnis des Textes.</p>
-                <div class="eingabe-area">
-                    <textarea class="eingabe-textarea" id="eingabeText" placeholder="Hier könnte deine Zeile stehen — ein Gedankenfragment, ein Flüstern im Text..."></textarea>
-                    <div class="eingabe-actions">
-                        <div class="eingabe-meta">
-                            <span class="meta-item"><i class="fas fa-font"></i> <span id="charCount">0</span> Zeichen</span>
-                            <span class="meta-item"><i class="fas fa-clock"></i> <span id="timeStamp">--:--:--</span></span>
-                            <span class="meta-item"><i class="fas fa-fingerprint"></i> Leserin <span id="readerId">—</span></span>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn btn-ghost" id="btnClear"><span><i class="fas fa-eraser"></i> Leeren</span></button>
-                            <button class="btn btn-primary" id="btnSubmit"><span><i class="fas fa-feather"></i> Verankern</span></button>
-                            <button class="btn" id="btnFortsetzen"><span>Fortsetzen <i class="fas fa-arrow-right"></i></span></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <div class="panel panel-qr fade-in">
+      <div class="panel-header">
+        <span class="panel-tag"><i>◈</i> Verknüpfung</span>
+        <span class="panel-id">04</span>
+      </div>
+      <h3 class="panel-title">Physisches verknüpfen</h3>
+      <p class="panel-desc">Scanne das Muster, um ein physisches Objekt mit der Geschichte zu verbinden.</p>
+      <div class="qr-viewport" id="qrViewport">
+        <div class="qr-corner tl"></div><div class="qr-corner tr"></div>
+        <div class="qr-corner bl"></div><div class="qr-corner br"></div>
+        <div class="qr-scan-line" id="qrScanLine"></div>
+        <div class="qr-pattern" id="qrPattern"></div>
+      </div>
+      <div class="qr-status" id="qrStatus">Initialisiere Scanner...</div>
+    </div>
 
-    </main>
+    <div class="panel panel-memory fade-in">
+      <div class="panel-header">
+        <span class="panel-tag"><i>◈</i> Gedächtnis</span>
+        <span class="panel-id">05</span>
+      </div>
+      <h3 class="panel-title">Gedächtnis des Textes</h3>
+      <p class="panel-desc">Verknüpfte Erinnerungspuren, die den Verlauf beeinflussen.</p>
+      <div class="memory-nodes" id="memoryNodes">
+        <div class="memory-node"><span class="node-indicator empty"></span><div class="node-info"><div class="node-name">Noch keine Erinnerungen</div></div></div>
+      </div>
+    </div>
+  </div>
 
-    <!-- ===== Footer ===== -->
-    <footer>
-        <span>Buch der Begierde · v0.5.0</span>
-        <span>Vanilla ES6 · Supabase</span>
-    </footer>
+  <section class="section-eingabe fade-in">
+    <div class="eingabe-panel">
+      <div class="panel-header">
+        <span class="panel-tag"><i>◈</i> Eingabe</span>
+        <span class="panel-id">06</span>
+      </div>
+      <h3 class="panel-title">Deine Zeile</h3>
+      <div class="eingabe-area">
+        <textarea class="eingabe-textarea" id="eingabeText" placeholder="Schreibe deine eigene Zeile in die Geschichte..."></textarea>
+      </div>
+      <div class="eingabe-actions">
+        <div class="eingabe-meta">
+          <span class="meta-item"><i>✎</i> <span id="charCount">0 / 500</span></span>
+          <span class="meta-item"><i>◷</i> <span id="timeStamp">—</span></span>
+          <span class="meta-item"><i>◉</i> <span id="readerId">—</span></span>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-ghost" id="btnClear">Löschen</button>
+          <button class="btn" id="btnFortsetzen">Fortsetzen</button>
+          <button class="btn btn-primary" id="btnSubmit">Verankern</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- ===== Entry-Point ===== -->
-    <script type="module" src="js/app-lesen.js"></script>
+  <footer class="centered">
+    <span>Buch der Begierde — v0.6.0</span>
+  </footer>
+</main>
+
+<div class="page-transition" id="pageTransition"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script type="module" src="js/app-lesen.js"></script>
 </body>
 </html>

@@ -1,0 +1,73 @@
+/* ===================================================================
+ * analyse.css — Spezifische Styles für die Geräteanalyse-Seite
+ * Verbesserte Kontraste für bessere Lesbarkeit
+ * =================================================================== */
+
+/* --- Card Styles mit besserer Lesbarkeit --- */
+.card .card-value {
+    color: #1a1410;
+    font-weight: 500;
+}
+
+.card .card-name {
+    color: #3a2a1a;
+}
+
+/* --- Panel Description --- */
+.panel-desc {
+    color: #3a2a1a;
+    font-weight: 400;
+}
+
+/* --- Summary Bar Styles --- */
+.summary-bar .summary-value {
+    color: #1a1410;
+}
+
+.summary-bar .summary-label {
+    color: #3a2a1a;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+    font-weight: 500;
+}
+
+.status-badge.ok {
+    color: #2a5c3c;
+    background: rgba(74, 140, 92, 0.12);
+}
+
+.status-badge.warn {
+    color: #5c4a2a;
+    background: rgba(140, 122, 74, 0.12);
+}
+
+.status-badge.err {
+    color: #5c2a2a;
+    background: rgba(140, 74, 74, 0.12);
+}
+
+/* --- Toast Notifications (Datenbank-Test) --- */
+.toast {
+    color: #1a1410;
+    font-weight: 500;
+}
+
+.toast .card-name,
+.toast .card-value {
+    color: #1a1410;
+    font-weight: 500;
+}
+
+/* --- Test Button --- */
+button,
+[type="button"] {
+    color: #1a1410;
+    font-weight: 500;
+}
+
+button:hover,
+[type="button"]:hover {
+    color: #0a0805;
+}

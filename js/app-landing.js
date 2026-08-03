@@ -1,41 +1,49 @@
 /**
  * app-landing.js — Entry-Point für index.html
- *
- * Initialisiert Atmosphäre, Partikel und die Menu-Buttons
- * (Lesen, Hören, Schreiben) mit Page-Transition-Navigation.
+ * Video-Einstieg + Buch-Animation
  */
 
-import { createParticles, initFadeInObserver } from './atmosphere.js';
-import { navigateTo } from './navigation.js';
+import { createParticles } from './atmosphere.js';
 
 function initLanding() {
-    createParticles('particles');
-    initFadeInObserver();
+  // Partikel-Hintergrund
+  createParticles('particles');
 
-    // Menu-Buttons mit Page-Transition verknüpfen
-    const btnLesen = document.getElementById('menuLesen');
-    const btnHoeren = document.getElementById('menuHoeren');
-    const btnSchreiben = document.getElementById('menuSchreiben');
-    const btnArchiv = document.getElementById('menuArchiv');
+  // Buch-Szene: Nach Video-Überspringen oder Ende einblenden
+  const video = document.getElementById('introVideo');
+  const videoIntro = document.getElementById('videoIntro');
+  const bookScene = document.getElementById('bookScene');
 
-    if (btnLesen) btnLesen.addEventListener('click', () => navigateTo('lesen.html'));
-    if (btnHoeren) btnHoeren.addEventListener('click', () => navigateTo('hoeren.html'));
-    if (btnSchreiben) btnSchreiben.addEventListener('click', () => navigateTo('schreiben.html'));
-    if (btnArchiv) btnArchiv.addEventListener('click', () => navigateTo('archiv.html'));
+  if (video && videoIntro) {
+    video.addEventListener('ended', () => {
+      videoIntro.classList.add('hidden');
+      bookScene.style.animation = 'fadeInScale 1.2s ease-out forwards';
+    });
+    // Fallback nach 6s
+    setTimeout(() => {
+      if (video.currentTime < 1) skipVideo();
+    }, 6000);
+  }
 
-    // Logo-Klick → zurück zur Landing
-    const logo = document.getElementById('logoLink');
-    if (logo) {
-        logo.addEventListener('click', (e) => {
-            e.preventDefault();
-            // bereits auf der Landing — nur sanft nach oben scrollen
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
+  // Menu-Animation
+  const menu = document.getElementById('introMenu');
+  if (menu) {
+    menu.style.opacity = '0';
+    setTimeout(() => {
+      menu.style.animation = 'fadeInUp 1s ease-out forwards';
+    }, 4500);
+  }
 }
 
+window.skipVideo = function() {
+  const videoIntro = document.getElementById('videoIntro');
+  const bookScene = document.getElementById('bookScene');
+  if (videoIntro) videoIntro.classList.add('hidden');
+  if (bookScene) bookScene.style.animation = 'fadeInScale 1.2s ease-out forwards';
+};
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLanding);
+  document.addEventListener('DOMContentLoaded', initLanding);
 } else {
-    initLanding();
+  initLanding();
 }

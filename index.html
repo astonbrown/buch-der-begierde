@@ -1,100 +1,1147 @@
-<!DOCTYPE html>
+
+# Erstelle die komplette überarbeitete index.html
+index_html = '''<!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buch der Begierde — Ein interaktives Leseerlebnis</title>
-    <meta name="description" content="Ein interaktives, literarisches Web-Artefakt. Wortfragmente, Resonanz, dynamische Erinnerungen.">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Buch der Begierde — Ein interaktives Leseerlebnis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   DESIGN SYSTEM — Buch der Begierde v0.6.0
+   Basierend auf Video-Vorlage: Altes Buch, Sepia, Pergament, antike Flaschen
+   ============================================================================ */
 
-    <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+:root {
+  /* Farben — extrahiert aus der Video-Vorlage */
+  --bg-deep: #0a0a0f;
+  --bg-surface: #121018;
+  --bg-elevated: #1a1418;
+  --fg-primary: #e8dcc8;
+  --fg-secondary: #c4b896;
+  --fg-muted: #8a7a5a;
+  --accent-blood: #6b1a1a;
+  --accent-blood-glow: #8b2525;
+  --accent-gold: #b8a060;
+  --accent-gold-dim: #7a6a40;
+  --parchment: #e8dcc8;
+  --parchment-dark: #c4b896;
+  --parchment-aged: #b8a878;
+  --ink: #1a1410;
+  --ink-light: #3a2e22;
+  --wood-dark: #2a1f15;
+  --wood-medium: #4a3a28;
+  --shadow-deep: rgba(0,0,0,0.85);
+  --shadow-soft: rgba(0,0,0,0.4);
+  --mist: rgba(180,170,150,0.06);
+  
+  /* Fonts */
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  
+  /* Transitions */
+  --t-slow: 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --t-medium: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast: 0.3s ease;
+}
 
-    <!-- Stylesheets (modular) -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/atmosphere.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/index.css">
+/* ============================================================================
+   RESET & BASIS
+   ============================================================================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-deep); font-family:var(--font-serif); color:var(--fg-primary); -webkit-font-smoothing:antialiased; }
+
+/* ============================================================================
+   INTRO — HTML5 VIDEO FULLSCREEN
+   ============================================================================ */
+#intro-video {
+  position:fixed; inset:0; z-index:1000;
+  background:#050508;
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity var(--t-slow), visibility var(--t-slow);
+}
+#intro-video.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+#intro-video video {
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+}
+.video-overlay {
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse at center, transparent 30%, rgba(5,5,8,0.7) 70%, rgba(5,5,8,0.95) 100%);
+  pointer-events:none;
+}
+.video-vignette {
+  position:absolute; inset:0;
+  box-shadow:inset 0 0 150px rgba(0,0,0,0.6);
+  pointer-events:none;
+}
+.video-text {
+  position:relative; z-index:10; text-align:center;
+  opacity:0; transform:translateY(20px);
+  animation:fadeInUp 2s ease 1s forwards;
+}
+.video-text h1 {
+  font-size:clamp(1.8rem, 5vw, 3.5rem); font-weight:400;
+  letter-spacing:0.35em; color:var(--parchment);
+  text-shadow:0 0 50px rgba(184,160,96,0.25), 0 2px 15px rgba(0,0,0,0.9);
+  margin-bottom:0.4em;
+}
+.video-text p {
+  font-size:clamp(0.85rem, 2vw, 1.2rem); color:var(--parchment-dark);
+  letter-spacing:0.18em; font-style:italic;
+}
+.video-skip {
+  position:absolute; bottom:5vh; left:50%; transform:translateX(-50%);
+  z-index:20; background:transparent; border:1px solid var(--accent-gold-dim);
+  color:var(--accent-gold-dim); padding:0.6em 2em;
+  font-size:0.75rem; letter-spacing:0.2em; cursor:pointer;
+  opacity:0; animation:fadeIn 1s ease 3s forwards;
+  transition:all var(--t-fast); font-family:var(--font-serif); border-radius:4px;
+}
+.video-skip:hover { border-color:var(--accent-gold); color:var(--accent-gold); }
+
+@keyframes fadeInUp { to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { to { opacity:1; } }
+
+/* ============================================================================
+   BUCH-ÖFFNUNGS-ANIMATION (CANVAS)
+   ============================================================================ */
+#book-opening {
+  position:fixed; inset:0; z-index:900;
+  background:var(--bg-deep);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; visibility:hidden;
+  transition:opacity var(--t-slow), visibility var(--t-slow);
+}
+#book-opening.active { opacity:1; visibility:visible; }
+#book-canvas { position:absolute; inset:0; width:100%; height:100%; }
+.book-overlay {
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse at center, transparent 0%, rgba(10,10,15,0.5) 100%);
+  pointer-events:none;
+}
+.book-text {
+  position:relative; z-index:10; text-align:center;
+  opacity:0; transform:translateY(15px);
+}
+.book-text h2 {
+  font-size:clamp(1.3rem, 3vw, 2rem); font-weight:400;
+  letter-spacing:0.25em; color:var(--parchment);
+  text-shadow:0 0 30px rgba(184,160,96,0.2);
+}
+
+/* ============================================================================
+   PERGAMENT-PORTAL
+   ============================================================================ */
+#portal {
+  position:fixed; inset:0; z-index:800;
+  display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(60,40,30,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(40,30,60,0.08) 0%, transparent 50%),
+    var(--bg-deep);
+  opacity:0; visibility:hidden;
+  transition:opacity var(--t-slow), visibility var(--t-slow), transform var(--t-slow);
+}
+#portal.active { opacity:1; visibility:visible; }
+#portal.hidden-portal { opacity:0; pointer-events:none; transform:scale(1.03); }
+
+.parchment-wrapper {
+  position:relative;
+  width:min(88vw, 680px); height:min(82vh, 850px);
+  display:flex; align-items:center; justify-content:center;
+}
+.parchment {
+  position:relative; width:100%; height:100%;
+  background:linear-gradient(135deg, #e8dcc8 0%, #d4c5a0 25%, #e0d2b0 50%, #c8b890 75%, #ddd0b8 100%);
+  border-radius:3px;
+  box-shadow:
+    0 0 50px rgba(184,160,96,0.12),
+    0 20px 70px rgba(0,0,0,0.75),
+    inset 0 0 80px rgba(139,119,80,0.08);
+  padding:clamp(1.5rem, 4vw, 2.5rem);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; overflow:hidden;
+}
+/* Pergament-Textur */
+.parchment::before {
+  content:''; position:absolute; inset:0;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  opacity:0.5; pointer-events:none; mix-blend-mode:multiply;
+}
+/* Gealterte Ränder */
+.parchment::after {
+  content:''; position:absolute; inset:6px;
+  border:1px solid rgba(90,70,40,0.15); border-radius:2px; pointer-events:none;
+}
+.parchment-content {
+  position:relative; z-index:2; width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:clamp(0.6rem, 2vh, 1.2rem);
+}
+
+/* Wachssiegel */
+.seal {
+  width:clamp(50px, 10vw, 80px); height:clamp(50px, 10vw, 80px);
+  border:2px solid var(--accent-blood); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  animation:sealPulse 4s ease-in-out infinite;
+  position:relative; margin-bottom:0.3rem;
+}
+.seal::before {
+  content:''; position:absolute; inset:-3px;
+  border:1px solid rgba(107,26,26,0.25); border-radius:50%;
+}
+.seal svg { width:45%; height:45%; fill:var(--accent-blood); opacity:0.75; }
+@keyframes sealPulse {
+  0%,100% { box-shadow:0 0 18px rgba(107,26,26,0.15); }
+  50% { box-shadow:0 0 35px rgba(107,26,26,0.35); }
+}
+
+.parchment h2 {
+  font-size:clamp(1.2rem, 3.5vw, 2rem); font-weight:400;
+  color:var(--ink); letter-spacing:0.18em; text-transform:uppercase; line-height:1.3;
+}
+.parchment .divider {
+  width:50%; max-width:160px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--ink-light), transparent);
+}
+.parchment p {
+  font-size:clamp(0.8rem, 1.8vw, 1rem); color:var(--ink-light);
+  line-height:1.7; max-width:92%; font-style:italic;
+}
+.parchment .code-box {
+  font-family:var(--font-mono); font-size:clamp(0.65rem, 1.5vw, 0.85rem);
+  letter-spacing:0.35em; color:var(--accent-blood);
+  background:rgba(107,26,26,0.04); padding:0.7em 1.4em;
+  border:1px solid rgba(107,26,26,0.18); cursor:pointer;
+  transition:all var(--t-fast); position:relative; overflow:hidden;
+}
+.parchment .code-box:hover {
+  background:rgba(107,26,26,0.08);
+  box-shadow:0 0 18px rgba(107,26,26,0.12);
+}
+.parchment .code-box::after {
+  content:'SCANNEN'; position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--accent-blood); color:var(--parchment);
+  font-family:var(--font-serif); letter-spacing:0.25em; font-size:0.75em;
+  opacity:0; transition:opacity var(--t-fast);
+}
+.parchment .code-box:hover::after { opacity:1; }
+
+.enter-btn {
+  margin-top:0.5rem; background:transparent; border:1px solid var(--ink-light);
+  color:var(--ink); padding:0.8em 2.2em;
+  font-size:clamp(0.75rem, 1.6vw, 0.9rem); letter-spacing:0.22em;
+  text-transform:uppercase; cursor:pointer;
+  transition:all var(--t-fast); font-family:var(--font-serif);
+  position:relative; overflow:hidden;
+}
+.enter-btn::before {
+  content:''; position:absolute; inset:0; background:var(--ink);
+  transform:translateX(-101%); transition:transform var(--t-medium);
+}
+.enter-btn:hover::before { transform:translateX(0); }
+.enter-btn span { position:relative; z-index:1; transition:color var(--t-medium); }
+.enter-btn:hover { border-color:var(--ink); }
+.enter-btn:hover span { color:var(--parchment); }
+
+/* ============================================================================
+   HAUPT-APP & NAVIGATION
+   ============================================================================ */
+#app {
+  position:fixed; inset:0; z-index:10;
+  opacity:0; transition:opacity var(--t-slow);
+  background:var(--bg-deep);
+}
+#app.visible { opacity:1; }
+
+.mist-layer {
+  position:fixed; inset:0; pointer-events:none; z-index:5;
+  background:radial-gradient(ellipse at 50% 100%, rgba(180,170,150,0.03) 0%, transparent 60%);
+}
+
+/* Navigation */
+#main-nav {
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:clamp(0.7rem, 1.8vh, 1.2rem) clamp(1rem, 2.5vw, 1.8rem);
+  background:linear-gradient(to bottom, rgba(10,10,15,0.95) 0%, transparent 100%);
+  opacity:0; transform:translateY(-15px);
+  transition:all var(--t-medium); pointer-events:none;
+}
+#main-nav.visible { opacity:1; transform:translateY(0); pointer-events:all; }
+.nav-brand {
+  font-size:clamp(0.8rem, 1.6vw, 1rem); letter-spacing:0.3em;
+  color:var(--fg-muted); text-transform:uppercase; cursor:pointer;
+  transition:color var(--t-fast);
+}
+.nav-brand:hover { color:var(--accent-gold); }
+.nav-links { display:flex; gap:clamp(0.8rem, 2.5vw, 2rem); list-style:none; }
+.nav-links a {
+  color:var(--fg-muted); text-decoration:none;
+  font-size:clamp(0.7rem, 1.3vw, 0.85rem); letter-spacing:0.12em;
+  text-transform:uppercase; position:relative; padding-bottom:3px;
+  transition:color var(--t-fast); cursor:pointer;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:0; left:0;
+  width:0; height:1px; background:var(--accent-blood);
+  transition:width var(--t-medium);
+}
+.nav-links a:hover, .nav-links a.active { color:var(--fg-primary); }
+.nav-links a:hover::after, .nav-links a.active::after { width:100%; }
+
+/* ============================================================================
+   FOLGESEITEN
+   ============================================================================ */
+.page {
+  position:fixed; inset:0; z-index:10;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:clamp(3.5rem, 9vh, 5.5rem) clamp(0.8rem, 3vw, 2.5rem) clamp(0.8rem, 3vh, 1.5rem);
+  opacity:0; pointer-events:none; transform:translateY(15px);
+  transition:all var(--t-medium); overflow:hidden;
+}
+.page.active { opacity:1; pointer-events:all; transform:translateY(0); }
+.page-bg {
+  position:absolute; inset:0; z-index:-1;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(60,30,30,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(30,30,60,0.05) 0%, transparent 50%),
+    var(--bg-deep);
+}
+.page-inner {
+  width:100%; max-width:850px; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:clamp(0.6rem, 2vh, 1.2rem); position:relative;
+}
+.page-title {
+  font-size:clamp(1.4rem, 3.5vw, 2.2rem); font-weight:400;
+  letter-spacing:0.18em; color:var(--fg-primary); text-transform:uppercase;
+  text-align:center; text-shadow:0 0 25px rgba(184,160,96,0.1);
+}
+.page-subtitle {
+  font-size:clamp(0.75rem, 1.6vw, 0.95rem); color:var(--fg-muted);
+  letter-spacing:0.12em; font-style:italic; text-align:center;
+}
+
+/* ----- HÖREN ----- */
+.visualizer {
+  width:min(75vw, 420px); height:90px;
+  display:flex; align-items:flex-end; justify-content:center; gap:3px;
+  margin:6px 0;
+}
+.v-bar {
+  width:3px; background:linear-gradient(to top, var(--accent-blood), var(--accent-gold-dim));
+  border-radius:2px; animation:vWave 1.2s ease-in-out infinite; opacity:0.65;
+}
+.v-bar:nth-child(odd) { animation-duration:0.9s; }
+.v-bar:nth-child(3n) { animation-duration:1.4s; }
+.v-bar:nth-child(5n) { animation-duration:0.7s; }
+@keyframes vWave { 0%,100% { height:15%; } 50% { height:100%; } }
+
+.audio-ctrl { display:flex; gap:12px; align-items:center; margin:6px 0; }
+.a-btn {
+  width:42px; height:42px; border-radius:50%; border:1px solid var(--accent-gold-dim);
+  background:transparent; color:var(--fg-muted); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all var(--t-fast); font-size:0.85rem;
+}
+.a-btn:hover { border-color:var(--accent-gold); color:var(--accent-gold); }
+.a-btn.play { width:50px; height:50px; border-color:var(--accent-blood); color:var(--accent-blood); }
+.a-btn.play:hover { box-shadow:0 0 20px rgba(107,26,26,0.2); }
+
+.tracklist { width:100%; max-width:420px; margin-top:6px; }
+.track {
+  display:flex; align-items:center; gap:10px;
+  padding:6px 10px; border-bottom:1px solid rgba(180,170,150,0.05);
+  cursor:pointer; transition:all var(--t-fast); font-size:0.8rem;
+}
+.track:hover { background:rgba(180,170,150,0.03); }
+.track-num { color:var(--accent-gold-dim); font-family:var(--font-mono); font-size:0.7rem; width:22px; }
+.track-name { flex:1; color:var(--fg-primary); letter-spacing:0.03em; }
+.track-dur { color:var(--accent-gold-dim); font-family:var(--font-mono); font-size:0.7rem; }
+
+/* ----- LESEN ----- */
+.chapters { display:flex; gap:6px; margin-bottom:8px; }
+.ch-dot {
+  width:8px; height:8px; border-radius:50%; border:1px solid var(--accent-gold-dim);
+  background:transparent; cursor:pointer; transition:all var(--t-fast);
+}
+.ch-dot.active, .ch-dot:hover { background:var(--accent-blood); border-color:var(--accent-blood); box-shadow:0 0 8px rgba(107,26,26,0.3); }
+
+.read-area {
+  width:100%; max-width:520px; max-height:45vh; overflow-y:auto;
+  padding:16px; background:rgba(10,10,15,0.55); border:1px solid rgba(180,170,150,0.06);
+}
+.read-area::-webkit-scrollbar { width:2px; }
+.read-area::-webkit-scrollbar-thumb { background:var(--accent-gold-dim); }
+.read-area p {
+  font-size:clamp(0.8rem, 1.6vw, 0.95rem); line-height:1.85;
+  color:var(--fg-muted); margin-bottom:0.8em; text-align:justify;
+}
+.read-area p:first-child::first-letter {
+  font-size:2.8em; float:left; line-height:0.8; margin-right:0.08em;
+  color:var(--accent-blood); font-weight:400;
+}
+.read-progress {
+  width:100%; max-width:520px; height:1px;
+  background:rgba(180,170,150,0.08); margin-top:6px; position:relative;
+}
+.read-progress-bar { position:absolute; left:0; top:0; height:100%; width:20%; background:var(--accent-blood); transition:width var(--t-medium); }
+
+/* Fragment-Selektor (Buch der Begierde Feature) */
+.fragment-bar {
+  display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin:4px 0;
+}
+.fragment-tag {
+  padding:4px 12px; border:1px solid rgba(180,170,150,0.12);
+  background:rgba(180,170,150,0.03); color:var(--fg-muted);
+  font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase;
+  cursor:pointer; transition:all var(--t-fast); border-radius:3px;
+}
+.fragment-tag:hover, .fragment-tag.active {
+  border-color:var(--accent-blood); color:var(--fg-primary);
+  background:rgba(107,26,26,0.06); box-shadow:0 0 10px rgba(107,26,26,0.1);
+}
+
+/* Echo-Metriken */
+.echo-metrics {
+  display:flex; gap:16px; justify-content:center; margin:4px 0;
+}
+.echo-metric {
+  text-align:center;
+}
+.echo-metric .value {
+  font-family:var(--font-mono); font-size:0.9rem; color:var(--accent-gold);
+  font-variant-numeric:tabular-nums;
+}
+.echo-metric .label {
+  font-size:0.6rem; color:var(--fg-muted); letter-spacing:0.15em; text-transform:uppercase;
+}
+
+/* ----- SCHREIBEN ----- */
+.write-box {
+  width:100%; max-width:520px; display:flex; flex-direction:column; gap:8px;
+}
+.write-prompt {
+  font-size:clamp(0.75rem, 1.5vw, 0.9rem); color:var(--fg-muted);
+  font-style:italic; text-align:center; line-height:1.6; transition:opacity 0.3s;
+}
+.write-ta {
+  width:100%; min-height:100px; max-height:30vh;
+  background:rgba(10,10,15,0.75); border:1px solid rgba(180,170,150,0.1);
+  color:var(--fg-primary); padding:12px; font-family:var(--font-serif);
+  font-size:clamp(0.8rem, 1.5vw, 0.95rem); line-height:1.65;
+  resize:none; outline:none; transition:border-color var(--t-fast);
+}
+.write-ta:focus { border-color:var(--accent-blood); box-shadow:0 0 15px rgba(107,26,26,0.08); }
+.write-ta::placeholder { color:rgba(180,170,150,0.22); font-style:italic; }
+.write-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.w-btn {
+  padding:6px 16px; border:1px solid var(--accent-gold-dim);
+  background:transparent; color:var(--fg-muted); font-family:var(--font-serif);
+  font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase;
+  cursor:pointer; transition:all var(--t-fast); border-radius:3px;
+}
+.w-btn:hover { border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(184,160,96,0.04); }
+.w-btn.primary { border-color:var(--accent-blood); color:var(--accent-blood); }
+.w-btn.primary:hover { background:rgba(107,26,26,0.07); }
+
+.notes { width:100%; max-width:520px; margin-top:6px; }
+.note {
+  padding:6px 10px; border-left:2px solid var(--accent-blood);
+  margin-bottom:4px; background:rgba(107,26,26,0.02);
+  font-size:0.75rem; color:var(--fg-muted); line-height:1.4;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+@media (max-width:480px) {
+  .parchment { padding:1rem; }
+  .nav-links { gap:0.6rem; }
+  .nav-links a { font-size:0.6rem; letter-spacing:0.08em; }
+  .visualizer { height:60px; }
+  .read-area { padding:10px; max-height:40vh; }
+  .page { padding-top:3rem; }
+}
+@media (max-height:550px) {
+  .parchment-wrapper { height:88vh; }
+  .page { padding-top:3rem; }
+  .visualizer { height:45px; }
+  .read-area { max-height:35vh; }
+}
+@media (min-width:1600px) {
+  .page-inner { max-width:1100px; }
+  .parchment-wrapper { width:min(70vw, 800px); }
+}
+
+/* ============================================================================
+   PAGE TRANSITION OVERLAY
+   ============================================================================ */
+#page-transition {
+  position:fixed; inset:0; z-index:999;
+  background:var(--bg-deep); opacity:0; pointer-events:none;
+  transition:opacity var(--t-medium);
+}
+#page-transition.active { opacity:1; pointer-events:all; }
+</style>
 </head>
-<body class="landing-body">
+<body>
 
-    <!-- Atmosphäre & Grain -->
-    <div class="atmosphere"></div>
-    <div class="grain-overlay"></div>
-    <div class="particles" id="particles"></div>
+<!-- ==================== INTRO: HTML5 VIDEO ==================== -->
+<div id="intro-video">
+  <video id="introVid" autoplay muted playsinline preload="auto">
+    <source src="generated_video.mp4" type="video/mp4">
+    <!-- Fallback: Canvas-Animation wenn Video nicht verfügbar -->
+  </video>
+  <div class="video-overlay"></div>
+  <div class="video-vignette"></div>
+  <div class="video-text">
+    <h1>Buch der Begierde</h1>
+    <p>Ein interaktives Leseerlebnis</p>
+  </div>
+  <button class="video-skip" onclick="skipVideo()">Überspringen</button>
+</div>
 
-    <!-- Page Transition Overlay -->
-    <div class="page-transition" id="pageTransition"></div>
+<!-- ==================== BUCH-ÖFFNUNGS-ANIMATION ==================== -->
+<div id="book-opening">
+  <canvas id="bookCanvas"></canvas>
+  <div class="book-overlay"></div>
+  <div class="book-text" id="bookText">
+    <h2>Die Seiten öffnen sich...</h2>
+  </div>
+</div>
 
-    <!-- ===== Buch-Szene ===== -->
-    <div class="book-scene">
-        <div class="book-3d">
-
-            <!-- Buchrücken -->
-            <div class="book-spine"></div>
-
-            <!-- Buchseiten (sichtbar wenn Deckel offen) -->
-            <div class="book-pages">
-                <div class="page-left">
-                    <div class="page-chapter">Kapitel I</div>
-                    <div class="page-title">Die Nacht legte sich über die Stadt&hellip;</div>
-                </div>
-                <div class="page-right">
-                    <div class="page-text">
-                        &hellip;wie ein Samtgewebe, das jede Bewegung verschluckte.
-                        Ich stand am Fenster und beobachtete das Licht der Laternen.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Buchdeckel (öffnet sich) -->
-            <div class="book-cover">
-                <div class="cover-front">
-                    <div class="cover-diamond"><span>B</span></div>
-                    <h1 class="cover-title">Buch der <em>Begierde</em></h1>
-                    <div class="cover-line"></div>
-                    <div class="cover-subtitle">Ein interaktives Leseerlebnis</div>
-                </div>
-                <div class="cover-back"></div>
-            </div>
-
+<!-- ==================== PERGAMENT-PORTAL ==================== -->
+<div id="portal">
+  <div class="parchment-wrapper">
+    <div class="parchment">
+      <div class="parchment-content">
+        <div class="seal">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
         </div>
-        <!-- Schatten unter dem Buch -->
-        <div class="book-shadow"></div>
+        <h2>Willkommen,<br>wandernde Seele</h2>
+        <div class="divider"></div>
+        <p>Du hältst ein Buch in Händen, das älter ist als die Zeit selbst. Der Code auf dem Pergament ist der Schlüssel zu einer Welt aus Schatten und Sehnsucht.</p>
+        <div class="code-box" onclick="scanCode()">X7-K9-Ω-42</div>
+        <p style="font-size:0.75rem;opacity:0.5;margin-top:-2px;">Scanne den Code, um das Portal zu öffnen</p>
+        <button class="enter-btn" onclick="enterApp()"><span>Das Tor öffnen</span></button>
+      </div>
     </div>
+  </div>
+</div>
 
-    <!-- ===== Menu ===== -->
-    <nav class="intro-menu">
-        <button class="menu-btn" id="menuLesen" aria-label="Lesen — betritt die Geschichte">
-            <i class="fas fa-book-open"></i>
-            <span class="menu-label">Lesen</span>
-        </button>
-        <button class="menu-btn" id="menuHoeren" aria-label="Hören — Geschichte als Stimme">
-            <i class="fas fa-volume-up"></i>
-            <span class="menu-label">Hören</span>
-        </button>
-        <button class="menu-btn" id="menuSchreiben" aria-label="Schreiben — eigene Zeile hinzufügen">
-            <i class="fas fa-feather"></i>
-            <span class="menu-label">Schreiben</span>
-        </button>
-        <button class="menu-btn" id="menuArchiv" aria-label="Archiv — Gedächtnis-Explorer">
-            <i class="fas fa-archive"></i>
-            <span class="menu-label">Archiv</span>
-        </button>
-    </nav>
+<!-- ==================== HAUPT-APP ==================== -->
+<div id="app">
+  <div class="mist-layer"></div>
 
-    <!-- ===== Footer ===== -->
-    <footer class="intro-footer">
-        <span>Buch der Begierde · v0.5.0</span>
-        <span><a href="analyse.html">Geräteanalyse</a> · Vanilla ES6</span>
-    </footer>
+  <!-- Navigation -->
+  <nav id="main-nav">
+    <div class="nav-brand" onclick="showPortal()">Buch der Begierde</div>
+    <ul class="nav-links">
+      <li><a class="active" onclick="goTo('lesen')">Lesen</a></li>
+      <li><a onclick="goTo('hoeren')">Hören</a></li>
+      <li><a onclick="goTo('schreiben')">Schreiben</a></li>
+      <li><a onclick="goTo('archiv')">Archiv</a></li>
+    </ul>
+  </nav>
 
-    <!-- ===== Entry-Point ===== -->
-    <script type="module" src="js/app-landing.js"></script>
+  <!-- Seite: LESEN (Hauptseite) -->
+  <section class="page active" id="pg-lesen">
+    <div class="page-bg"></div>
+    <div class="page-inner">
+      <h2 class="page-title">Lesen</h2>
+      <p class="page-subtitle">Wähle dein Fragment — Jede Kombination erzählt eine andere Geschichte</p>
+
+      <!-- Fragment-Selektor -->
+      <div class="fragment-bar">
+        <div class="fragment-tag" data-fragment="samt" onclick="toggleFragment(this)">Samt</div>
+        <div class="fragment-tag" data-fragment="kaelte" onclick="toggleFragment(this)">Kälte</div>
+        <div class="fragment-tag" data-fragment="waerme" onclick="toggleFragment(this)">Wärme</div>
+        <div class="fragment-tag" data-fragment="licht" onclick="toggleFragment(this)">Licht</div>
+        <div class="fragment-tag" data-fragment="schatten" onclick="toggleFragment(this)">Schatten</div>
+        <div class="fragment-tag" data-fragment="staub" onclick="toggleFragment(this)">Staub</div>
+        <div class="fragment-tag" data-fragment="atem" onclick="toggleFragment(this)">Atem</div>
+      </div>
+
+      <!-- Echo-Metriken -->
+      <div class="echo-metrics">
+        <div class="echo-metric">
+          <div class="value" id="echo-resonanz">0.00</div>
+          <div class="label">Resonanz</div>
+        </div>
+        <div class="echo-metric">
+          <div class="value" id="echo-tiefe">0.00</div>
+          <div class="label">Tiefe</div>
+        </div>
+        <div class="echo-metric">
+          <div class="value" id="echo-drift">0.00</div>
+          <div class="label">Drift</div>
+        </div>
+      </div>
+
+      <!-- Kapitel-Selektor -->
+      <div class="chapters">
+        <div class="ch-dot active" onclick="loadChapter(0)"></div>
+        <div class="ch-dot" onclick="loadChapter(1)"></div>
+        <div class="ch-dot" onclick="loadChapter(2)"></div>
+        <div class="ch-dot" onclick="loadChapter(3)"></div>
+        <div class="ch-dot" onclick="loadChapter(4)"></div>
+      </div>
+
+      <!-- Lesebereich -->
+      <div class="read-area" id="readArea">
+        <p>Die Nacht legte sich über die Stadt wie ein Samtgewebe, das jede Bewegung verschluckte. Ich stand am Fenster und beobachtete das Licht der Laternen, wie es sich in den Pfützen des gerade vergangenen Regens brach.</p>
+        <p>Ein Geräusch hinter mir. Das Rascheln von Seide, vielleicht. Oder nur der Wind, der durch die Ritzen der alten Fensterfugen strich. Ich drehte mich nicht um. In dieser Stunde zwischen Mitternacht und Morgengrauen wagte niemand, sich zu rühren.</p>
+        <p>Doch dann — ein Atemzug. Näher als der Wind. Wärmer als die Kälte, die von den Steinwänden ausging. Jemand war hier. Jemand, der genauso lange wartete wie ich.</p>
+      </div>
+
+      <div class="read-progress"><div class="read-progress-bar" id="rpBar"></div></div>
+      <p class="page-subtitle" style="margin-top:2px;">Seite <span id="pageNum">47</span> / 312</p>
+    </div>
+  </section>
+
+  <!-- Seite: HÖREN -->
+  <section class="page" id="pg-hoeren">
+    <div class="page-bg"></div>
+    <div class="page-inner">
+      <h2 class="page-title">Hören</h2>
+      <p class="page-subtitle">Atmosphärische Klangwelten — Die Geschichte spricht zu dir</p>
+      <div class="visualizer" id="viz"></div>
+      <div class="audio-ctrl">
+        <button class="a-btn" onclick="prevTrack()">◀◀</button>
+        <button class="a-btn play" id="playBtn" onclick="togglePlay()">▶</button>
+        <button class="a-btn" onclick="nextTrack()">▶▶</button>
+      </div>
+      <div class="tracklist">
+        <div class="track" onclick="selTrack(this, 0)">
+          <span class="track-num">01</span>
+          <span class="track-name">Flüstern im Kerzenschein</span>
+          <span class="track-dur">04:32</span>
+        </div>
+        <div class="track" onclick="selTrack(this, 1)">
+          <span class="track-num">02</span>
+          <span class="track-name">Das Rascheln von Seide</span>
+          <span class="track-dur">03:17</span>
+        </div>
+        <div class="track" onclick="selTrack(this, 2)">
+          <span class="track-num">03</span>
+          <span class="track-name">Mitternacht in Venedig</span>
+          <span class="track-dur">05:44</span>
+        </div>
+        <div class="track" onclick="selTrack(this, 3)">
+          <span class="track-num">04</span>
+          <span class="track-name">Der letzte Tanz</span>
+          <span class="track-dur">06:21</span>
+        </div>
+        <div class="track" onclick="selTrack(this, 4)">
+          <span class="track-num">05</span>
+          <span class="track-name">Echo der Vergangenheit</span>
+          <span class="track-dur">07:08</span>
+        </div>
+      </div>
+      <div class="echo-metrics" style="margin-top:8px;">
+        <div class="echo-metric">
+          <div class="value" id="speedVal">1.0x</div>
+          <div class="label">Geschwindigkeit</div>
+        </div>
+        <div class="echo-metric">
+          <div class="value" id="pitchVal">1.0</div>
+          <div class="label">Tonhöhe</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seite: SCHREIBEN -->
+  <section class="page" id="pg-schreiben">
+    <div class="page-bg"></div>
+    <div class="page-inner">
+      <h2 class="page-title">Schreiben</h2>
+      <p class="page-subtitle">Gib deiner Geschichte eine Stimme — Die Fragmente führen dich</p>
+      <div class="write-box">
+        <p class="write-prompt" id="wPrompt">"Schreibe die ersten Worte eines Briefes, den du niemals abschicken wirst..."</p>
+        <textarea class="write-ta" id="wArea" placeholder="Deine Worte werden zu Schatten, die die Ewigkeit überdauern..."></textarea>
+        <div class="write-actions">
+          <button class="w-btn" onclick="newPrompt()">Inspiration</button>
+          <button class="w-btn" onclick="analyzeText()">Resonanz-Analyse</button>
+          <button class="w-btn primary" onclick="saveNote()">Speichern</button>
+        </div>
+      </div>
+      <div class="notes" id="notes">
+        <div class="note">„Die Nacht kennt alle Geheimnisse, die wir am Tag vergessen." <span style="color:var(--accent-gold-dim);font-size:0.65rem;">— Resonanz: Schatten, Atem</span></div>
+        <div class="note">„Ich habe dich in jedem Regentropfen gesucht." <span style="color:var(--accent-gold-dim);font-size:0.65rem;">— Resonanz: Kälte, Licht</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seite: ARCHIV -->
+  <section class="page" id="pg-archiv">
+    <div class="page-bg"></div>
+    <div class="page-inner">
+      <h2 class="page-title">Archiv</h2>
+      <p class="page-subtitle">Dein Gedächtnis — Jeder Moment hinterlässt eine Spur</p>
+      <div style="width:100%;max-width:500px;height:200px;background:rgba(10,10,15,0.5);border:1px solid rgba(180,170,150,0.06);display:flex;align-items:center;justify-content:center;">
+        <p style="color:var(--fg-muted);font-style:italic;font-size:0.85rem;">Memory-Graph Visualisierung<br><span style="font-size:0.7rem;">(Canvas-Graph wird hier gerendert)</span></p>
+      </div>
+      <div class="echo-metrics" style="margin-top:10px;">
+        <div class="echo-metric"><div class="value" id="mem-episodic">12</div><div class="label">Episodisch</div></div>
+        <div class="echo-metric"><div class="value" id="mem-sensory">8</div><div class="label">Sensorisch</div></div>
+        <div class="echo-metric"><div class="value" id="mem-emotional">5</div><div class="label">Emotional</div></div>
+        <div class="echo-metric"><div class="value" id="mem-conceptual">3</div><div class="label">Konzeptuell</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Page Transition Overlay -->
+<div id="page-transition"></div>
+
+<script>
+/* ============================================================================
+   INTRO: VIDEO HANDLING
+   ============================================================================ */
+const video = document.getElementById('introVid');
+const introVideo = document.getElementById('intro-video');
+
+// Wenn Video nicht ladbar -> sofort zur Buch-Animation
+video.addEventListener('error', () => {
+  log('Video nicht verfügbar, starte Canvas-Animation');
+  skipVideo();
+});
+
+// Video-Ende -> Buch-Animation
+video.addEventListener('ended', () => {
+  introVideo.classList.add('hidden');
+  startBookOpening();
+});
+
+// Fallback: Nach 6s automatisch weiter (wenn Video hängt)
+setTimeout(() => {
+  if (!video.ended && video.currentTime < 0.5) {
+    skipVideo();
+  }
+}, 6000);
+
+function skipVideo() {
+  video.pause();
+  introVideo.classList.add('hidden');
+  startBookOpening();
+}
+
+/* ============================================================================
+   BUCH-ÖFFNUNGS-ANIMATION (CANVAS)
+   ============================================================================ */
+const bookOpening = document.getElementById('book-opening');
+const bookCanvas = document.getElementById('bookCanvas');
+const bookCtx = bookCanvas.getContext('2d');
+
+function resizeBookCanvas() {
+  bookCanvas.width = window.innerWidth;
+  bookCanvas.height = window.innerHeight;
+}
+resizeBookCanvas();
+window.addEventListener('resize', resizeBookCanvas);
+
+let bookAnimFrame = 0;
+const bookDuration = 180; // frames (~3s bei 60fps)
+
+function drawBookOpen(progress) {
+  const w = bookCanvas.width, h = bookCanvas.height;
+  bookCtx.fillStyle = '#0a0a0f';
+  bookCtx.fillRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h / 2;
+  const bookW = Math.min(w * 0.5, 500);
+  const bookH = Math.min(h * 0.55, 400);
+  const spineX = cx;
+  const coverAngle = progress * Math.PI * 0.45; // max 81°
+  const pageAngle = progress * Math.PI * 0.35;
+
+  // Schatten
+  bookCtx.save();
+  bookCtx.shadowColor = 'rgba(0,0,0,0.6)';
+  bookCtx.shadowBlur = 40;
+  bookCtx.shadowOffsetY = 20;
+
+  // Linke Seite (Cover öffnet sich)
+  bookCtx.save();
+  bookCtx.translate(spineX, cy);
+  bookCtx.scale(Math.cos(coverAngle), 1);
+  bookCtx.fillStyle = '#2a1f15';
+  bookCtx.fillRect(-bookW/2, -bookH/2, bookW/2, bookH);
+  // Cover-Details
+  bookCtx.strokeStyle = '#4a3a28';
+  bookCtx.lineWidth = 2;
+  bookCtx.strokeRect(-bookW/2 + 8, -bookH/2 + 8, bookW/2 - 16, bookH - 16);
+  bookCtx.restore();
+
+  // Rechte Seite (Cover öffnet sich)
+  bookCtx.save();
+  bookCtx.translate(spineX, cy);
+  bookCtx.scale(Math.cos(coverAngle), 1);
+  bookCtx.fillStyle = '#2a1f15';
+  bookCtx.fillRect(0, -bookH/2, bookW/2, bookH);
+  bookCtx.strokeStyle = '#4a3a28';
+  bookCtx.lineWidth = 2;
+  bookCtx.strokeRect(8, -bookH/2 + 8, bookW/2 - 16, bookH - 16);
+  bookCtx.restore();
+
+  bookCtx.restore();
+
+  // Linke Seite (Seiten)
+  bookCtx.save();
+  bookCtx.translate(spineX, cy);
+  bookCtx.scale(Math.cos(pageAngle), 1);
+  bookCtx.fillStyle = '#e8dcc8';
+  bookCtx.fillRect(-bookW/2 + 4, -bookH/2 + 4, bookW/2 - 8, bookH - 8);
+  // Seiten-Textur
+  bookCtx.fillStyle = 'rgba(180,170,150,0.1)';
+  for (let i = 0; i < 20; i++) {
+    bookCtx.fillRect(-bookW/2 + 10, -bookH/2 + 15 + i * (bookH-30)/20, bookW/2 - 20, 1);
+  }
+  bookCtx.restore();
+
+  // Rechte Seite (Seiten)
+  bookCtx.save();
+  bookCtx.translate(spineX, cy);
+  bookCtx.scale(Math.cos(pageAngle), 1);
+  bookCtx.fillStyle = '#e8dcc8';
+  bookCtx.fillRect(4, -bookH/2 + 4, bookW/2 - 8, bookH - 8);
+  bookCtx.fillStyle = 'rgba(180,170,150,0.1)';
+  for (let i = 0; i < 20; i++) {
+    bookCtx.fillRect(10, -bookH/2 + 15 + i * (bookH-30)/20, bookW/2 - 20, 1);
+  }
+  bookCtx.restore();
+
+  // Buchrücken
+  bookCtx.fillStyle = '#1a1410';
+  bookCtx.fillRect(spineX - 3, cy - bookH/2, 6, bookH);
+
+  // Partikel
+  if (progress > 0.3) {
+    const pCount = Math.floor((progress - 0.3) * 100);
+    for (let i = 0; i < pCount; i++) {
+      const px = cx + (Math.random() - 0.5) * bookW * 1.5;
+      const py = cy + (Math.random() - 0.5) * bookH * 1.2;
+      const ps = Math.random() * 1.5 + 0.3;
+      const po = (progress - 0.3) * 0.4 * Math.random();
+      bookCtx.beginPath();
+      bookCtx.arc(px, py, ps, 0, Math.PI * 2);
+      bookCtx.fillStyle = `rgba(184,160,96,${po})`;
+      bookCtx.fill();
+    }
+  }
+}
+
+function animateBook() {
+  if (bookAnimFrame >= bookDuration) {
+    bookOpening.classList.remove('active');
+    showPortal();
+    return;
+  }
+  const progress = bookAnimFrame / bookDuration;
+  const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+  drawBookOpen(eased);
+  bookAnimFrame++;
+  requestAnimationFrame(animateBook);
+}
+
+function startBookOpening() {
+  bookOpening.classList.add('active');
+  bookAnimFrame = 0;
+  animateBook();
+}
+
+/* ============================================================================
+   PORTAL & NAVIGATION
+   ============================================================================ */
+const portal = document.getElementById('portal');
+const app = document.getElementById('app');
+const nav = document.getElementById('main-nav');
+
+function showPortal() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  portal.classList.remove('hidden-portal');
+  portal.classList.add('active');
+  nav.classList.remove('visible');
+}
+
+function enterApp() {
+  portal.classList.add('hidden-portal');
+  app.classList.add('visible');
+  nav.classList.add('visible');
+  goTo('lesen');
+}
+
+function scanCode() {
+  const cb = document.querySelector('.code-box');
+  cb.style.transform = 'scale(1.05)';
+  cb.style.boxShadow = '0 0 25px rgba(107,26,26,0.25)';
+  setTimeout(() => {
+    cb.style.transform = 'scale(1)';
+    cb.style.boxShadow = 'none';
+    enterApp();
+  }, 500);
+}
+
+function goTo(pageId) {
+  portal.classList.add('hidden-portal');
+  nav.classList.add('visible');
+  app.classList.add('visible');
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('pg-' + pageId);
+  if (target) target.classList.add('active');
+
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const activeLink = [...document.querySelectorAll('.nav-links a')].find(a => a.getAttribute('onclick')?.includes(pageId));
+  if (activeLink) activeLink.classList.add('active');
+}
+
+/* ============================================================================
+   LESEN — Fragment-Selektor & Story
+   ============================================================================ */
+let activeFragments = new Set();
+let currentChapter = 0;
+
+function toggleFragment(el) {
+  const frag = el.dataset.fragment;
+  if (activeFragments.has(frag)) {
+    activeFragments.delete(frag);
+    el.classList.remove('active');
+  } else {
+    if (activeFragments.size < 3) {
+      activeFragments.add(frag);
+      el.classList.add('active');
+    }
+  }
+  updateEchoMetrics();
+  updateStory();
+}
+
+function updateEchoMetrics() {
+  const r = (Math.random() * 0.5 + activeFragments.size * 0.15).toFixed(2);
+  const t = (Math.random() * 0.3 + activeFragments.size * 0.1).toFixed(2);
+  const d = (Math.random() * 0.2).toFixed(2);
+  document.getElementById('echo-resonanz').textContent = r;
+  document.getElementById('echo-tiefe').textContent = t;
+  document.getElementById('echo-drift').textContent = d;
+}
+
+const storyChapters = [
+  {
+    text: `<p>Die Nacht legte sich über die Stadt wie ein Samtgewebe, das jede Bewegung verschluckte. Ich stand am Fenster und beobachtete das Licht der Laternen, wie es sich in den Pfützen des gerade vergangenen Regens brach.</p><p>Ein Geräusch hinter mir. Das Rascheln von Seide, vielleicht. Oder nur der Wind, der durch die Ritzen der alten Fensterfugen strich. Ich drehte mich nicht um. In dieser Stunde zwischen Mitternacht und Morgengrauen wagte niemand, sich zu rühren.</p><p>Doch dann — ein Atemzug. Näher als der Wind. Wärmer als die Kälte, die von den Steinwänden ausging. Jemand war hier. Jemand, der genauso lange wartete wie ich.</p>`,
+    page: 47
+  },
+  {
+    text: `<p>Der Staub tanzte im Lichtstrahl, der durch die schmale Luke fiel. Ein einziger, goldener Faden aus Vergangenheit, der alles enthüllte, was wir zu verbergen suchten. Ich hob die Hand, und die Partikel umschmeichelten meine Finger wie Erinnerungen, die sich weigern, zu verblassen.</p><p>„Du kommst zu spät", sagte eine Stimme aus dem Schatten. Sie klang wie zerbrochenes Glas, das in Samt gewickelt wurde — scharf und sanft zugleich.</p><p>Ich lächelte. „Für manche Dinge gibt es keine Zeit. Nur den Moment."</p>`,
+    page: 89
+  },
+  {
+    text: `<p>Die Kälte war nicht körperlich. Sie saß tiefer, in den Räumen zwischen den Gedanken, in den Pausen zwischen den Worten. Ich spürte sie, als ich den Brief öffnete — das Papier war eisig, obwohl die Sonne draußen brannte.</p><p>„Wenn du das liest", stand da, „bin ich bereits fort. Nicht physisch — das wäre zu einfach. Sondern dort, wo die Worte enden und die Stille beginnt."</p><p>Ich faltete den Brief zusammen und legte ihn auf den Tisch. Der Staub würde ihn bedecken, genau wie all die anderen Dinge, die ich nicht mehr anfassen konnte.</p>`,
+    page: 134
+  },
+  {
+    text: `<p>Das Licht änderte sich. Nicht allmählich, wie es der Sonnenuntergang tat, sondern abrupt, als hätte jemand einen Schalter umgelegt. Eine Sekunde war der Raum warm und golden, die nächste lag er in bläulichem Halbdunkel.</p><p>Sie stand in der Tür. Ihr Atem war sichtbar in der plötzlichen Kälte, kleine Wolken aus Leben, die in die Leere entwichen. „Ich habe dich gesucht", sagte sie. „In jedem Schatten, in jedem Licht, in jedem Moment, der hätte deiner sein können."</p><p>„Und jetzt?" fragte ich.</p><p>„Jetzt habe ich dich gefunden."</p>`,
+    page: 201
+  },
+  {
+    text: `<p>Der letzte Atem war der schwerste. Nicht weil er körperlich anstrengend war, sondern weil er alles mit sich trug, was ich je gewesen war. Jede Liebe, jeder Verlust, jede Nacht, die zu lang und jeder Tag, der zu kurz war.</p><p>Ich öffnete die Augen — und die Welt war anders. Nicht besser, nicht schlechter. Nur anders. Die Farben waren gedämpfter, die Geräuche ferner, die Zeit langsamer. Als hätte ich einen Schleier abgenommen, den ich nicht gewusst hatte, dass ich trug.</p><p>„Willkommen", flüsterte der Schatten. „Du bist endlich angekommen."</p>`,
+    page: 312
+  }
+];
+
+function loadChapter(idx) {
+  currentChapter = idx;
+  document.querySelectorAll('.ch-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+  const area = document.getElementById('readArea');
+  area.innerHTML = storyChapters[idx].text;
+  area.scrollTop = 0;
+  document.getElementById('rpBar').style.width = ((idx + 1) / storyChapters.length * 100) + '%';
+  document.getElementById('pageNum').textContent = storyChapters[idx].page;
+}
+
+function updateStory() {
+  // Hier würde die echte Story-Engine mit Fragment-Branching greifen
+  // Für Demo: leichte Text-Variation basierend auf Fragmenten
+  const area = document.getElementById('readArea');
+  if (activeFragments.has('samt')) {
+    area.style.borderColor = 'rgba(107,26,26,0.15)';
+  } else if (activeFragments.has('licht')) {
+    area.style.borderColor = 'rgba(184,160,96,0.15)';
+  } else {
+    area.style.borderColor = 'rgba(180,170,150,0.06)';
+  }
+}
+
+/* ============================================================================
+   HÖREN — Audio-Player
+   ============================================================================ */
+const viz = document.getElementById('viz');
+for (let i = 0; i < 32; i++) {
+  const b = document.createElement('div');
+  b.className = 'v-bar';
+  b.style.height = Math.random() * 50 + 10 + '%';
+  b.style.animationDelay = Math.random() * 1.2 + 's';
+  viz.appendChild(b);
+}
+
+let isPlaying = false;
+let currentTrack = 0;
+const tracks = [
+  { name: 'Flüstern im Kerzenschein', dur: '04:32' },
+  { name: 'Das Rascheln von Seide', dur: '03:17' },
+  { name: 'Mitternacht in Venedig', dur: '05:44' },
+  { name: 'Der letzte Tanz', dur: '06:21' },
+  { name: 'Echo der Vergangenheit', dur: '07:08' }
+];
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  document.getElementById('playBtn').textContent = isPlaying ? '❚❚' : '▶';
+  document.querySelectorAll('.v-bar').forEach(b => {
+    b.style.animationPlayState = isPlaying ? 'running' : 'paused';
+  });
+}
+
+function selTrack(el, idx) {
+  currentTrack = idx;
+  document.querySelectorAll('.track').forEach(t => t.style.background = '');
+  el.style.background = 'rgba(180,170,150,0.03)';
+  if (!isPlaying) togglePlay();
+}
+
+function prevTrack() {
+  currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+  const trackEls = document.querySelectorAll('.track');
+  selTrack(trackEls[currentTrack], currentTrack);
+}
+
+function nextTrack() {
+  currentTrack = (currentTrack + 1) % tracks.length;
+  const trackEls = document.querySelectorAll('.track');
+  selTrack(trackEls[currentTrack], currentTrack);
+}
+
+/* ============================================================================
+   SCHREIBEN — Text-Engine
+   ============================================================================ */
+const prompts = [
+  "Schreibe die ersten Worte eines Briefes, den du niemals abschicken wirst...",
+  "Beschreibe den Moment, in dem zwei sich treffen, die sich einst geliebt haben...",
+  "Was würdest du sagen, wenn die Nacht zuhören würde?",
+  "Schreibe von einem Ort, an dem die Zeit stehen geblieben ist...",
+  "Erfinde das Ende einer Geschichte, die niemand je erzählt hat...",
+  "Was bleibt von einer Liebe, wenn die Worte verstummen?",
+  "Die Kälte kriecht durch die Ritzen. Was schreibst du, um sie fernzuhalten?",
+  "Ein Atemzug im Dunkeln. Beschreibe die Stille danach."
+];
+
+function newPrompt() {
+  const el = document.getElementById('wPrompt');
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = '"' + prompts[Math.floor(Math.random() * prompts.length)] + '"';
+    el.style.opacity = '1';
+  }, 300);
+}
+
+function analyzeText() {
+  const txt = document.getElementById('wArea').value.toLowerCase();
+  const found = [];
+  const fragMap = { 'samt': 'Samt', 'kälte': 'Kälte', 'kälte': 'Kälte', 'wärme': 'Wärme', 'licht': 'Licht', 'schatten': 'Schatten', 'staub': 'Staub', 'atem': 'Atem' };
+  Object.keys(fragMap).forEach(k => {
+    if (txt.includes(k)) found.push(fragMap[k]);
+  });
+  if (found.length > 0) {
+    alert('Gefundene Resonanzen: ' + found.join(', '));
+  } else {
+    alert('Keine Fragment-Resonanzen gefunden. Schreibe mehr aus dem Herzen...');
+  }
+}
+
+function saveNote() {
+  const txt = document.getElementById('wArea').value.trim();
+  if (!txt) return;
+  const nl = document.getElementById('notes');
+  const n = document.createElement('div');
+  n.className = 'note';
+  const fragText = activeFragments.size > 0 ? ' — Resonanz: ' + [...activeFragments].join(', ') : '';
+  n.innerHTML = '„' + txt.substring(0, 90) + (txt.length > 90 ? '...' : '') + '"<span style="color:var(--accent-gold-dim);font-size:0.65rem;">' + fragText + '</span>';
+  n.style.opacity = '0';
+  nl.insertBefore(n, nl.firstChild);
+  setTimeout(() => { n.style.transition = 'opacity 0.5s'; n.style.opacity = '1'; }, 50);
+  document.getElementById('wArea').value = '';
+  // Update Archiv-Memory
+  const memEmo = document.getElementById('mem-emotional');
+  if (memEmo) memEmo.textContent = parseInt(memEmo.textContent) + 1;
+}
+
+document.getElementById('wArea').addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.key === 'Enter') saveNote();
+});
+
+/* ============================================================================
+   GLOBAL
+   ============================================================================ */
+function log(msg) { console.log('[Buch der Begierde]', msg); }
+
+// Keyboard-Navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') showPortal();
+});
+
+// Echo-Canvas (Hintergrund-Partikel)
+const echoCanvas = document.createElement('canvas');
+echoCanvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0.4;';
+document.body.appendChild(echoCanvas);
+const echoCtx = echoCanvas.getContext('2d');
+
+function resizeEcho() {
+  echoCanvas.width = window.innerWidth;
+  echoCanvas.height = window.innerHeight;
+}
+resizeEcho();
+window.addEventListener('resize', resizeEcho);
+
+let echoParts = [];
+for (let i = 0; i < 60; i++) {
+  echoParts.push({
+    x: Math.random() * echoCanvas.width,
+    y: Math.random() * echoCanvas.height,
+    s: Math.random() * 1.2 + 0.3,
+    vx: (Math.random() - 0.5) * 0.2,
+    vy: (Math.random() - 0.5) * 0.2 - 0.05,
+    o: Math.random() * 0.3 + 0.05
+  });
+}
+
+function animEcho() {
+  echoCtx.clearRect(0, 0, echoCanvas.width, echoCanvas.height);
+  echoParts.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.y < -5) { p.y = echoCanvas.height + 5; p.x = Math.random() * echoCanvas.width; }
+    if (p.x < -5) p.x = echoCanvas.width + 5;
+    if (p.x > echoCanvas.width + 5) p.x = -5;
+    echoCtx.beginPath();
+    echoCtx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+    echoCtx.fillStyle = `rgba(184,160,96,${p.o})`;
+    echoCtx.fill();
+  });
+  requestAnimationFrame(animEcho);
+}
+animEcho();
+</script>
 </body>
-</html>
+</html>'''
+
+with open('/mnt/agents/output/index.html', 'w', encoding='utf-8') as f:
+    f.write(index_html)
+
+print(f"index.html gespeichert: {len(index_html)} Zeichen")
