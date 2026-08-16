@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+
+# Erstelle die komplette überarbeitete index.html
+index_html = '''<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -6,7 +8,7 @@
 <title>Buch der Begierde — Ein interaktives Leseerlebnis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Imperial+Script&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ============================================================================
    DESIGN SYSTEM — Buch der Begierde v0.6.0
@@ -38,7 +40,6 @@
   
   /* Fonts */
   --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  --font-script: 'Imperial Script', cursive;
   --font-mono: 'JetBrains Mono', 'Courier New', monospace;
   
   /* Transitions */
@@ -83,17 +84,13 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-deep)
 }
 .video-text h1 {
   font-size:clamp(1.8rem, 5vw, 3.5rem); font-weight:400;
-  letter-spacing:0.35em; color:#3a2e22;
-  text-shadow:
-    0 0 40px rgba(232,220,200,0.35),
-    0 1px 3px rgba(0,0,0,0.85),
-    0 2px 12px rgba(0,0,0,0.7);
+  letter-spacing:0.35em; color:var(--parchment);
+  text-shadow:0 0 50px rgba(184,160,96,0.25), 0 2px 15px rgba(0,0,0,0.9);
   margin-bottom:0.4em;
 }
 .video-text p {
-  font-size:clamp(0.85rem, 2vw, 1.2rem); color:#5a4a38;
+  font-size:clamp(0.85rem, 2vw, 1.2rem); color:var(--parchment-dark);
   letter-spacing:0.18em; font-style:italic;
-  text-shadow:0 1px 4px rgba(0,0,0,0.6);
 }
 .video-skip {
   position:absolute; bottom:5vh; left:50%; transform:translateX(-50%);
@@ -109,256 +106,152 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-deep)
 @keyframes fadeIn { to { opacity:1; } }
 
 /* ============================================================================
-   PORTAL — OFFENES BUCH (Text liegt auf den Seiten)
+   BUCH-ÖFFNUNGS-ANIMATION (CANVAS)
+   ============================================================================ */
+#book-opening {
+  position:fixed; inset:0; z-index:900;
+  background:var(--bg-deep);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; visibility:hidden;
+  transition:opacity var(--t-slow), visibility var(--t-slow);
+}
+#book-opening.active { opacity:1; visibility:visible; }
+#book-canvas { position:absolute; inset:0; width:100%; height:100%; }
+.book-overlay {
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse at center, transparent 0%, rgba(10,10,15,0.5) 100%);
+  pointer-events:none;
+}
+.book-text {
+  position:relative; z-index:10; text-align:center;
+  opacity:0; transform:translateY(15px);
+}
+.book-text h2 {
+  font-size:clamp(1.3rem, 3vw, 2rem); font-weight:400;
+  letter-spacing:0.25em; color:var(--parchment);
+  text-shadow:0 0 30px rgba(184,160,96,0.2);
+}
+
+/* ============================================================================
+   PERGAMENT-PORTAL
    ============================================================================ */
 #portal {
-  position: fixed;
-  inset: 0;
-  z-index: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Soft paper tone so side areas feel part of the scene, not empty bars */
-  background-color: #e0d4b8;
-  background-image:
-    radial-gradient(ellipse at 50% 50%, rgba(232,220,200,0.4) 0%, transparent 70%);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--t-slow), visibility var(--t-slow);
-  overflow: hidden;
+  position:fixed; inset:0; z-index:800;
+  display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(60,40,30,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(40,30,60,0.08) 0%, transparent 50%),
+    var(--bg-deep);
+  opacity:0; visibility:hidden;
+  transition:opacity var(--t-slow), visibility var(--t-slow), transform var(--t-slow);
 }
-#portal.active {
-  opacity: 1;
-  visibility: visible;
+#portal.active { opacity:1; visibility:visible; }
+#portal.hidden-portal { opacity:0; pointer-events:none; transform:scale(1.03); }
+
+.parchment-wrapper {
+  position:relative;
+  width:min(88vw, 680px); height:min(82vh, 850px);
+  display:flex; align-items:center; justify-content:center;
 }
-#portal.hidden-portal {
-  opacity: 0;
-  pointer-events: none;
+.parchment {
+  position:relative; width:100%; height:100%;
+  background:linear-gradient(135deg, #e8dcc8 0%, #d4c5a0 25%, #e0d2b0 50%, #c8b890 75%, #ddd0b8 100%);
+  border-radius:3px;
+  box-shadow:
+    0 0 50px rgba(184,160,96,0.12),
+    0 20px 70px rgba(0,0,0,0.75),
+    inset 0 0 80px rgba(139,119,80,0.08);
+  padding:clamp(1.5rem, 4vw, 2.5rem);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; overflow:hidden;
+}
+/* Pergament-Textur */
+.parchment::before {
+  content:''; position:absolute; inset:0;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  opacity:0.5; pointer-events:none; mix-blend-mode:multiply;
+}
+/* Gealterte Ränder */
+.parchment::after {
+  content:''; position:absolute; inset:6px;
+  border:1px solid rgba(90,70,40,0.15); border-radius:2px; pointer-events:none;
+}
+.parchment-content {
+  position:relative; z-index:2; width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:clamp(0.6rem, 2vh, 1.2rem);
 }
 
-/* Container holds the book at its natural aspect ratio and centers it */
-.book-stage {
-  position: relative;
-  /* Slightly larger than viewport so side bars disappear; mild crop of outer edges */
-  width: min(108vw, calc(108vh * 2557 / 1416));
-  height: min(108vh, calc(108vw * 1416 / 2557));
-  max-width: 108vw;
-  max-height: 108vh;
+/* Wachssiegel */
+.seal {
+  width:clamp(50px, 10vw, 80px); height:clamp(50px, 10vw, 80px);
+  border:2px solid var(--accent-blood); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  animation:sealPulse 4s ease-in-out infinite;
+  position:relative; margin-bottom:0.3rem;
+}
+.seal::before {
+  content:''; position:absolute; inset:-3px;
+  border:1px solid rgba(107,26,26,0.25); border-radius:50%;
+}
+.seal svg { width:45%; height:45%; fill:var(--accent-blood); opacity:0.75; }
+@keyframes sealPulse {
+  0%,100% { box-shadow:0 0 18px rgba(107,26,26,0.15); }
+  50% { box-shadow:0 0 35px rgba(107,26,26,0.35); }
 }
 
-.book-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill; /* stage matches image ratio → no distortion */
-  object-position: center center;
-  pointer-events: none;
-  user-select: none;
-  z-index: 0;
+.parchment h2 {
+  font-size:clamp(1.2rem, 3.5vw, 2rem); font-weight:400;
+  color:var(--ink); letter-spacing:0.18em; text-transform:uppercase; line-height:1.3;
 }
-
-/* Two-page layout: left page + right page */
-.book-content {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: center;
-  pointer-events: none; /* only interactive children get clicks */
-  box-sizing: border-box;
+.parchment .divider {
+  width:50%; max-width:160px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--ink-light), transparent);
 }
-
-.page-left,
-.page-right {
-  position: absolute;
-  top: 14%;
-  bottom: 22%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 1.5% 2.2%;
-  box-sizing: border-box;
-  overflow: hidden;
-  pointer-events: auto;
+.parchment p {
+  font-size:clamp(0.8rem, 1.8vw, 1rem); color:var(--ink-light);
+  line-height:1.7; max-width:92%; font-style:italic;
 }
-
-/* Left page of the book */
-.page-left {
-  left: 17%;
-  right: 51.5%;
+.parchment .code-box {
+  font-family:var(--font-mono); font-size:clamp(0.65rem, 1.5vw, 0.85rem);
+  letter-spacing:0.35em; color:var(--accent-blood);
+  background:rgba(107,26,26,0.04); padding:0.7em 1.4em;
+  border:1px solid rgba(107,26,26,0.18); cursor:pointer;
+  transition:all var(--t-fast); position:relative; overflow:hidden;
 }
-
-/* Right page of the book */
-.page-right {
-  left: 52.5%;
-  right: 16%;
+.parchment .code-box:hover {
+  background:rgba(107,26,26,0.08);
+  box-shadow:0 0 18px rgba(107,26,26,0.12);
 }
-
-.page-left h2, .page-right h2, .book-content h2 {
-  font-family: var(--font-script);
-  font-size: clamp(0.9rem, 2vw, 1.35rem);
-  font-weight: 400;
-  color: #2a2218;
-  letter-spacing: 0.03em;
-  line-height: 1.25;
-  margin: 0 0 0.4rem;
-  text-shadow: 0 1px 1px rgba(255,250,240,0.5);
+.parchment .code-box::after {
+  content:'SCANNEN'; position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--accent-blood); color:var(--parchment);
+  font-family:var(--font-serif); letter-spacing:0.25em; font-size:0.75em;
+  opacity:0; transition:opacity var(--t-fast);
 }
-
-.page-left .divider, .page-right .divider, .book-content .divider {
-  width: 36%;
-  max-width: 120px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #5a4a38, transparent);
-  margin: 0.25rem 0 0.7rem;
-  opacity: 0.65;
-  flex-shrink: 0;
-}
-
-.page-left p, .page-right p, .book-content p {
-  font-family: var(--font-script);
-  font-size: clamp(0.75rem, 1.35vw, 1.0rem);
-  color: #3a2e22;
-  line-height: 1.4;
-  max-width: 100%;
-  font-style: normal;
-  margin: 0.12rem 0;
-  text-shadow: 0 1px 1px rgba(255,250,240,0.35);
-}
-
-/* Word-by-word reveal */
-.page-left .word, .page-right .word, .book-content .word {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(5px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-.page-left .word.visible, .page-right .word.visible, .book-content .word.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.page-right .code-box, .book-content .code-box {
-  font-family: var(--font-mono);
-  font-size: clamp(0.55rem, 1.1vw, 0.75rem);
-  letter-spacing: 0.28em;
-  color: #6b1a1a;
-  background: rgba(107,26,26,0.06);
-  padding: 0.45em 1em;
-  border: 1px solid rgba(107,26,26,0.2);
-  cursor: pointer;
-  transition: all var(--t-fast);
-  position: relative;
-  overflow: hidden;
-  margin-top: 0.7rem;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-.page-right .code-box:hover, .book-content .code-box:hover {
-  background: rgba(107,26,26,0.1);
-  box-shadow: 0 0 12px rgba(107,26,26,0.12);
-}
-.page-right .code-box::after, .book-content .code-box::after {
-  content: 'SCANNEN';
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #6b1a1a;
-  color: #e8dcc8;
-  font-family: var(--font-serif);
-  letter-spacing: 0.2em;
-  font-size: 0.75em;
-  opacity: 0;
-  transition: opacity var(--t-fast);
-}
-.page-right .code-box:hover::after, .book-content .code-box:hover::after { opacity: 1; }
-
-.page-right .hint, .book-content .hint {
-  font-size: clamp(0.55rem, 1vw, 0.68rem);
-  opacity: 0.55;
-  margin-top: 0.2rem;
-  color: #5a4a38;
-  font-style: normal;
-  letter-spacing: 0.03em;
-  flex-shrink: 0;
-}
+.parchment .code-box:hover::after { opacity:1; }
 
 .enter-btn {
-  margin-top: 0.6rem;
-  background: transparent;
-  border: 1px solid #5a4a38;
-  color: #2a2218;
-  padding: 0.55em 1.5em;
-  font-size: clamp(0.62rem, 1.2vw, 0.8rem);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all var(--t-fast);
-  font-family: var(--font-serif);
-  position: relative;
-  overflow: hidden;
-  border-radius: 2px;
-  flex-shrink: 0;
+  margin-top:0.5rem; background:transparent; border:1px solid var(--ink-light);
+  color:var(--ink); padding:0.8em 2.2em;
+  font-size:clamp(0.75rem, 1.6vw, 0.9rem); letter-spacing:0.22em;
+  text-transform:uppercase; cursor:pointer;
+  transition:all var(--t-fast); font-family:var(--font-serif);
+  position:relative; overflow:hidden;
 }
 .enter-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #2a2218;
-  transform: translateX(-101%);
-  transition: transform var(--t-medium);
+  content:''; position:absolute; inset:0; background:var(--ink);
+  transform:translateX(-101%); transition:transform var(--t-medium);
 }
-.enter-btn:hover::before { transform: translateX(0); }
-.enter-btn span {
-  position: relative;
-  z-index: 1;
-  transition: color var(--t-medium);
-}
-.enter-btn:hover { border-color: #2a2218; }
-.enter-btn:hover span { color: #e8dcc8; }
+.enter-btn:hover::before { transform:translateX(0); }
+.enter-btn span { position:relative; z-index:1; transition:color var(--t-medium); }
+.enter-btn:hover { border-color:var(--ink); }
+.enter-btn:hover span { color:var(--parchment); }
 
-/* Hide old seal if present */
-.seal { display: none; }
-
-@media (max-width: 600px) {
-  .page-left {
-    left: 12%;
-    right: 51%;
-    top: 12%;
-    bottom: 20%;
-  }
-  .page-right {
-    left: 51%;
-    right: 10%;
-    top: 12%;
-    bottom: 20%;
-  }
-  .page-left h2, .page-right h2 {
-    font-size: clamp(0.72rem, 3.2vw, 1.05rem);
-  }
-  .page-left p, .page-right p {
-    font-size: clamp(0.55rem, 2.4vw, 0.72rem);
-    line-height: 1.4;
-  }
-}
-
-@media (max-height: 500px) {
-  .page-left, .page-right {
-    top: 10%;
-    bottom: 16%;
-  }
-  .page-left p, .page-right p {
-    margin: 0.1rem 0;
-  }
-}
-
+/* ============================================================================
+   HAUPT-APP & NAVIGATION
+   ============================================================================ */
 #app {
   position:fixed; inset:0; z-index:10;
   opacity:0; transition:opacity var(--t-slow);
@@ -569,6 +462,7 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-deep)
    RESPONSIVE
    ============================================================================ */
 @media (max-width:480px) {
+  .parchment { padding:1rem; }
   .nav-links { gap:0.6rem; }
   .nav-links a { font-size:0.6rem; letter-spacing:0.08em; }
   .visualizer { height:60px; }
@@ -576,12 +470,14 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-deep)
   .page { padding-top:3rem; }
 }
 @media (max-height:550px) {
+  .parchment-wrapper { height:88vh; }
   .page { padding-top:3rem; }
   .visualizer { height:45px; }
   .read-area { max-height:35vh; }
 }
 @media (min-width:1600px) {
   .page-inner { max-width:1100px; }
+  .parchment-wrapper { width:min(70vw, 800px); }
 }
 
 /* ============================================================================
@@ -612,22 +508,29 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-deep)
   <button class="video-skip" onclick="skipVideo()">Überspringen</button>
 </div>
 
-<!-- ==================== PORTAL — OFFENES BUCH ==================== -->
+<!-- ==================== BUCH-ÖFFNUNGS-ANIMATION ==================== -->
+<div id="book-opening">
+  <canvas id="bookCanvas"></canvas>
+  <div class="book-overlay"></div>
+  <div class="book-text" id="bookText">
+    <h2>Die Seiten öffnen sich...</h2>
+  </div>
+</div>
+
+<!-- ==================== PERGAMENT-PORTAL ==================== -->
 <div id="portal">
-  <div class="book-stage">
-    <img class="book-bg" src="book-open.png" alt="Offenes Buch" draggable="false"
-         onerror="this.style.display='none'; console.warn('book-open.png nicht gefunden – bitte im gleichen Ordner wie index.html ablegen');">
-    <div class="book-content" id="bookContent">
-      <div class="page-left" id="pageLeft">
-        <h2 id="portalTitle"></h2>
-        <div class="divider" id="portalDivider" style="opacity:0"></div>
-        <div id="portalTextLeft"></div>
-      </div>
-      <div class="page-right" id="pageRight">
-        <div id="portalTextRight"></div>
-        <div class="code-box" id="portalCode" onclick="scanCode()" style="opacity:0;pointer-events:none">X7-K9-Ω-42</div>
-        <p class="hint" id="portalHint" style="opacity:0">Scanne den Code oder öffne das Tor</p>
-        <button class="enter-btn" id="portalBtn" onclick="enterApp()" style="opacity:0;pointer-events:none"><span>Das Tor öffnen</span></button>
+  <div class="parchment-wrapper">
+    <div class="parchment">
+      <div class="parchment-content">
+        <div class="seal">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+        </div>
+        <h2>Willkommen,<br>wandernde Seele</h2>
+        <div class="divider"></div>
+        <p>Du hältst ein Buch in Händen, das älter ist als die Zeit selbst. Der Code auf dem Pergament ist der Schlüssel zu einer Welt aus Schatten und Sehnsucht.</p>
+        <div class="code-box" onclick="scanCode()">X7-K9-Ω-42</div>
+        <p style="font-size:0.75rem;opacity:0.5;margin-top:-2px;">Scanne den Code, um das Portal zu öffnen</p>
+        <button class="enter-btn" onclick="enterApp()"><span>Das Tor öffnen</span></button>
       </div>
     </div>
   </div>
@@ -806,15 +709,16 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-deep)
 const video = document.getElementById('introVid');
 const introVideo = document.getElementById('intro-video');
 
-// Wenn Video nicht ladbar -> direkt zum Portal
+// Wenn Video nicht ladbar -> sofort zur Buch-Animation
 video.addEventListener('error', () => {
+  log('Video nicht verfügbar, starte Canvas-Animation');
   skipVideo();
 });
 
-// Video-Ende -> Portal
+// Video-Ende -> Buch-Animation
 video.addEventListener('ended', () => {
   introVideo.classList.add('hidden');
-  showPortal();
+  startBookOpening();
 });
 
 // Fallback: Nach 6s automatisch weiter (wenn Video hängt)
@@ -827,7 +731,131 @@ setTimeout(() => {
 function skipVideo() {
   video.pause();
   introVideo.classList.add('hidden');
-  showPortal();
+  startBookOpening();
+}
+
+/* ============================================================================
+   BUCH-ÖFFNUNGS-ANIMATION (CANVAS)
+   ============================================================================ */
+const bookOpening = document.getElementById('book-opening');
+const bookCanvas = document.getElementById('bookCanvas');
+const bookCtx = bookCanvas.getContext('2d');
+
+function resizeBookCanvas() {
+  bookCanvas.width = window.innerWidth;
+  bookCanvas.height = window.innerHeight;
+}
+resizeBookCanvas();
+window.addEventListener('resize', resizeBookCanvas);
+
+let bookAnimFrame = 0;
+const bookDuration = 180; // frames (~3s bei 60fps)
+
+function drawBookOpen(progress) {
+  const w = bookCanvas.width, h = bookCanvas.height;
+  bookCtx.fillStyle = '#0a0a0f';
+  bookCtx.fillRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h / 2;
+  const bookW = Math.min(w * 0.5, 500);
+  const bookH = Math.min(h * 0.55, 400);
+  const spineX = cx;
+  const coverAngle = progress * Math.PI * 0.45; // max 81°
+  const pageAngle = progress * Math.PI * 0.35;
+
+  // Schatten
+  bookCtx.save();
+  bookCtx.shadowColor = 'rgba(0,0,0,0.6)';
+  bookCtx.shadowBlur = 40;
+  bookCtx.shadowOffsetY = 20;
+
+  // Linke Seite (Cover öffnet sich)
+  bookCtx.save();
+  bookCtx.translate(spineX, cy);
+  bookCtx.scale(Math.cos(coverAngle), 1);
+  bookCtx.fillStyle = '#2a1f15';
+  bookCtx.fillRect(-bookW/2, -bookH/2, bookW/2, bookH);
+  // Cover-Details
+  bookCtx.strokeStyle = '#4a3a28';
+  bookCtx.lineWidth = 2;
+  bookCtx.strokeRect(-bookW/2 + 8, -bookH/2 + 8, bookW/2 - 16, bookH - 16);
+  bookCtx.restore();
+
+  // Rechte Seite (Cover öffnet sich)
+  bookCtx.save();
+  bookCtx.translate(spineX, cy);
+  bookCtx.scale(Math.cos(coverAngle), 1);
+  bookCtx.fillStyle = '#2a1f15';
+  bookCtx.fillRect(0, -bookH/2, bookW/2, bookH);
+  bookCtx.strokeStyle = '#4a3a28';
+  bookCtx.lineWidth = 2;
+  bookCtx.strokeRect(8, -bookH/2 + 8, bookW/2 - 16, bookH - 16);
+  bookCtx.restore();
+
+  bookCtx.restore();
+
+  // Linke Seite (Seiten)
+  bookCtx.save();
+  bookCtx.translate(spineX, cy);
+  bookCtx.scale(Math.cos(pageAngle), 1);
+  bookCtx.fillStyle = '#e8dcc8';
+  bookCtx.fillRect(-bookW/2 + 4, -bookH/2 + 4, bookW/2 - 8, bookH - 8);
+  // Seiten-Textur
+  bookCtx.fillStyle = 'rgba(180,170,150,0.1)';
+  for (let i = 0; i < 20; i++) {
+    bookCtx.fillRect(-bookW/2 + 10, -bookH/2 + 15 + i * (bookH-30)/20, bookW/2 - 20, 1);
+  }
+  bookCtx.restore();
+
+  // Rechte Seite (Seiten)
+  bookCtx.save();
+  bookCtx.translate(spineX, cy);
+  bookCtx.scale(Math.cos(pageAngle), 1);
+  bookCtx.fillStyle = '#e8dcc8';
+  bookCtx.fillRect(4, -bookH/2 + 4, bookW/2 - 8, bookH - 8);
+  bookCtx.fillStyle = 'rgba(180,170,150,0.1)';
+  for (let i = 0; i < 20; i++) {
+    bookCtx.fillRect(10, -bookH/2 + 15 + i * (bookH-30)/20, bookW/2 - 20, 1);
+  }
+  bookCtx.restore();
+
+  // Buchrücken
+  bookCtx.fillStyle = '#1a1410';
+  bookCtx.fillRect(spineX - 3, cy - bookH/2, 6, bookH);
+
+  // Partikel
+  if (progress > 0.3) {
+    const pCount = Math.floor((progress - 0.3) * 100);
+    for (let i = 0; i < pCount; i++) {
+      const px = cx + (Math.random() - 0.5) * bookW * 1.5;
+      const py = cy + (Math.random() - 0.5) * bookH * 1.2;
+      const ps = Math.random() * 1.5 + 0.3;
+      const po = (progress - 0.3) * 0.4 * Math.random();
+      bookCtx.beginPath();
+      bookCtx.arc(px, py, ps, 0, Math.PI * 2);
+      bookCtx.fillStyle = `rgba(184,160,96,${po})`;
+      bookCtx.fill();
+    }
+  }
+}
+
+function animateBook() {
+  if (bookAnimFrame >= bookDuration) {
+    bookOpening.classList.remove('active');
+    showPortal();
+    return;
+  }
+  const progress = bookAnimFrame / bookDuration;
+  const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+  drawBookOpen(eased);
+  bookAnimFrame++;
+  requestAnimationFrame(animateBook);
+}
+
+function startBookOpening() {
+  bookOpening.classList.add('active');
+  bookAnimFrame = 0;
+  animateBook();
 }
 
 /* ============================================================================
@@ -837,96 +865,11 @@ const portal = document.getElementById('portal');
 const app = document.getElementById('app');
 const nav = document.getElementById('main-nav');
 
-const PORTAL_TITLE = "Geschrieben von Frauen für Frauen";
-/* Left page (first half) */
-const PORTAL_LEFT = [
-  "Ich wurde nicht geschrieben – ich wurde gefühlt.",
-  "Jede Seite trägt den Hauch einer Frau, die es wagte, ihre tiefste Wahrheit niederzuschreiben."
-];
-/* Right page (second half) */
-const PORTAL_RIGHT = [
-  "Dies ist kein gewöhnliches Buch. Es ist ein Spiegel, ein Vertrauter, ein Flüstern in der Nacht.",
-  "Ich bin entstanden aus Stunden der Stille, aus Tinte und Sehnsucht, aus Mut und Verletzlichkeit.",
-  "Lass mich dir zeigen, was zwischen den Zeilen lebt."
-];
-
-let portalAnimated = false;
-
-function wrapWords(text) {
-  return text.split(/(\s+)/).map(token => {
-    if (/^\s+$/.test(token)) return token;
-    return `<span class="word">${token}</span>`;
-  }).join('');
-}
-
-function revealWords(container, delayPerWord = 70) {
-  const words = container.querySelectorAll('.word');
-  words.forEach((w, i) => {
-    setTimeout(() => w.classList.add('visible'), i * delayPerWord);
-  });
-  return words.length * delayPerWord;
-}
-
-function runPortalAnimation() {
-  if (portalAnimated) return;
-  portalAnimated = true;
-
-  const titleEl = document.getElementById('portalTitle');
-  const textLeft = document.getElementById('portalTextLeft');
-  const textRight = document.getElementById('portalTextRight');
-  const divider = document.getElementById('portalDivider');
-  const codeBox = document.getElementById('portalCode');
-  const hint = document.getElementById('portalHint');
-  const btn = document.getElementById('portalBtn');
-
-  // --- LEFT PAGE: title + first half ---
-  titleEl.innerHTML = wrapWords(PORTAL_TITLE);
-  let delay = revealWords(titleEl, 75);
-
-  setTimeout(() => {
-    divider.style.transition = 'opacity 0.7s ease';
-    divider.style.opacity = '0.7';
-  }, delay + 150);
-
-  let leftDelay = delay + 400;
-  PORTAL_LEFT.forEach((para) => {
-    const p = document.createElement('p');
-    p.innerHTML = wrapWords(para);
-    textLeft.appendChild(p);
-    setTimeout(() => revealWords(p, 50), leftDelay);
-    leftDelay += para.split(/\s+/).length * 50 + 350;
-  });
-
-  // --- RIGHT PAGE: second half + controls ---
-  // Start right page a bit after left has begun, so reading flows left → right
-  let rightDelay = Math.max(leftDelay * 0.45, 1200);
-  PORTAL_RIGHT.forEach((para) => {
-    const p = document.createElement('p');
-    p.innerHTML = wrapWords(para);
-    textRight.appendChild(p);
-    setTimeout(() => revealWords(p, 50), rightDelay);
-    rightDelay += para.split(/\s+/).length * 50 + 350;
-  });
-
-  setTimeout(() => {
-    codeBox.style.transition = 'opacity 0.8s ease';
-    codeBox.style.opacity = '1';
-    codeBox.style.pointerEvents = 'auto';
-    hint.style.transition = 'opacity 0.8s ease';
-    hint.style.opacity = '0.55';
-    btn.style.transition = 'opacity 0.8s ease';
-    btn.style.opacity = '1';
-    btn.style.pointerEvents = 'auto';
-  }, rightDelay + 250);
-}
-
 function showPortal() {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   portal.classList.remove('hidden-portal');
   portal.classList.add('active');
   nav.classList.remove('visible');
-  // Start word animation shortly after fade-in
-  setTimeout(runPortalAnimation, 400);
 }
 
 function enterApp() {
@@ -937,8 +880,7 @@ function enterApp() {
 }
 
 function scanCode() {
-  const cb = document.getElementById('portalCode') || document.querySelector('.code-box');
-  if (!cb) return;
+  const cb = document.querySelector('.code-box');
   cb.style.transform = 'scale(1.05)';
   cb.style.boxShadow = '0 0 25px rgba(107,26,26,0.25)';
   setTimeout(() => {
@@ -1197,4 +1139,9 @@ function animEcho() {
 animEcho();
 </script>
 </body>
-</html>
+</html>'''
+
+with open('/mnt/agents/output/index.html', 'w', encoding='utf-8') as f:
+    f.write(index_html)
+
+print(f"index.html gespeichert: {len(index_html)} Zeichen")
