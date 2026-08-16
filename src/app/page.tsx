@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /* ======================================================== */
@@ -143,27 +144,70 @@ function DustParticles() {
 
 function NavDots({ current, onNavigate }: { current: number; onNavigate: (i: number) => void }) {
   const labels = ['I', 'II', 'III'];
-  return (
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <motion.nav
-      className="fixed right-5 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-5"
+      style={{
+        position: 'fixed',
+        right: 20,
+        top: '50%',
+        transform: 'translateY(-50%)',
+        zIndex: 99999,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 20,
+        pointerEvents: 'auto',
+      }}
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 1.5, duration: 1.2 }}
+      transition={{ delay: 0.5, duration: 1.2 }}
     >
-      {labels.map((label, i) => (
-        <button
-          key={i}
-          onClick={() => onNavigate(i)}
-          className="nav-dot-light group relative"
-          aria-label={`Kapitel ${label}`}
-          style={current === i ? { background: 'rgba(62, 51, 34, 0.6)', boxShadow: '0 0 6px rgba(62, 51, 34, 0.2)' } : {}}
-        >
-          <span className="absolute right-5 top-1/2 -translate-y-1/2 text-xs font-[family-name:var(--font-cinzel)] text-[#3E3322] opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">
-            {label}
-          </span>
-        </button>
-      ))}
-    </motion.nav>
+      {labels.map((label, i) => {
+        const isActive = current === i;
+        return (
+          <button
+            key={i}
+            onClick={() => onNavigate(i)}
+            aria-label={`Kapitel ${label}`}
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              border: isActive ? 'none' : '1px solid rgba(93, 78, 55, 0.4)',
+              background: isActive ? 'rgba(62, 51, 34, 0.6)' : 'transparent',
+              boxShadow: isActive ? '0 0 6px rgba(62, 51, 34, 0.2)' : 'none',
+              cursor: 'pointer',
+              transition: 'all 0.5s ease',
+              padding: 0,
+              position: 'relative',
+              pointerEvents: 'auto',
+            }}
+          >
+            <span style={{
+              position: 'absolute',
+              right: 20,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              fontSize: 12,
+              fontFamily: 'var(--font-cinzel), serif',
+              color: '#3E3322',
+              opacity: 0,
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+              transition: 'opacity 0.5s',
+            }}
+              className="group-hover-label"
+            >
+              {label}
+            </span>
+          </button>
+        );
+      })}
+    </motion.nav>,
+    document.body
   );
 }
 
@@ -182,7 +226,7 @@ function ChapterIntro({ onEnter }: { onEnter: () => void }) {
   return (
     <section className="relative w-full h-screen overflow-hidden parchment-bg">
       {/* Paper grain overlay */}
-      <div className="paper-grain absolute inset-0" />
+      <div className="paper-grain absolute inset-0" style={{ pointerEvents: 'none' }} />
 
       {/* Warm ambient glow from upper-left */}
       <div
@@ -196,13 +240,13 @@ function ChapterIntro({ onEnter }: { onEnter: () => void }) {
       />
 
       {/* Dust particles */}
-      <DustParticles />
+      <div style={{ pointerEvents: 'none' }}><DustParticles /></div>
 
       {/* Vignette */}
-      <div className="vignette-warm absolute inset-0 z-[3]" />
+      <div className="vignette-warm absolute inset-0 z-[3]" style={{ pointerEvents: 'none' }} />
 
       {/* Victorian frame with corner ornaments */}
-      <div className="victorian-frame inner-border absolute inset-0 z-[2]">
+      <div className="victorian-frame inner-border absolute inset-0 z-[2]" style={{ pointerEvents: 'none' }}>
         <div className="corner-ornament corner-tl"><CornerOrnament /></div>
         <div className="corner-ornament corner-tr"><CornerOrnament /></div>
         <div className="corner-ornament corner-bl"><CornerOrnament /></div>
@@ -358,7 +402,7 @@ function ChapterBookIntro({ onContinue }: { onContinue: () => void }) {
       }}
     >
       {/* Paper grain */}
-      <div className="paper-grain absolute inset-0" />
+      <div className="paper-grain absolute inset-0" style={{ pointerEvents: 'none' }} />
 
       {/* Ambient light */}
       <div className="absolute inset-0 pointer-events-none">
@@ -368,8 +412,8 @@ function ChapterBookIntro({ onContinue }: { onContinue: () => void }) {
         />
       </div>
 
-      <DustParticles />
-      <div className="vignette-warm absolute inset-0 z-[3]" />
+      <div style={{ pointerEvents: 'none' }}><DustParticles /></div>
+      <div className="vignette-warm absolute inset-0 z-[3]" style={{ pointerEvents: 'none' }} />
 
       {/* Content card */}
       <div className="relative z-10 max-w-2xl mx-auto px-5 md:px-8">
@@ -569,9 +613,9 @@ function ChapterPassages() {
         background: 'radial-gradient(ellipse at center, #D9C4A0 0%, #C4A574 60%, #B89B74 100%)',
       }}
     >
-      <div className="paper-grain absolute inset-0" />
-      <DustParticles />
-      <div className="vignette-warm absolute inset-0 z-[3]" />
+      <div className="paper-grain absolute inset-0" style={{ pointerEvents: 'none' }} />
+      <div style={{ pointerEvents: 'none' }}><DustParticles /></div>
+      <div className="vignette-warm absolute inset-0 z-[3]" style={{ pointerEvents: 'none' }} />
 
       <div className="relative z-10 max-w-3xl mx-auto px-5 md:px-8">
         {/* Chapter heading */}
@@ -639,63 +683,66 @@ function ChapterPassages() {
   );
 }
 
+function TransitionOverlay({ phase }: { phase: 'in' | 'out' | null }) {
+  if (!phase || typeof document === 'undefined') return null;
+  return createPortal(
+    <motion.div
+      className="fixed inset-0"
+      style={{
+        zIndex: 99998,
+        background: 'radial-gradient(ellipse at center, #A68B5B 0%, #8B7355 50%, #6B563F 100%)',
+        pointerEvents: 'none',
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: phase === 'in' ? 1 : 0 }}
+      transition={{ duration: 0.8, ease: 'easeInOut' }}
+    />,
+    document.body
+  );
+}
+
 /* ======================================================== */
 /*  MAIN PAGE                                                  */
 /* ======================================================== */
 
 export default function BuchDerBegierde() {
   const [activeChapter, setActiveChapter] = useState(0);
-  const [transitioning, setTransitioning] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [overlayPhase, setOverlayPhase] = useState<'in' | 'out' | null>(null);
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    mountedRef.current = true;
+  }, []);
 
   const navigateToChapter = useCallback((index: number) => {
-    if (transitioning) return;
-    setTransitioning(true);
-    setActiveChapter(index);
-    setTimeout(() => setTransitioning(false), 1200);
-  }, [transitioning]);
+    if (!mountedRef.current || overlayPhase || index === activeChapter) return;
+    setOverlayPhase('in');
+    setShowOverlay(true);
+    setTimeout(() => {
+      setActiveChapter(index);
+      setOverlayPhase('out');
+    }, 800);
+    setTimeout(() => {
+      setShowOverlay(false);
+      setOverlayPhase(null);
+    }, 1600);
+  }, [overlayPhase, activeChapter]);
 
   const handleEnter = useCallback(() => navigateToChapter(1), [navigateToChapter]);
   const handleContinue = useCallback(() => navigateToChapter(2), [navigateToChapter]);
 
   return (
-    <main className="relative min-h-screen" style={{ background: '#C4A574' }}>
-      <AnimatePresence mode="wait">
-        {activeChapter === 0 && (
-          <motion.div
-            key="chapter-1"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: 'easeInOut' }}
-          >
-            <ChapterIntro onEnter={handleEnter} />
-          </motion.div>
-        )}
+    <main style={{ background: '#C4A574', minHeight: '100vh' }}>
+      {activeChapter === 0 && <ChapterIntro onEnter={handleEnter} />}
+      {activeChapter === 1 && <ChapterBookIntro onContinue={handleContinue} />}
+      {activeChapter === 2 && <ChapterPassages />}
 
-        {activeChapter === 1 && (
-          <motion.div
-            key="chapter-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: 'easeInOut' }}
-          >
-            <ChapterBookIntro onContinue={handleContinue} />
-          </motion.div>
-        )}
+      {/* Transition overlay */}
+      <TransitionOverlay phase={overlayPhase} />
 
-        {activeChapter === 2 && (
-          <motion.div
-            key="chapter-3"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5, ease: 'easeInOut' }}
-          >
-            <ChapterPassages />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {activeChapter > 0 && (
+      {/* Nav dots */}
+      {activeChapter > 0 && !overlayPhase && (
         <NavDots current={activeChapter - 1} onNavigate={navigateToChapter} />
       )}
     </main>
