@@ -6,8 +6,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-playfair);
+  --font-sans: var(--font-cinzel);
   --font-serif: var(--font-cormorant);
+  --font-display: var(--font-cinzel-decorative);
   --font-script: var(--font-vibes);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -44,55 +45,53 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Custom design tokens */
-  --color-sepia: #d4a574;
-  --color-sepia-dark: #8b6914;
-  --color-gold: #c9a84c;
-  --color-gold-light: #e8d5a3;
-  --color-gold-bright: #f0c75e;
-  --color-bronze: #a0784a;
-  --color-parchment: #f5e6c8;
-  --color-parchment-light: #faf3e6;
-  --color-mahogany: #4a1c1c;
-  --color-mahogany-deep: #2a0e0e;
-  --color-ink: #3b2413;
-  --color-leather: #6b3a2a;
-  --color-warm-shadow: rgba(74, 28, 28, 0.4);
+  /* BOD Reference Palette */
+  --color-parchment: #D4B896;
+  --color-parchment-light: #E8DCC8;
+  --color-parchment-deep: #C4A574;
+  --color-parchment-edge: #A68B5B;
+  --color-ink: #2C2416;
+  --color-ink-mid: #3E3322;
+  --color-ink-light: #5D4E37;
+  --color-ink-subtle: #8B7355;
+  --color-wood: #6B563F;
+  --color-gold-accent: #B8860B;
+  --color-warm-glow: rgba(212, 175, 120, 0.15);
 }
 
 :root {
   --radius: 0.625rem;
-  --background: #1a0f0a;
-  --foreground: #f5e6c8;
-  --card: #2a1810;
-  --card-foreground: #f5e6c8;
-  --popover: #2a1810;
-  --popover-foreground: #f5e6c8;
-  --primary: #c9a84c;
-  --primary-foreground: #1a0f0a;
-  --secondary: #4a1c1c;
-  --secondary-foreground: #f5e6c8;
-  --muted: #3b2413;
-  --muted-foreground: #d4a574;
-  --accent: #a0784a;
-  --accent-foreground: #faf3e6;
+  --background: #D4B896;
+  --foreground: #2C2416;
+  --card: #E8DCC8;
+  --card-foreground: #2C2416;
+  --popover: #E8DCC8;
+  --popover-foreground: #2C2416;
+  --primary: #3E3322;
+  --primary-foreground: #E8DCC8;
+  --secondary: #C4A574;
+  --secondary-foreground: #2C2416;
+  --muted: #B8956A;
+  --muted-foreground: #5D4E37;
+  --accent: #8B7355;
+  --accent-foreground: #E8DCC8;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #5a3a2a;
-  --input: #3b2413;
-  --ring: #c9a84c;
-  --chart-1: #c9a84c;
-  --chart-2: #d4a574;
-  --chart-3: #a0784a;
-  --chart-4: #6b3a2a;
-  --chart-5: #4a1c1c;
-  --sidebar: #1a0f0a;
-  --sidebar-foreground: #f5e6c8;
-  --sidebar-primary: #c9a84c;
-  --sidebar-primary-foreground: #1a0f0a;
-  --sidebar-accent: #2a1810;
-  --sidebar-accent-foreground: #f5e6c8;
-  --sidebar-border: #5a3a2a;
-  --sidebar-ring: #c9a84c;
+  --border: #8B7355;
+  --input: #C4A574;
+  --ring: #5D4E37;
+  --chart-1: #3E3322;
+  --chart-2: #5D4E37;
+  --chart-3: #8B7355;
+  --chart-4: #B8860B;
+  --chart-5: #C4A574;
+  --sidebar: #C4A574;
+  --sidebar-foreground: #2C2416;
+  --sidebar-primary: #3E3322;
+  --sidebar-primary-foreground: #E8DCC8;
+  --sidebar-accent: #D4B896;
+  --sidebar-accent-foreground: #2C2416;
+  --sidebar-border: #8B7355;
+  --sidebar-ring: #5D4E37;
 }
 
 @layer base {
@@ -104,141 +103,207 @@
     font-family: var(--font-cormorant), 'Times New Roman', Georgia, serif;
   }
   ::selection {
-    background: rgba(201, 168, 76, 0.3);
-    color: #faf3e6;
+    background: rgba(139, 115, 85, 0.3);
+    color: #2C2416;
   }
 }
 
 /* ======================================== */
-/* PARCHMENT TEXTURE                       */
+/* SVG NOISE FILTER (paper grain)            */
+/* ======================================== */
+/* This is applied via inline SVG in the page */
+
+/* ======================================== */
+/* PARCHMENT TEXTURE – LIGHT                */
 /* ======================================== */
 @layer components {
   .parchment-bg {
-    background-color: #f5e6c8;
+    background-color: #D4B896;
     background-image:
-      radial-gradient(ellipse at 20% 50%, rgba(201, 168, 76, 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 20%, rgba(160, 120, 74, 0.06) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 80%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
-      url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  }
-
-  .dark-parchment {
-    background-color: #2a1810;
-    background-image:
-      radial-gradient(ellipse at 20% 50%, rgba(201, 168, 76, 0.05) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 20%, rgba(160, 120, 74, 0.04) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 80%, rgba(212, 165, 116, 0.06) 0%, transparent 50%),
-      url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      radial-gradient(ellipse at 30% 20%, rgba(232, 220, 200, 0.6) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(196, 165, 116, 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at center, #D9C4A0 0%, #C4A574 70%, #A68B5B 100%);
   }
 
   /* ======================================== */
-  /* GOLD ORNAMENT DIVIDERS                  */
+  /* PAPER GRAIN OVERLAY                     */
   /* ======================================== */
-  .ornament-divider {
+  .paper-grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.12;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  }
+
+  /* ======================================== */
+  /* VIGNETTE (warm edges)                    */
+  /* ======================================== */
+  .vignette-warm {
+    box-shadow: inset 0 0 200px rgba(44, 36, 22, 0.35);
+    pointer-events: none;
+  }
+
+  /* ======================================== */
+  /* EMBOSSED / ENGRAVED TITLE TEXT           */
+  /* ======================================== */
+  .embossed-title {
+    background: linear-gradient(180deg, #4A3F2E 0%, #2C2416 50%, #3E3322 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter:
+      drop-shadow(1px 1px 0px rgba(255, 245, 220, 0.3))
+      drop-shadow(-1px -1px 0px rgba(44, 36, 22, 0.15));
+  }
+
+  .embossed-title-large {
+    background: linear-gradient(180deg, #E8DCC8 0%, #8B7355 50%, #4A3728 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter:
+      drop-shadow(2px 2px 0px rgba(44, 31, 20, 0.6))
+      drop-shadow(-1px -1px 0px rgba(255, 250, 240, 0.25));
+  }
+
+  /* ======================================== */
+  /* ORNAMENTAL DIVIDER WITH DIAMOND          */
+  /* ======================================== */
+  .ornament-divider-diamond {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    padding: 1.5rem 0;
+    padding: 1.25rem 0;
   }
-  .ornament-divider::before,
-  .ornament-divider::after {
+  .ornament-divider-diamond::before,
+  .ornament-divider-diamond::after {
     content: '';
     flex: 1;
-    max-width: 200px;
+    max-width: 120px;
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(201, 168, 76, 0.6),
+      #5D4E37,
       transparent
     );
   }
-  .ornament-divider span {
-    color: #c9a84c;
-    font-size: 1.25rem;
-    text-shadow: 0 0 8px rgba(201, 168, 76, 0.3);
+  .ornament-divider-diamond span {
+    color: #5D4E37;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
   }
 
   /* ======================================== */
-  /* GOLDEN SEAL BUTTON                      */
+  /* DOUBLE-LINE RULE DIVIDER                 */
   /* ======================================== */
-  .seal-button {
+  .double-rule {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 0.75rem 0;
+  }
+  .double-rule::before,
+  .double-rule::after {
+    content: '';
+    width: min(300px, 60%);
+    height: 1px;
+    background: #5D4E37;
+    opacity: 0.6;
+  }
+
+  /* ======================================== */
+  /* VICTORIAN CORNER ORNAMENTS               */
+  /* ======================================== */
+  .victorian-frame {
+    position: relative;
+  }
+  .victorian-frame .corner-ornament {
+    position: absolute;
+    width: clamp(80px, 15vw, 200px);
+    height: clamp(100px, 18vw, 260px);
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .victorian-frame .corner-ornament svg {
+    width: 100%;
+    height: 100%;
+  }
+  .victorian-frame .corner-tl { top: 12px; left: 12px; }
+  .victorian-frame .corner-tr { top: 12px; right: 12px; transform: scaleX(-1); }
+  .victorian-frame .corner-bl { bottom: 12px; left: 12px; transform: scaleY(-1); }
+  .victorian-frame .corner-br { bottom: 12px; right: 12px; transform: scale(-1); }
+
+  /* ======================================== */
+  /* INNER DOUBLE-LINE BORDER                */
+  /* ======================================== */
+  .inner-border {
+    position: relative;
+  }
+  .inner-border::before {
+    content: '';
+    position: absolute;
+    inset: 24px;
+    border: 1px solid rgba(93, 78, 55, 0.25);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .inner-border::after {
+    content: '';
+    position: absolute;
+    inset: 28px;
+    border: 1px solid rgba(93, 78, 55, 0.12);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ======================================== */
+  /* GOLDEN SEAL BUTTON (light version)       */
+  /* ======================================== */
+  .seal-button-light {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem 3rem;
-    border: 2px solid #c9a84c;
-    border-radius: 50%;
-    width: 140px;
-    height: 140px;
-    background: radial-gradient(
-      circle at 40% 35%,
-      rgba(240, 199, 94, 0.15) 0%,
-      rgba(201, 168, 76, 0.08) 50%,
-      transparent 70%
-    );
-    color: #c9a84c;
-    font-family: var(--font-playfair), serif;
-    font-size: 1rem;
+    padding: 1rem 2.5rem;
+    border: 2px solid #5D4E37;
+    border-radius: 4px;
+    min-width: 200px;
+    background: linear-gradient(180deg, rgba(232, 220, 200, 0.6) 0%, rgba(196, 165, 116, 0.4) 100%);
+    color: #3E3322;
+    font-family: var(--font-cinzel), serif;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.6s ease;
-    text-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
     box-shadow:
-      0 0 20px rgba(201, 168, 76, 0.15),
-      inset 0 0 20px rgba(201, 168, 76, 0.05);
-  overflow: hidden;
-  animation: seal-pulse 3s ease-in-out infinite;
+      0 2px 8px rgba(44, 36, 22, 0.2),
+      inset 0 1px 0 rgba(255, 245, 220, 0.4);
+    overflow: hidden;
   }
-  .seal-button::before {
+  .seal-button-light::before {
     content: '';
     position: absolute;
-    inset: -2px;
-    border-radius: 50%;
-    border: 1px solid rgba(201, 168, 76, 0.3);
-    animation: seal-rotate 20s linear infinite;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0%,
-      rgba(201, 168, 76, 0.2) 10%,
-      transparent 20%
-    );
+    inset: 3px;
+    border: 1px solid rgba(93, 78, 55, 0.2);
+    border-radius: 2px;
+    pointer-events: none;
   }
-  .seal-button:hover {
-    background: radial-gradient(
-      circle at 40% 35%,
-      rgba(240, 199, 94, 0.25) 0%,
-      rgba(201, 168, 76, 0.15) 50%,
-      transparent 70%
-    );
+  .seal-button-light:hover {
+    background: linear-gradient(180deg, rgba(232, 220, 200, 0.8) 0%, rgba(196, 165, 116, 0.6) 100%);
     box-shadow:
-      0 0 40px rgba(201, 168, 76, 0.3),
-      inset 0 0 30px rgba(201, 168, 76, 0.1);
-    transform: scale(1.05);
-  }
-
-  @keyframes seal-pulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 76, 0.15), inset 0 0 20px rgba(201, 168, 76, 0.05); }
-    50% { box-shadow: 0 0 35px rgba(201, 168, 76, 0.25), inset 0 0 25px rgba(201, 168, 76, 0.08); }
-  }
-  @keyframes seal-rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  /* ======================================== */
-  /* HANDWRITING REVEAL ANIMATION            */
-  /* ======================================== */
-  .handwriting-reveal {
-    clip-path: inset(0 100% 0 0);
-    animation: write-reveal 3s ease-out forwards;
-  }
-  @keyframes write-reveal {
-    to { clip-path: inset(0 0% 0 0); }
+      0 4px 16px rgba(44, 36, 22, 0.3),
+      inset 0 1px 0 rgba(255, 245, 220, 0.5);
+    transform: translateY(-1px);
   }
 
   /* ======================================== */
@@ -248,181 +313,113 @@
     animation: flicker 4s ease-in-out infinite alternate;
   }
   @keyframes flicker {
-    0% { opacity: 0.8; filter: brightness(1); }
-    25% { opacity: 0.85; filter: brightness(1.05); }
-    50% { opacity: 0.75; filter: brightness(0.95); }
-    75% { opacity: 0.9; filter: brightness(1.02); }
-    100% { opacity: 0.82; filter: brightness(0.98); }
+    0% { opacity: 0.85; filter: brightness(1); }
+    25% { opacity: 0.9; filter: brightness(1.03); }
+    50% { opacity: 0.82; filter: brightness(0.97); }
+    75% { opacity: 0.88; filter: brightness(1.01); }
+    100% { opacity: 0.84; filter: brightness(0.99); }
   }
 
   /* ======================================== */
-  /* FOG/MIST OVERLAY                        */
-  /* ======================================== */
-  .fog-overlay {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 30% 60%, rgba(201, 168, 76, 0.06) 0%, transparent 60%),
-      radial-gradient(ellipse at 70% 40%, rgba(212, 165, 116, 0.04) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 90%, rgba(74, 28, 28, 0.15) 0%, transparent 40%);
-    animation: fog-drift 12s ease-in-out infinite alternate;
-    pointer-events: none;
-  }
-  @keyframes fog-drift {
-    0% { transform: translateX(-2%) translateY(-1%); opacity: 0.7; }
-    50% { transform: translateX(1%) translateY(0.5%); opacity: 1; }
-    100% { transform: translateX(-1%) translateY(-0.5%); opacity: 0.8; }
-  }
-
-  /* ======================================== */
-  /* FLOATING PARTICLES (dust in light)      */
+  /* FLOATING DUST PARTICLES                  */
   /* ======================================== */
   .dust-particle {
     position: absolute;
     width: 2px;
     height: 2px;
-    background: rgba(201, 168, 76, 0.4);
+    background: rgba(139, 115, 85, 0.5);
     border-radius: 50%;
     animation: float-dust linear infinite;
     pointer-events: none;
   }
   @keyframes float-dust {
     0% { transform: translateY(0) translateX(0); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-100vh) translateX(20px); opacity: 0; }
   }
 
   /* ======================================== */
-  /* PAGE CURL / BOOK EDGE EFFECT            */
+  /* PAGE CURL                               */
   /* ======================================== */
-  .page-curl {
-    position: relative;
-  }
   .page-curl::after {
     content: '';
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     background: linear-gradient(
       225deg,
       transparent 45%,
-      rgba(201, 168, 76, 0.08) 50%,
-      rgba(201, 168, 76, 0.15) 56%,
-      rgba(201, 168, 76, 0.05) 60%,
+      rgba(139, 115, 85, 0.1) 50%,
+      rgba(139, 115, 85, 0.2) 56%,
       transparent 65%
     );
-    border-bottom-right-radius: 4px;
     pointer-events: none;
   }
 
   /* ======================================== */
-  /* MOOD CARD STYLES                        */
+  /* MOOD CARD (light parchment)             */
   /* ======================================== */
-  .mood-card {
+  .mood-card-light {
     position: relative;
     padding: 2rem;
-    border: 1px solid rgba(201, 168, 76, 0.2);
+    border: 1px solid rgba(93, 78, 55, 0.25);
     border-radius: 2px;
-    background: rgba(42, 24, 16, 0.6);
-    backdrop-filter: blur(4px);
-    cursor: pointer;
+    background: rgba(232, 220, 200, 0.5);
+    backdrop-filter: blur(2px);
+    cursor: default;
     transition: all 0.8s ease;
     overflow: hidden;
   }
-  .mood-card::before {
+  .mood-card-light::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(93, 78, 55, 0.3), transparent);
   }
-  .mood-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.2), transparent);
-  }
-  .mood-card:hover {
-    border-color: rgba(201, 168, 76, 0.4);
-    background: rgba(42, 24, 16, 0.8);
-    box-shadow: 0 0 30px rgba(201, 168, 76, 0.08);
+  .mood-card-light:hover {
+    border-color: rgba(93, 78, 55, 0.4);
+    background: rgba(232, 220, 200, 0.7);
+    box-shadow: 0 4px 20px rgba(44, 36, 22, 0.12);
     transform: translateY(-2px);
   }
 
   /* ======================================== */
-  /* MOOD TAG BUTTONS                        */
+  /* MOOD TAG BUTTONS (light)                */
   /* ======================================== */
-  .mood-tag {
+  .mood-tag-light {
     display: inline-block;
-    padding: 0.35rem 1rem;
-    border: 1px solid rgba(201, 168, 76, 0.25);
+    padding: 0.3rem 0.9rem;
+    border: 1px solid rgba(93, 78, 55, 0.2);
     border-radius: 2px;
     font-family: var(--font-cormorant), serif;
     font-size: 0.85rem;
-    color: #d4a574;
+    color: #5D4E37;
     background: transparent;
     cursor: pointer;
     transition: all 0.4s ease;
     letter-spacing: 0.05em;
   }
-  .mood-tag:hover,
-  .mood-tag.active {
-    border-color: #c9a84c;
-    color: #c9a84c;
-    background: rgba(201, 168, 76, 0.1);
-    text-shadow: 0 0 8px rgba(201, 168, 76, 0.3);
+  .mood-tag-light:hover,
+  .mood-tag-light.active {
+    border-color: #3E3322;
+    color: #2C2416;
+    background: rgba(139, 115, 85, 0.15);
   }
 
   /* ======================================== */
-  /* SCROLL HIDE UTILITY                     */
+  /* CHAPTER NUMBER WATERMARK                */
   /* ======================================== */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  /* ======================================== */
-  /* VIGNETTE EFFECT                         */
-  /* ======================================== */
-  .vignette {
-    box-shadow: inset 0 0 150px rgba(26, 15, 10, 0.7);
-    pointer-events: none;
-  }
-
-  /* ======================================== */
-  /* GOLD BORDER FRAME                       */
-  /* ======================================== */
-  .gold-frame {
-    border: 1px solid rgba(201, 168, 76, 0.3);
-    position: relative;
-  }
-  .gold-frame::before {
-    content: '';
-    position: absolute;
-    inset: 4px;
-    border: 1px solid rgba(201, 168, 76, 0.1);
-    pointer-events: none;
-  }
-
-  /* ======================================== */
-  /* CHAPTER NUMBER DECORATION               */
-  /* ======================================== */
-  .chapter-num {
-    font-family: var(--font-playfair), serif;
+  .chapter-num-light {
+    font-family: var(--font-cinzel), serif;
     font-size: 8rem;
     font-weight: 300;
-    color: rgba(201, 168, 76, 0.08);
+    color: rgba(139, 115, 85, 0.08);
     line-height: 1;
     position: absolute;
     top: -1rem;
@@ -432,48 +429,67 @@
   }
 
   /* ======================================== */
-  /* NAVIGATION DOTS                         */
+  /* NAVIGATION DOTS (light)                 */
   /* ======================================== */
-  .nav-dot {
+  .nav-dot-light {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    border: 1px solid rgba(201, 168, 76, 0.4);
+    border: 1px solid rgba(93, 78, 55, 0.4);
     background: transparent;
     cursor: pointer;
     transition: all 0.5s ease;
   }
-  .nav-dot.active {
-    background: rgba(201, 168, 76, 0.7);
-    box-shadow: 0 0 10px rgba(201, 168, 76, 0.3);
+  .nav-dot-light.active {
+    background: rgba(62, 51, 34, 0.6);
+    box-shadow: 0 0 6px rgba(62, 51, 34, 0.2);
   }
-  .nav-dot:hover {
-    border-color: rgba(201, 168, 76, 0.7);
+  .nav-dot-light:hover {
+    border-color: rgba(62, 51, 34, 0.7);
+  }
+
+  /* ======================================== */
+  /* SCROLL UTILITY                          */
+  /* ======================================== */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* ======================================== */
+  /* GOLD FRAME (light version)              */
+  /* ======================================== */
+  .gold-frame-light {
+    border: 1px solid rgba(93, 78, 55, 0.3);
+    position: relative;
+    background: rgba(232, 220, 200, 0.4);
+  }
+  .gold-frame-light::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(93, 78, 55, 0.1);
+    pointer-events: none;
   }
 }
 
 /* ======================================== */
-/* RESPONSIVE ADJUSTMENTS                  */
+/* RESPONSIVE                               */
 /* ======================================== */
 @media (max-width: 768px) {
-  .seal-button {
-    width: 110px;
-    height: 110px;
-    font-size: 0.85rem;
-    padding: 0.75rem;
+  .chapter-num-light { font-size: 5rem; }
+  .victorian-frame .corner-ornament {
+    width: 70px;
+    height: 90px;
   }
-  .chapter-num {
-    font-size: 5rem;
-  }
+  .inner-border::before { inset: 16px; }
+  .inner-border::after { inset: 19px; }
 }
 
 @media (max-width: 480px) {
-  .seal-button {
-    width: 100px;
-    height: 100px;
-    font-size: 0.75rem;
+  .chapter-num-light { font-size: 4rem; }
+  .victorian-frame .corner-ornament {
+    width: 50px;
+    height: 65px;
   }
-  .chapter-num {
-    font-size: 4rem;
-  }
+  .inner-border::before { inset: 12px; }
+  .inner-border::after { inset: 14px; }
 }

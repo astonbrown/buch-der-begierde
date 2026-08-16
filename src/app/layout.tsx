@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Cormorant_Garamond, Great_Vibes } from "next/font/google";
+import { Cinzel, Cinzel_Decorative, Cormorant_Garamond, Great_Vibes } from "next/font/google";
 import "./globals.css";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+const cinzelDecorative = Cinzel_Decorative({
+  variable: "--font-cinzel-decorative",
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
   display: "swap",
 });
 
@@ -28,7 +35,7 @@ export const metadata: Metadata = {
   description:
     "Buch der Begierde – Ein mystisches, literarisches Erlebnis. Geschrieben von Frauen für Frauen.",
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>",
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>",
   },
 };
 
@@ -40,7 +47,7 @@ export default function RootLayout({
   return (
     <html lang="de" suppressHydrationWarning>
       <body
-        className={`${playfair.variable} ${cormorant.variable} ${greatVibes.variable} antialiased`}
+        className={`${cinzel.variable} ${cinzelDecorative.variable} ${cormorant.variable} ${greatVibes.variable} antialiased`}
       >
         {children}
       </body>
