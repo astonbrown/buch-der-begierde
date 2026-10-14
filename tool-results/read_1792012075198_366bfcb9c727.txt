@@ -1,0 +1,751 @@
+     1→     1→'use client';
+     2→     2→
+     3→     3→import { useState, useEffect, useCallback, useRef } from 'react';
+     4→     4→import { createPortal } from 'react-dom';
+     5→     5→import { motion, AnimatePresence } from 'framer-motion';
+     6→     6→
+     7→     7→/* ======================================================== */
+     8→     8→/*  DATA                                                      */
+     9→     9→/* ======================================================== */
+    10→    10→
+    11→    11→const textPassages = [
+    12→    12→  {
+    13→    13→    id: 1,
+    14→    14→    text: 'Zärtlich griff er nach ihrer Hand – ein Moment zwischen Vertrauen und Neugier.',
+    15→    15→    defaultMood: 'ruhig' as const,
+    16→    16→  },
+    17→    17→  {
+    18→    18→    id: 2,
+    19→    19→    text: 'Sein Atem berührte sie, wie eine Erinnerung, die Wärme trägt.',
+    20→    20→    defaultMood: 'intensiv' as const,
+    21→    21→  },
+    22→    22→  {
+    23→    23→    id: 3,
+    24→    24→    text: 'Ein Blick, der mehr sagte als Worte – still, aber voller Bedeutung.',
+    25→    25→    defaultMood: 'melancholisch' as const,
+    26→    26→  },
+    27→    27→  {
+    28→    28→    id: 4,
+    29→    29→    text: 'Die Nähe war kein Zufall, sondern ein Versprechen, das sich erfüllte.',
+    30→    30→    defaultMood: 'hoffnungsvoll' as const,
+    31→    31→  },
+    32→    32→  {
+    33→    33→    id: 5,
+    34→    34→    text: 'In der Bewegung lag keine Hast, nur das Erkennen des Augenblicks.',
+    35→    35→    defaultMood: 'ruhig' as const,
+    36→    36→  },
+    37→    37→];
+    38→    38→
+    39→    39→type MoodType = 'ruhig' | 'intensiv' | 'melancholisch' | 'hoffnungsvoll';
+    40→    40→
+    41→    41→const moodStyles: Record<MoodType, { bg: string; glow: string; text: string; accent: string; border: string }> = {
+    42→    42→  ruhig: {
+    43→    43→    bg: 'rgba(232, 220, 200, 0.5)',
+    44→    44→    glow: 'rgba(184, 134, 11, 0.06)',
+    45→    45→    text: '#3E3322',
+    46→    46→    accent: 'rgba(184, 134, 11, 0.25)',
+    47→    47→    border: 'rgba(139, 115, 85, 0.3)',
+    48→    48→  },
+    49→    49→  intensiv: {
+    50→    50→    bg: 'rgba(200, 180, 160, 0.55)',
+    51→    51→    glow: 'rgba(160, 80, 50, 0.06)',
+    52→    52→    text: '#4A2C1C',
+    53→    53→    accent: 'rgba(160, 80, 50, 0.25)',
+    54→    54→    border: 'rgba(120, 70, 40, 0.3)',
+    55→    55→  },
+    56→    56→  melancholisch: {
+    57→    57→    bg: 'rgba(210, 205, 200, 0.55)',
+    58→    58→    glow: 'rgba(100, 110, 130, 0.05)',
+    59→    59→    text: '#3A3540',
+    60→    60→    accent: 'rgba(100, 110, 130, 0.2)',
+    61→    61→    border: 'rgba(120, 110, 100, 0.3)',
+    62→    62→  },
+    63→    63→  hoffnungsvoll: {
+    64→    64→    bg: 'rgba(235, 218, 185, 0.5)',
+    65→    65→    glow: 'rgba(200, 170, 60, 0.07)',
+    66→    66→    text: '#3A3218',
+    67→    67→    accent: 'rgba(200, 170, 60, 0.3)',
+    68→    68→    border: 'rgba(160, 140, 80, 0.3)',
+    69→    69→  },
+    70→    70→};
+    71→    71→
+    72→    72→const moodLabels: Record<MoodType, string> = {
+    73→    73→  ruhig: 'ruhig',
+    74→    74→  intensiv: 'intensiv',
+    75→    75→  melancholisch: 'melancholisch',
+    76→    76→  hoffnungsvoll: 'hoffnungsvoll',
+    77→    77→};
+    78→    78→
+    79→    79→/* ======================================================== */
+    80→    80→/*  VICTORIAN CORNER ORNAMENT SVG                             */
+    81→    81→/* ======================================================== */
+    82→    82→
+    83→    83→function CornerOrnament() {
+    84→    84→  return (
+    85→    85→    <svg viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    86→    86→      {/* Main stem */}
+    87→    87→      <path d="M10 10 C10 10, 10 120, 40 160 C60 185, 90 190, 110 170" stroke="#5D4E37" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+    88→    88→      {/* Acanthus leaf 1 */}
+    89→    89→      <path d="M15 30 C30 20, 55 25, 50 45 C45 60, 20 50, 15 30Z" stroke="#5D4E37" strokeWidth="0.8" fill="rgba(93,78,55,0.06)" />
+    90→    90→      {/* Acanthus leaf 2 */}
+    91→    91→      <path d="M20 60 C40 48, 70 55, 62 80 C55 100, 25 85, 20 60Z" stroke="#5D4E37" strokeWidth="0.8" fill="rgba(93,78,55,0.05)" />
+    92→    92→      {/* Acanthus leaf 3 */}
+    93→    93→      <path d="M30 95 C55 80, 90 90, 78 118 C68 140, 35 120, 30 95Z" stroke="#5D4E37" strokeWidth="0.8" fill="rgba(93,78,55,0.04)" />
+    94→    94→      {/* Scroll curl top */}
+    95→    95→      <path d="M10 10 C25 5, 40 12, 35 25 C30 35, 12 22, 10 10" stroke="#5D4E37" strokeWidth="1" fill="rgba(93,78,55,0.08)" />
+    96→    96→      {/* Spiral at end */}
+    97→    97→      <path d="M110 170 C120 155, 140 155, 145 165 C150 175, 140 185, 130 180 C120 175, 125 165, 110 170" stroke="#5D4E37" strokeWidth="1" fill="none" />
+    98→    98→      {/* Small tendril */}
+    99→    99→      <path d="M62 80 C75 72, 88 78, 82 90" stroke="#5D4E37" strokeWidth="0.6" fill="none" />
+   100→   100→      {/* Dot accents */}
+   101→   101→      <circle cx="12" cy="12" r="1.5" fill="#5D4E37" opacity="0.4" />
+   102→   102→      <circle cx="145" cy="165" r="1.5" fill="#5D4E37" opacity="0.3" />
+   103→   103→    </svg>
+   104→   104→  );
+   105→   105→}
+   106→   106→
+   107→   107→/* ======================================================== */
+   108→   108→/*  DUST PARTICLES                                             */
+   109→   109→/* ======================================================== */
+   110→   110→
+   111→   111→function DustParticles() {
+   112→   112→  const particles = Array.from({ length: 15 }, (_, i) => ({
+   113→   113→    id: i,
+   114→   114→    left: `${10 + Math.random() * 80}%`,
+   115→   115→    size: 1 + Math.random() * 1.5,
+   116→   116→    duration: 10 + Math.random() * 15,
+   117→   117→    delay: Math.random() * 12,
+   118→   118→    opacity: 0.15 + Math.random() * 0.3,
+   119→   119→  }));
+   120→   120→
+   121→   121→  return (
+   122→   122→    <>
+   123→   123→      {particles.map((p) => (
+   124→   124→        <div
+   125→   125→          key={p.id}
+   126→   126→          className="dust-particle"
+   127→   127→          style={{
+   128→   128→            left: p.left,
+   129→   129→            width: p.size,
+   130→   130→            height: p.size,
+   131→   131→            animationDuration: `${p.duration}s`,
+   132→   132→            animationDelay: `${p.delay}s`,
+   133→   133→            opacity: p.opacity,
+   134→   134→          }}
+   135→   135→        />
+   136→   136→      ))}
+   137→   137→    </>
+   138→   138→  );
+   139→   139→}
+   140→   140→
+   141→   141→/* ======================================================== */
+   142→   142→/*  NAVIGATION DOTS                                            */
+   143→   143→/* ======================================================== */
+   144→   144→
+   145→   145→function NavDots({ current, onNavigate }: { current: number; onNavigate: (i: number) => void }) {
+   146→   146→  const labels = ['I', 'II', 'III'];
+   147→   147→
+   148→   148→  if (typeof document === 'undefined') return null;
+   149→   149→
+   150→   150→  return createPortal(
+   151→   151→    <motion.nav
+   152→   152→      style={{
+   153→   153→        position: 'fixed',
+   154→   154→        right: 20,
+   155→   155→        top: '50%',
+   156→   156→        transform: 'translateY(-50%)',
+   157→   157→        zIndex: 99999,
+   158→   158→        display: 'flex',
+   159→   159→        flexDirection: 'column',
+   160→   160→        alignItems: 'center',
+   161→   161→        gap: 20,
+   162→   162→        pointerEvents: 'auto',
+   163→   163→      }}
+   164→   164→      initial={{ opacity: 0, x: 20 }}
+   165→   165→      animate={{ opacity: 1, x: 0 }}
+   166→   166→      transition={{ delay: 0.5, duration: 1.2 }}
+   167→   167→    >
+   168→   168→      {labels.map((label, i) => {
+   169→   169→        const isActive = current === i;
+   170→   170→        return (
+   171→   171→          <button
+   172→   172→            key={i}
+   173→   173→            onClick={() => onNavigate(i)}
+   174→   174→            aria-label={`Kapitel ${label}`}
+   175→   175→            style={{
+   176→   176→              width: 10,
+   177→   177→              height: 10,
+   178→   178→              borderRadius: '50%',
+   179→   179→              border: isActive ? 'none' : '1px solid rgba(93, 78, 55, 0.4)',
+   180→   180→              background: isActive ? 'rgba(62, 51, 34, 0.6)' : 'transparent',
+   181→   181→              boxShadow: isActive ? '0 0 6px rgba(62, 51, 34, 0.2)' : 'none',
+   182→   182→              cursor: 'pointer',
+   183→   183→              transition: 'all 0.5s ease',
+   184→   184→              padding: 0,
+   185→   185→              position: 'relative',
+   186→   186→              pointerEvents: 'auto',
+   187→   187→            }}
+   188→   188→          >
+   189→   189→            <span style={{
+   190→   190→              position: 'absolute',
+   191→   191→              right: 20,
+   192→   192→              top: '50%',
+   193→   193→              transform: 'translateY(-50%)',
+   194→   194→              fontSize: 12,
+   195→   195→              fontFamily: 'var(--font-cinzel), serif',
+   196→   196→              color: '#3E3322',
+   197→   197→              opacity: 0,
+   198→   198→              whiteSpace: 'nowrap',
+   199→   199→              pointerEvents: 'none',
+   200→   200→              transition: 'opacity 0.5s',
+   201→   201→            }}
+   202→   202→              className="group-hover-label"
+   203→   203→            >
+   204→   204→              {label}
+   205→   205→            </span>
+   206→   206→          </button>
+   207→   207→        );
+   208→   208→      })}
+   209→   209→    </motion.nav>,
+   210→   210→    document.body
+   211→   211→  );
+   212→   212→}
+   213→   213→
+   214→   214→/* ======================================================== */
+   215→   215→/*  CHAPTER I – TITLE PAGE (matching BOD1/BOD2)               */
+   216→   216→/* ======================================================== */
+   217→   217→
+   218→   218→function ChapterIntro({ onEnter }: { onEnter: () => void }) {
+   219→   219→  const [showContent, setShowContent] = useState(false);
+   220→   220→
+   221→   221→  useEffect(() => {
+   222→   222→    const t = setTimeout(() => setShowContent(true), 600);
+   223→   223→    return () => clearTimeout(t);
+   224→   224→  }, []);
+   225→   225→
+   226→   226→  return (
+   227→   227→    <section className="relative w-full h-screen overflow-hidden parchment-bg">
+   228→   228→      {/* Paper grain overlay */}
+   229→   229→      <div className="paper-grain absolute inset-0" style={{ pointerEvents: 'none' }} />
+   230→   230→
+   231→   231→      {/* Warm ambient glow from upper-left */}
+   232→   232→      <div
+   233→   233→        className="absolute inset-0 candle-glow pointer-events-none"
+   234→   234→        style={{
+   235→   235→          background: `
+   236→   236→            radial-gradient(ellipse 50% 40% at 35% 30%, rgba(232, 220, 200, 0.5) 0%, transparent 70%),
+   237→   237→            radial-gradient(ellipse 80% 60% at 50% 50%, rgba(212, 175, 120, 0.12) 0%, transparent 60%)
+   238→   238→          `,
+   239→   239→        }}
+   240→   240→      />
+   241→   241→
+   242→   242→      {/* Dust particles */}
+   243→   243→      <div style={{ pointerEvents: 'none' }}><DustParticles /></div>
+   244→   244→
+   245→   245→      {/* Vignette */}
+   246→   246→      <div className="vignette-warm absolute inset-0 z-[3]" style={{ pointerEvents: 'none' }} />
+   247→   247→
+   248→   248→      {/* Victorian frame with corner ornaments */}
+   249→   249→      <div className="victorian-frame inner-border absolute inset-0 z-[2]" style={{ pointerEvents: 'none' }}>
+   250→   250→        <div className="corner-ornament corner-tl"><CornerOrnament /></div>
+   251→   251→        <div className="corner-ornament corner-tr"><CornerOrnament /></div>
+   252→   252→        <div className="corner-ornament corner-bl"><CornerOrnament /></div>
+   253→   253→        <div className="corner-ornament corner-br"><CornerOrnament /></div>
+   254→   254→      </div>
+   255→   255→
+   256→   256→      {/* Content */}
+   257→   257→      <div className="relative z-10 flex flex-col items-center justify-center h-full px-8 md:px-16">
+   258→   258→        <AnimatePresence>
+   259→   259→          {showContent && (
+   260→   260→            <motion.div
+   261→   261→              className="flex flex-col items-center"
+   262→   262→              initial={{ opacity: 0 }}
+   263→   263→              animate={{ opacity: 1 }}
+   264→   264→              transition={{ duration: 2.5 }}
+   265→   265→            >
+   266→   266→              {/* THE BOOK */}
+   267→   267→              <motion.h2
+   268→   268→                className="font-[family-name:var(--font-cinzel)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-[0.15em] uppercase text-center"
+   269→   269→                style={{
+   270→   270→                  color: '#3E3322',
+   271→   271→                  textShadow: '1px 1px 0px rgba(255,245,220,0.3), -1px -1px 0px rgba(44,36,22,0.1)',
+   272→   272→                }}
+   273→   273→                initial={{ opacity: 0, y: 15 }}
+   274→   274→                animate={{ opacity: 1, y: 0 }}
+   275→   275→                transition={{ duration: 1.8, delay: 0.5 }}
+   276→   276→              >
+   277→   277→                The Book
+   278→   278→              </motion.h2>
+   279→   279→
+   280→   280→              {/* Diamond divider with OF */}
+   281→   281→              <motion.div
+   282→   282→                className="flex items-center gap-3 sm:gap-5 my-3 sm:my-4"
+   283→   283→                initial={{ opacity: 0, scaleX: 0 }}
+   284→   284→                animate={{ opacity: 1, scaleX: 1 }}
+   285→   285→                transition={{ duration: 1.5, delay: 1.0 }}
+   286→   286→              >
+   287→   287→                <div className="w-16 sm:w-24 h-px" style={{ background: 'linear-gradient(90deg, transparent, #5D4E37)' }} />
+   288→   288→                <span
+   289→   289→                  className="font-[family-name:var(--font-cinzel)] text-sm sm:text-base tracking-[0.4em] uppercase"
+   290→   290→                  style={{ color: '#4A3F2E' }}
+   291→   291→                >
+   292→   292→                  of
+   293→   293→                </span>
+   294→   294→                <div className="w-16 sm:w-24 h-px" style={{ background: 'linear-gradient(270deg, transparent, #5D4E37)' }} />
+   295→   295→              </motion.div>
+   296→   296→
+   297→   297→              {/* DESIRE – Main title with embossed effect */}
+   298→   298→              <motion.h1
+   299→   299→                className="embossed-title-large font-[family-name:var(--font-cinzel-decorative)] text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-[-0.02em] uppercase text-center leading-[0.85]"
+   300→   300→                initial={{ opacity: 0, y: 20 }}
+   301→   301→                animate={{ opacity: 1, y: 0 }}
+   302→   302→                transition={{ duration: 2, delay: 1.5 }}
+   303→   303→              >
+   304→   304→                Desire
+   305→   305→              </motion.h1>
+   306→   306→
+   307→   307→              {/* Diamond ornament below title */}
+   308→   308→              <motion.div
+   309→   309→                className="ornament-divider-diamond mt-4 sm:mt-6"
+   310→   310→                initial={{ opacity: 0 }}
+   311→   311→                animate={{ opacity: 1 }}
+   312→   312→                transition={{ duration: 1.5, delay: 2.5 }}
+   313→   313→              >
+   314→   314→                <span>◆</span>
+   315→   315→              </motion.div>
+   316→   316→
+   317→   317→              {/* German subtitle in script */}
+   318→   318→              <motion.p
+   319→   319→                className="font-[family-name:var(--font-vibes)] text-xl sm:text-2xl md:text-3xl text-center mt-2"
+   320→   320→                style={{
+   321→   321→                  color: '#5D4E37',
+   322→   322→                  textShadow: '0 1px 2px rgba(44,36,22,0.1)',
+   323→   323→                }}
+   324→   324→                initial={{ opacity: 0, y: 8 }}
+   325→   325→                animate={{ opacity: 1, y: 0 }}
+   326→   326→                transition={{ duration: 1.5, delay: 3.0 }}
+   327→   327→              >
+   328→   328→                Ein Portal in deine tiefsten Sehnsüchte
+   329→   329→              </motion.p>
+   330→   330→
+   331→   331→              {/* Eintreten button */}
+   332→   332→              <motion.button
+   333→   333→                className="seal-button-light mt-8 sm:mt-10"
+   334→   334→                onClick={onEnter}
+   335→   335→                initial={{ opacity: 0, y: 10 }}
+   336→   336→                animate={{ opacity: 1, y: 0 }}
+   337→   337→                transition={{ duration: 1.5, delay: 3.5 }}
+   338→   338→                whileHover={{ scale: 1.03, translateY: -1 }}
+   339→   339→                whileTap={{ scale: 0.98 }}
+   340→   340→              >
+   341→   341→                Eintreten
+   342→   342→              </motion.button>
+   343→   343→            </motion.div>
+   344→   344→          )}
+   345→   345→        </AnimatePresence>
+   346→   346→      </div>
+   347→   347→
+   348→   348→      {/* Bottom ornament hint */}
+   349→   349→      <motion.div
+   350→   350→        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
+   351→   351→        initial={{ opacity: 0 }}
+   352→   352→        animate={{ opacity: 0.35 }}
+   353→   353→        transition={{ delay: 4.5, duration: 2 }}
+   354→   354→      >
+   355→   355→        <motion.div
+   356→   356→          animate={{ y: [0, 5, 0] }}
+   357→   357→          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+   358→   358→          style={{ color: '#5D4E37' }}
+   359→   359→          className="text-xl"
+   360→   360→        >
+   361→   361→          ❧
+   362→   362→        </motion.div>
+   363→   363→      </motion.div>
+   364→   364→    </section>
+   365→   365→  );
+   366→   366→}
+   367→   367→
+   368→   368→/* ======================================================== */
+   369→   369→/*  CHAPTER II – THE BOOK INTRODUCES ITSELF                 */
+   370→   370→/* ======================================================== */
+   371→   371→
+   372→   372→function ChapterBookIntro({ onContinue }: { onContinue: () => void }) {
+   373→   373→  const [revealedLines, setRevealedLines] = useState(0);
+   374→   374→
+   375→   375→  const lines = [
+   376→   376→    'Ich wurde nicht geschrieben – ich wurde gefühlt.',
+   377→   377→    'Jede Seite trägt den Hauch einer Frau, die es wagte,',
+   378→   378→    'ihre tiefste Wahrheit niederzuschreiben.',
+   379→   379→    '',
+   380→   380→    'Dies ist kein gewöhnliches Buch.',
+   381→   381→    'Es ist ein Spiegel, ein Vertrauter, ein Flüstern in der Nacht.',
+   382→   382→    '',
+   383→   383→    'Ich bin entstanden aus Stunden der Stille,',
+   384→   384→    'aus Tinte und Sehnsucht, aus Mut und Verletzlichkeit.',
+   385→   385→    '',
+   386→   386→    'Lass mich dir zeigen, was zwischen den Zeilen lebt.',
+   387→   387→  ];
+   388→   388→
+   389→   389→  useEffect(() => {
+   390→   390→    if (revealedLines < lines.length) {
+   391→   391→      const timer = setTimeout(() => {
+   392→   392→        setRevealedLines((prev) => prev + 1);
+   393→   393→      }, revealedLines === 0 ? 500 : 550);
+   394→   394→      return () => clearTimeout(timer);
+   395→   395→    }
+   396→   396→  }, [revealedLines, lines.length]);
+   397→   397→
+   398→   398→  return (
+   399→   399→    <section className="relative w-full min-h-screen overflow-hidden flex items-center justify-center py-16 md:py-24"
+   400→   400→      style={{
+   401→   401→        background: 'radial-gradient(ellipse at center, #D9C4A0 0%, #C4A574 70%, #A68B5B 100%)',
+   402→   402→      }}
+   403→   403→    >
+   404→   404→      {/* Paper grain */}
+   405→   405→      <div className="paper-grain absolute inset-0" style={{ pointerEvents: 'none' }} />
+   406→   406→
+   407→   407→      {/* Ambient light */}
+   408→   408→      <div className="absolute inset-0 pointer-events-none">
+   409→   409→        <div
+   410→   410→          className="absolute top-[15%] left-[20%] w-[400px] h-[400px] rounded-full candle-glow"
+   411→   411→          style={{ background: 'radial-gradient(circle, rgba(232, 220, 200, 0.3) 0%, transparent 70%)' }}
+   412→   412→        />
+   413→   413→      </div>
+   414→   414→
+   415→   415→      <div style={{ pointerEvents: 'none' }}><DustParticles /></div>
+   416→   416→      <div className="vignette-warm absolute inset-0 z-[3]" style={{ pointerEvents: 'none' }} />
+   417→   417→
+   418→   418→      {/* Content card */}
+   419→   419→      <div className="relative z-10 max-w-2xl mx-auto px-5 md:px-8">
+   420→   420→        <div className="gold-frame-light p-8 md:p-12 page-curl relative">
+   421→   421→          <div className="chapter-num-light">II</div>
+   422→   422→
+   423→   423→          {/* Headline */}
+   424→   424→          <motion.div
+   425→   425→            className="text-center mb-8 md:mb-10"
+   426→   426→            initial={{ opacity: 0, y: 10 }}
+   427→   427→            whileInView={{ opacity: 1, y: 0 }}
+   428→   428→            viewport={{ once: true }}
+   429→   429→            transition={{ duration: 1.5 }}
+   430→   430→          >
+   431→   431→            <h2
+   432→   432→              className="embossed-title font-[family-name:var(--font-cinzel-decorative)] text-2xl sm:text-3xl md:text-4xl font-bold mb-3 uppercase tracking-[0.08em]"
+   433→   433→            >
+   434→   434→              Geschrieben von Frauen
+   435→   435→            </h2>
+   436→   436→            <div className="ornament-divider-diamond">
+   437→   437→              <span>◆</span>
+   438→   438→            </div>
+   439→   439→            <p
+   440→   440→              className="font-[family-name:var(--font-cinzel)] text-base sm:text-lg tracking-[0.25em] uppercase"
+   441→   441→              style={{ color: '#4A3F2E', opacity: 0.7 }}
+   442→   442→            >
+   443→   443→              für Frauen
+   444→   444→            </p>
+   445→   445→          </motion.div>
+   446→   446→
+   447→   447→          {/* Text lines */}
+   448→   448→          <div className="space-y-1 min-h-[260px] md:min-h-[300px]">
+   449→   449→            {lines.map((line, i) => (
+   450→   450→              <motion.p
+   451→   451→                key={i}
+   452→   452→                className={`font-[family-name:var(--font-cormorant)] text-lg sm:text-xl md:text-2xl leading-relaxed ${
+   453→   453→                  line === '' ? 'h-3' : ''
+   454→   454→                }`}
+   455→   455→                style={{
+   456→   456→                  color: i === 0 || i === 4 || i === 8 || i === 10 ? '#3E3322' : '#5D4E37',
+   457→   457→                  textShadow: '0 1px 1px rgba(255,245,220,0.3)',
+   458→   458→                }}
+   459→   459→                initial={{ opacity: 0, x: -8 }}
+   460→   460→                animate={{
+   461→   461→                  opacity: i < revealedLines ? 1 : 0,
+   462→   462→                  x: i < revealedLines ? 0 : -8,
+   463→   463→                }}
+   464→   464→                transition={{ duration: 0.7, ease: 'easeOut' }}
+   465→   465→              >
+   466→   466→                {line}
+   467→   467→              </motion.p>
+   468→   468→            ))}
+   469→   469→          </div>
+   470→   470→
+   471→   471→          {/* Continue button */}
+   472→   472→          <AnimatePresence>
+   473→   473→            {revealedLines >= lines.length && (
+   474→   474→              <motion.div
+   475→   475→                className="mt-8 text-center"
+   476→   476→                initial={{ opacity: 0, y: 12 }}
+   477→   477→                animate={{ opacity: 1, y: 0 }}
+   478→   478→                transition={{ duration: 1.2 }}
+   479→   479→              >
+   480→   480→                <div className="double-rule" />
+   481→   481→                <motion.button
+   482→   482→                  className="seal-button-light mt-5"
+   483→   483→                  onClick={onContinue}
+   484→   484→                  whileHover={{ scale: 1.03, translateY: -1 }}
+   485→   485→                  whileTap={{ scale: 0.98 }}
+   486→   486→                >
+   487→   487→                  Weiterblättern
+   488→   488→                </motion.button>
+   489→   489→              </motion.div>
+   490→   490→            )}
+   491→   491→          </AnimatePresence>
+   492→   492→
+   493→   493→          {/* Corner dots */}
+   494→   494→          <div className="absolute top-2 left-2 text-[#5D4E37] opacity-20 text-sm">◆</div>
+   495→   495→          <div className="absolute top-2 right-2 text-[#5D4E37] opacity-20 text-sm">◆</div>
+   496→   496→          <div className="absolute bottom-2 left-2 text-[#5D4E37] opacity-20 text-sm">◆</div>
+   497→   497→          <div className="absolute bottom-2 right-2 text-[#5D4E37] opacity-20 text-sm">◆</div>
+   498→   498→        </div>
+   499→   499→      </div>
+   500→   500→    </section>
+   501→   501→  );
+   502→   502→}
+   503→   503→
+   504→   504→/* ======================================================== */
+   505→   505→/*  PASSAGE CARD (light parchment)                            */
+   506→   506→/* ======================================================== */
+   507→   507→
+   508→   508→function PassageCard({
+   509→   509→  passage,
+   510→   510→  index,
+   511→   511→  selectedMood,
+   512→   512→  onMoodSelect,
+   513→   513→}: {
+   514→   514→  passage: (typeof textPassages)[0];
+   515→   515→  index: number;
+   516→   516→  selectedMood: MoodType | null;
+   517→   517→  onMoodSelect: (id: number, mood: MoodType) => void;
+   518→   518→}) {
+   519→   519→  const [revealed, setRevealed] = useState(false);
+   520→   520→  const cardRef = useRef<HTMLDivElement>(null);
+   521→   521→
+   522→   522→  useEffect(() => {
+   523→   523→    const observer = new IntersectionObserver(
+   524→   524→      ([entry]) => {
+   525→   525→        if (entry.isIntersecting) setTimeout(() => setRevealed(true), index * 250);
+   526→   526→      },
+   527→   527→      { threshold: 0.15 }
+   528→   528→    );
+   529→   529→    if (cardRef.current) observer.observe(cardRef.current);
+   530→   530→    return () => observer.disconnect();
+   531→   531→  }, [index]);
+   532→   532→
+   533→   533→  const currentMood = selectedMood || passage.defaultMood;
+   534→   534→  const style = moodStyles[currentMood];
+   535→   535→
+   536→   536→  return (
+   537→   537→    <motion.div
+   538→   538→      ref={cardRef}
+   539→   539→      className="mood-card-light"
+   540→   540→      style={{
+   541→   541→        background: style.bg,
+   542→   542→        borderColor: style.border,
+   543→   543→      }}
+   544→   544→      initial={{ opacity: 0, y: 25 }}
+   545→   545→      animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
+   546→   546→      transition={{ duration: 1.2, ease: 'easeOut' }}
+   547→   547→    >
+   548→   548→      {/* Subtle glow at top */}
+   549→   549→      <div
+   550→   550→        className="absolute top-0 left-0 right-0 h-20 pointer-events-none transition-all duration-1000"
+   551→   551→        style={{ background: `linear-gradient(to bottom, ${style.glow}, transparent)` }}
+   552→   552→      />
+   553→   553→
+   554→   554→      {/* Quote mark */}
+   555→   555→      <div
+   556→   556→        className="font-[family-name:var(--font-cinzel)] text-4xl sm:text-5xl leading-none mb-2 select-none"
+   557→   557→        style={{ color: style.accent, opacity: 0.6 }}
+   558→   558→      >
+   559→   559→        „
+   560→   560→      </div>
+   561→   561→
+   562→   562→      {/* Text */}
+   563→   563→      <p
+   564→   564→        className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl md:text-3xl leading-relaxed italic mb-5 transition-colors duration-1000"
+   565→   565→        style={{
+   566→   566→          color: style.text,
+   567→   567→          textShadow: '0 1px 1px rgba(255,245,220,0.25)',
+   568→   568→        }}
+   569→   569→      >
+   570→   570→        {passage.text}
+   571→   571→      </p>
+   572→   572→
+   573→   573→      {/* Mood tags */}
+   574→   574→      <div className="flex flex-wrap gap-2 mt-3">
+   575→   575→        {(Object.keys(moodLabels) as MoodType[]).map((mood) => {
+   576→   576→          const mStyle = moodStyles[mood];
+   577→   577→          const isActive = currentMood === mood;
+   578→   578→          return (
+   579→   579→            <button
+   580→   580→              key={mood}
+   581→   581→              className={`mood-tag-light ${isActive ? 'active' : ''}`}
+   582→   582→              onClick={() => onMoodSelect(passage.id, mood)}
+   583→   583→              style={
+   584→   584→                isActive
+   585→   585→                  ? { borderColor: mStyle.accent, color: mStyle.text, background: mStyle.glow }
+   586→   586→                  : {}
+   587→   587→              }
+   588→   588→            >
+   589→   589→              {moodLabels[mood]}
+   590→   590→            </button>
+   591→   591→          );
+   592→   592→        })}
+   593→   593→      </div>
+   594→   594→    </motion.div>
+   595→   595→  );
+   596→   596→}
+   597→   597→
+   598→   598→/* ======================================================== */
+   599→   599→/*  CHAPTER III – EMOTIONAL TEXT PASSAGES                     */
+   600→   600→/* ======================================================== */
+   601→   601→
+   602→   602→function ChapterPassages() {
+   603→   603→  const [moodSelections, setMoodSelections] = useState<Record<number, MoodType | null>>({});
+   604→   604→
+   605→   605→  const handleMoodSelect = useCallback((id: number, mood: MoodType) => {
+   606→   606→    setMoodSelections((prev) => ({ ...prev, [id]: mood }));
+   607→   607→  }, []);
+   608→   608→
+   609→   609→  return (
+   610→   610→    <section
+   611→   611→      className="relative w-full min-h-screen py-16 md:py-24"
+   612→   612→      style={{
+   613→   613→        background: 'radial-gradient(ellipse at center, #D9C4A0 0%, #C4A574 60%, #B89B74 100%)',
+   614→   614→      }}
+   615→   615→    >
+   616→   616→      <div className="paper-grain absolute inset-0" style={{ pointerEvents: 'none' }} />
+   617→   617→      <div style={{ pointerEvents: 'none' }}><DustParticles /></div>
+   618→   618→      <div className="vignette-warm absolute inset-0 z-[3]" style={{ pointerEvents: 'none' }} />
+   619→   619→
+   620→   620→      <div className="relative z-10 max-w-3xl mx-auto px-5 md:px-8">
+   621→   621→        {/* Chapter heading */}
+   622→   622→        <motion.div
+   623→   623→          className="text-center mb-10 md:mb-14"
+   624→   624→          initial={{ opacity: 0, y: 12 }}
+   625→   625→          whileInView={{ opacity: 1, y: 0 }}
+   626→   626→          viewport={{ once: true }}
+   627→   627→          transition={{ duration: 1.5 }}
+   628→   628→        >
+   629→   629→          <div className="chapter-num-light mx-auto w-fit">III</div>
+   630→   630→          <h2
+   631→   631→            className="embossed-title font-[family-name:var(--font-cinzel-decorative)] text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-[0.08em] relative"
+   632→   632→          >
+   633→   633→            Stimmungsgedichte
+   634→   634→          </h2>
+   635→   635→          <div className="ornament-divider-diamond mt-2">
+   636→   636→            <span>◆</span>
+   637→   637→          </div>
+   638→   638→          <p
+   639→   639→            className="font-[family-name:var(--font-cormorant)] text-lg sm:text-xl italic mt-1"
+   640→   640→            style={{ color: '#5D4E37', opacity: 0.7, textShadow: '0 1px 1px rgba(255,245,220,0.3)' }}
+   641→   641→          >
+   642→   642→            Klicke auf eine Stimmung und erlebe, wie sich die Atmosphäre verwandelt
+   643→   643→          </p>
+   644→   644→        </motion.div>
+   645→   645→
+   646→   646→        {/* Passages */}
+   647→   647→        <div className="space-y-6 md:space-y-8">
+   648→   648→          {textPassages.map((passage, i) => (
+   649→   649→            <PassageCard
+   650→   650→              key={passage.id}
+   651→   651→              passage={passage}
+   652→   652→              index={i}
+   653→   653→              selectedMood={moodSelections[passage.id] || null}
+   654→   654→              onMoodSelect={handleMoodSelect}
+   655→   655→            />
+   656→   656→          ))}
+   657→   657→        </div>
+   658→   658→
+   659→   659→        {/* Bottom ornament */}
+   660→   660→        <motion.div
+   661→   661→          className="ornament-divider-diamond mt-14 md:mt-18"
+   662→   662→          initial={{ opacity: 0 }}
+   663→   663→          whileInView={{ opacity: 1 }}
+   664→   664→          viewport={{ once: true }}
+   665→   665→          transition={{ duration: 2 }}
+   666→   666→        >
+   667→   667→          <span>◆</span>
+   668→   668→        </motion.div>
+   669→   669→
+   670→   670→        {/* Closing */}
+   671→   671→        <motion.p
+   672→   672→          className="text-center font-[family-name:var(--font-vibes)] text-2xl sm:text-3xl mt-6 mb-10"
+   673→   673→          style={{ color: '#5D4E37', opacity: 0.6, textShadow: '0 1px 1px rgba(255,245,220,0.2)' }}
+   674→   674→          initial={{ opacity: 0 }}
+   675→   675→          whileInView={{ opacity: 0.6 }}
+   676→   676→          viewport={{ once: true }}
+   677→   677→          transition={{ duration: 2, delay: 0.5 }}
+   678→   678→        >
+   679→   679→          Die Geschichte geht weiter...
+   680→   680→        </motion.p>
+   681→   681→      </div>
+   682→   682→    </section>
+   683→   683→  );
+   684→   684→}
+   685→   685→
+   686→   686→function TransitionOverlay({ phase }: { phase: 'in' | 'out' | null }) {
+   687→   687→  if (!phase || typeof document === 'undefined') return null;
+   688→   688→  return createPortal(
+   689→   689→    <motion.div
+   690→   690→      className="fixed inset-0"
+   691→   691→      style={{
+   692→   692→        zIndex: 99998,
+   693→   693→        background: 'radial-gradient(ellipse at center, #A68B5B 0%, #8B7355 50%, #6B563F 100%)',
+   694→   694→        pointerEvents: 'none',
+   695→   695→      }}
+   696→   696→      initial={{ opacity: 0 }}
+   697→   697→      animate={{ opacity: phase === 'in' ? 1 : 0 }}
+   698→   698→      transition={{ duration: 0.8, ease: 'easeInOut' }}
+   699→   699→    />,
+   700→   700→    document.body
+   701→   701→  );
+   702→   702→}
+   703→   703→
+   704→   704→/* ======================================================== */
+   705→   705→/*  MAIN PAGE                                                  */
+   706→   706→/* ======================================================== */
+   707→   707→
+   708→   708→export default function BuchDerBegierde() {
+   709→   709→  const [activeChapter, setActiveChapter] = useState(0);
+   710→   710→  const [showOverlay, setShowOverlay] = useState(false);
+   711→   711→  const [overlayPhase, setOverlayPhase] = useState<'in' | 'out' | null>(null);
+   712→   712→  const mountedRef = useRef(false);
+   713→   713→
+   714→   714→  useEffect(() => {
+   715→   715→    mountedRef.current = true;
+   716→   716→  }, []);
+   717→   717→
+   718→   718→  const navigateToChapter = useCallback((index: number) => {
+   719→   719→    if (!mountedRef.current || overlayPhase || index === activeChapter) return;
+   720→   720→    setOverlayPhase('in');
+   721→   721→    setShowOverlay(true);
+   722→   722→    setTimeout(() => {
+   723→   723→      setActiveChapter(index);
+   724→   724→      setOverlayPhase('out');
+   725→   725→    }, 800);
+   726→   726→    setTimeout(() => {
+   727→   727→      setShowOverlay(false);
+   728→   728→      setOverlayPhase(null);
+   729→   729→    }, 1600);
+   730→   730→  }, [overlayPhase, activeChapter]);
+   731→   731→
+   732→   732→  const handleEnter = useCallback(() => navigateToChapter(1), [navigateToChapter]);
+   733→   733→  const handleContinue = useCallback(() => navigateToChapter(2), [navigateToChapter]);
+   734→   734→
+   735→   735→  return (
+   736→   736→    <main style={{ background: '#C4A574', minHeight: '100vh' }}>
+   737→   737→      {activeChapter === 0 && <ChapterIntro onEnter={handleEnter} />}
+   738→   738→      {activeChapter === 1 && <ChapterBookIntro onContinue={handleContinue} />}
+   739→   739→      {activeChapter === 2 && <ChapterPassages />}
+   740→   740→
+   741→   741→      {/* Transition overlay */}
+   742→   742→      <TransitionOverlay phase={overlayPhase} />
+   743→   743→
+   744→   744→      {/* Nav dots */}
+   745→   745→      {activeChapter > 0 && !overlayPhase && (
+   746→   746→        <NavDots current={activeChapter - 1} onNavigate={navigateToChapter} />
+   747→   747→      )}
+   748→   748→    </main>
+   749→   749→  );
+   750→   750→}
+   751→   751→
