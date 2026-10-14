@@ -1,0 +1,1148 @@
+     1→
+     2→# Erstelle die komplette überarbeitete index.html
+     3→index_html = '''<!DOCTYPE html>
+     4→<html lang="de">
+     5→<head>
+     6→<meta charset="UTF-8">
+     7→<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+     8→<title>Buch der Begierde — Ein interaktives Leseerlebnis</title>
+     9→<link rel="preconnect" href="https://fonts.googleapis.com">
+    10→<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    11→<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    12→<style>
+    13→/* ============================================================================
+    14→   DESIGN SYSTEM — Buch der Begierde v0.6.0
+    15→   Basierend auf Video-Vorlage: Altes Buch, Sepia, Pergament, antike Flaschen
+    16→   ============================================================================ */
+    17→
+    18→:root {
+    19→  /* Farben — extrahiert aus der Video-Vorlage */
+    20→  --bg-deep: #0a0a0f;
+    21→  --bg-surface: #121018;
+    22→  --bg-elevated: #1a1418;
+    23→  --fg-primary: #e8dcc8;
+    24→  --fg-secondary: #c4b896;
+    25→  --fg-muted: #8a7a5a;
+    26→  --accent-blood: #6b1a1a;
+    27→  --accent-blood-glow: #8b2525;
+    28→  --accent-gold: #b8a060;
+    29→  --accent-gold-dim: #7a6a40;
+    30→  --parchment: #e8dcc8;
+    31→  --parchment-dark: #c4b896;
+    32→  --parchment-aged: #b8a878;
+    33→  --ink: #1a1410;
+    34→  --ink-light: #3a2e22;
+    35→  --wood-dark: #2a1f15;
+    36→  --wood-medium: #4a3a28;
+    37→  --shadow-deep: rgba(0,0,0,0.85);
+    38→  --shadow-soft: rgba(0,0,0,0.4);
+    39→  --mist: rgba(180,170,150,0.06);
+    40→  
+    41→  /* Fonts */
+    42→  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    43→  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    44→  
+    45→  /* Transitions */
+    46→  --t-slow: 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    47→  --t-medium: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    48→  --t-fast: 0.3s ease;
+    49→}
+    50→
+    51→/* ============================================================================
+    52→   RESET & BASIS
+    53→   ============================================================================ */
+    54→*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    55→html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-deep); font-family:var(--font-serif); color:var(--fg-primary); -webkit-font-smoothing:antialiased; }
+    56→
+    57→/* ============================================================================
+    58→   INTRO — HTML5 VIDEO FULLSCREEN
+    59→   ============================================================================ */
+    60→#intro-video {
+    61→  position:fixed; inset:0; z-index:1000;
+    62→  background:#050508;
+    63→  display:flex; align-items:center; justify-content:center;
+    64→  transition:opacity var(--t-slow), visibility var(--t-slow);
+    65→}
+    66→#intro-video.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+    67→#intro-video video {
+    68→  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    69→}
+    70→.video-overlay {
+    71→  position:absolute; inset:0;
+    72→  background:radial-gradient(ellipse at center, transparent 30%, rgba(5,5,8,0.7) 70%, rgba(5,5,8,0.95) 100%);
+    73→  pointer-events:none;
+    74→}
+    75→.video-vignette {
+    76→  position:absolute; inset:0;
+    77→  box-shadow:inset 0 0 150px rgba(0,0,0,0.6);
+    78→  pointer-events:none;
+    79→}
+    80→.video-text {
+    81→  position:relative; z-index:10; text-align:center;
+    82→  opacity:0; transform:translateY(20px);
+    83→  animation:fadeInUp 2s ease 1s forwards;
+    84→}
+    85→.video-text h1 {
+    86→  font-size:clamp(1.8rem, 5vw, 3.5rem); font-weight:400;
+    87→  letter-spacing:0.35em; color:var(--parchment);
+    88→  text-shadow:0 0 50px rgba(184,160,96,0.25), 0 2px 15px rgba(0,0,0,0.9);
+    89→  margin-bottom:0.4em;
+    90→}
+    91→.video-text p {
+    92→  font-size:clamp(0.85rem, 2vw, 1.2rem); color:var(--parchment-dark);
+    93→  letter-spacing:0.18em; font-style:italic;
+    94→}
+    95→.video-skip {
+    96→  position:absolute; bottom:5vh; left:50%; transform:translateX(-50%);
+    97→  z-index:20; background:transparent; border:1px solid var(--accent-gold-dim);
+    98→  color:var(--accent-gold-dim); padding:0.6em 2em;
+    99→  font-size:0.75rem; letter-spacing:0.2em; cursor:pointer;
+   100→  opacity:0; animation:fadeIn 1s ease 3s forwards;
+   101→  transition:all var(--t-fast); font-family:var(--font-serif); border-radius:4px;
+   102→}
+   103→.video-skip:hover { border-color:var(--accent-gold); color:var(--accent-gold); }
+   104→
+   105→@keyframes fadeInUp { to { opacity:1; transform:translateY(0); } }
+   106→@keyframes fadeIn { to { opacity:1; } }
+   107→
+   108→/* ============================================================================
+   109→   BUCH-ÖFFNUNGS-ANIMATION (CANVAS)
+   110→   ============================================================================ */
+   111→#book-opening {
+   112→  position:fixed; inset:0; z-index:900;
+   113→  background:var(--bg-deep);
+   114→  display:flex; align-items:center; justify-content:center;
+   115→  opacity:0; visibility:hidden;
+   116→  transition:opacity var(--t-slow), visibility var(--t-slow);
+   117→}
+   118→#book-opening.active { opacity:1; visibility:visible; }
+   119→#book-canvas { position:absolute; inset:0; width:100%; height:100%; }
+   120→.book-overlay {
+   121→  position:absolute; inset:0;
+   122→  background:radial-gradient(ellipse at center, transparent 0%, rgba(10,10,15,0.5) 100%);
+   123→  pointer-events:none;
+   124→}
+   125→.book-text {
+   126→  position:relative; z-index:10; text-align:center;
+   127→  opacity:0; transform:translateY(15px);
+   128→}
+   129→.book-text h2 {
+   130→  font-size:clamp(1.3rem, 3vw, 2rem); font-weight:400;
+   131→  letter-spacing:0.25em; color:var(--parchment);
+   132→  text-shadow:0 0 30px rgba(184,160,96,0.2);
+   133→}
+   134→
+   135→/* ============================================================================
+   136→   PERGAMENT-PORTAL
+   137→   ============================================================================ */
+   138→#portal {
+   139→  position:fixed; inset:0; z-index:800;
+   140→  display:flex; align-items:center; justify-content:center;
+   141→  background:
+   142→    radial-gradient(ellipse at 30% 20%, rgba(60,40,30,0.12) 0%, transparent 50%),
+   143→    radial-gradient(ellipse at 70% 80%, rgba(40,30,60,0.08) 0%, transparent 50%),
+   144→    var(--bg-deep);
+   145→  opacity:0; visibility:hidden;
+   146→  transition:opacity var(--t-slow), visibility var(--t-slow), transform var(--t-slow);
+   147→}
+   148→#portal.active { opacity:1; visibility:visible; }
+   149→#portal.hidden-portal { opacity:0; pointer-events:none; transform:scale(1.03); }
+   150→
+   151→.parchment-wrapper {
+   152→  position:relative;
+   153→  width:min(88vw, 680px); height:min(82vh, 850px);
+   154→  display:flex; align-items:center; justify-content:center;
+   155→}
+   156→.parchment {
+   157→  position:relative; width:100%; height:100%;
+   158→  background:linear-gradient(135deg, #e8dcc8 0%, #d4c5a0 25%, #e0d2b0 50%, #c8b890 75%, #ddd0b8 100%);
+   159→  border-radius:3px;
+   160→  box-shadow:
+   161→    0 0 50px rgba(184,160,96,0.12),
+   162→    0 20px 70px rgba(0,0,0,0.75),
+   163→    inset 0 0 80px rgba(139,119,80,0.08);
+   164→  padding:clamp(1.5rem, 4vw, 2.5rem);
+   165→  display:flex; flex-direction:column; align-items:center; justify-content:center;
+   166→  text-align:center; overflow:hidden;
+   167→}
+   168→/* Pergament-Textur */
+   169→.parchment::before {
+   170→  content:''; position:absolute; inset:0;
+   171→  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+   172→  opacity:0.5; pointer-events:none; mix-blend-mode:multiply;
+   173→}
+   174→/* Gealterte Ränder */
+   175→.parchment::after {
+   176→  content:''; position:absolute; inset:6px;
+   177→  border:1px solid rgba(90,70,40,0.15); border-radius:2px; pointer-events:none;
+   178→}
+   179→.parchment-content {
+   180→  position:relative; z-index:2; width:100%; height:100%;
+   181→  display:flex; flex-direction:column; align-items:center; justify-content:center;
+   182→  gap:clamp(0.6rem, 2vh, 1.2rem);
+   183→}
+   184→
+   185→/* Wachssiegel */
+   186→.seal {
+   187→  width:clamp(50px, 10vw, 80px); height:clamp(50px, 10vw, 80px);
+   188→  border:2px solid var(--accent-blood); border-radius:50%;
+   189→  display:flex; align-items:center; justify-content:center;
+   190→  animation:sealPulse 4s ease-in-out infinite;
+   191→  position:relative; margin-bottom:0.3rem;
+   192→}
+   193→.seal::before {
+   194→  content:''; position:absolute; inset:-3px;
+   195→  border:1px solid rgba(107,26,26,0.25); border-radius:50%;
+   196→}
+   197→.seal svg { width:45%; height:45%; fill:var(--accent-blood); opacity:0.75; }
+   198→@keyframes sealPulse {
+   199→  0%,100% { box-shadow:0 0 18px rgba(107,26,26,0.15); }
+   200→  50% { box-shadow:0 0 35px rgba(107,26,26,0.35); }
+   201→}
+   202→
+   203→.parchment h2 {
+   204→  font-size:clamp(1.2rem, 3.5vw, 2rem); font-weight:400;
+   205→  color:var(--ink); letter-spacing:0.18em; text-transform:uppercase; line-height:1.3;
+   206→}
+   207→.parchment .divider {
+   208→  width:50%; max-width:160px; height:1px;
+   209→  background:linear-gradient(90deg, transparent, var(--ink-light), transparent);
+   210→}
+   211→.parchment p {
+   212→  font-size:clamp(0.8rem, 1.8vw, 1rem); color:var(--ink-light);
+   213→  line-height:1.7; max-width:92%; font-style:italic;
+   214→}
+   215→.parchment .code-box {
+   216→  font-family:var(--font-mono); font-size:clamp(0.65rem, 1.5vw, 0.85rem);
+   217→  letter-spacing:0.35em; color:var(--accent-blood);
+   218→  background:rgba(107,26,26,0.04); padding:0.7em 1.4em;
+   219→  border:1px solid rgba(107,26,26,0.18); cursor:pointer;
+   220→  transition:all var(--t-fast); position:relative; overflow:hidden;
+   221→}
+   222→.parchment .code-box:hover {
+   223→  background:rgba(107,26,26,0.08);
+   224→  box-shadow:0 0 18px rgba(107,26,26,0.12);
+   225→}
+   226→.parchment .code-box::after {
+   227→  content:'SCANNEN'; position:absolute; inset:0;
+   228→  display:flex; align-items:center; justify-content:center;
+   229→  background:var(--accent-blood); color:var(--parchment);
+   230→  font-family:var(--font-serif); letter-spacing:0.25em; font-size:0.75em;
+   231→  opacity:0; transition:opacity var(--t-fast);
+   232→}
+   233→.parchment .code-box:hover::after { opacity:1; }
+   234→
+   235→.enter-btn {
+   236→  margin-top:0.5rem; background:transparent; border:1px solid var(--ink-light);
+   237→  color:var(--ink); padding:0.8em 2.2em;
+   238→  font-size:clamp(0.75rem, 1.6vw, 0.9rem); letter-spacing:0.22em;
+   239→  text-transform:uppercase; cursor:pointer;
+   240→  transition:all var(--t-fast); font-family:var(--font-serif);
+   241→  position:relative; overflow:hidden;
+   242→}
+   243→.enter-btn::before {
+   244→  content:''; position:absolute; inset:0; background:var(--ink);
+   245→  transform:translateX(-101%); transition:transform var(--t-medium);
+   246→}
+   247→.enter-btn:hover::before { transform:translateX(0); }
+   248→.enter-btn span { position:relative; z-index:1; transition:color var(--t-medium); }
+   249→.enter-btn:hover { border-color:var(--ink); }
+   250→.enter-btn:hover span { color:var(--parchment); }
+   251→
+   252→/* ============================================================================
+   253→   HAUPT-APP & NAVIGATION
+   254→   ============================================================================ */
+   255→#app {
+   256→  position:fixed; inset:0; z-index:10;
+   257→  opacity:0; transition:opacity var(--t-slow);
+   258→  background:var(--bg-deep);
+   259→}
+   260→#app.visible { opacity:1; }
+   261→
+   262→.mist-layer {
+   263→  position:fixed; inset:0; pointer-events:none; z-index:5;
+   264→  background:radial-gradient(ellipse at 50% 100%, rgba(180,170,150,0.03) 0%, transparent 60%);
+   265→}
+   266→
+   267→/* Navigation */
+   268→#main-nav {
+   269→  position:fixed; top:0; left:0; right:0; z-index:50;
+   270→  display:flex; align-items:center; justify-content:space-between;
+   271→  padding:clamp(0.7rem, 1.8vh, 1.2rem) clamp(1rem, 2.5vw, 1.8rem);
+   272→  background:linear-gradient(to bottom, rgba(10,10,15,0.95) 0%, transparent 100%);
+   273→  opacity:0; transform:translateY(-15px);
+   274→  transition:all var(--t-medium); pointer-events:none;
+   275→}
+   276→#main-nav.visible { opacity:1; transform:translateY(0); pointer-events:all; }
+   277→.nav-brand {
+   278→  font-size:clamp(0.8rem, 1.6vw, 1rem); letter-spacing:0.3em;
+   279→  color:var(--fg-muted); text-transform:uppercase; cursor:pointer;
+   280→  transition:color var(--t-fast);
+   281→}
+   282→.nav-brand:hover { color:var(--accent-gold); }
+   283→.nav-links { display:flex; gap:clamp(0.8rem, 2.5vw, 2rem); list-style:none; }
+   284→.nav-links a {
+   285→  color:var(--fg-muted); text-decoration:none;
+   286→  font-size:clamp(0.7rem, 1.3vw, 0.85rem); letter-spacing:0.12em;
+   287→  text-transform:uppercase; position:relative; padding-bottom:3px;
+   288→  transition:color var(--t-fast); cursor:pointer;
+   289→}
+   290→.nav-links a::after {
+   291→  content:''; position:absolute; bottom:0; left:0;
+   292→  width:0; height:1px; background:var(--accent-blood);
+   293→  transition:width var(--t-medium);
+   294→}
+   295→.nav-links a:hover, .nav-links a.active { color:var(--fg-primary); }
+   296→.nav-links a:hover::after, .nav-links a.active::after { width:100%; }
+   297→
+   298→/* ============================================================================
+   299→   FOLGESEITEN
+   300→   ============================================================================ */
+   301→.page {
+   302→  position:fixed; inset:0; z-index:10;
+   303→  display:flex; flex-direction:column; align-items:center; justify-content:center;
+   304→  padding:clamp(3.5rem, 9vh, 5.5rem) clamp(0.8rem, 3vw, 2.5rem) clamp(0.8rem, 3vh, 1.5rem);
+   305→  opacity:0; pointer-events:none; transform:translateY(15px);
+   306→  transition:all var(--t-medium); overflow:hidden;
+   307→}
+   308→.page.active { opacity:1; pointer-events:all; transform:translateY(0); }
+   309→.page-bg {
+   310→  position:absolute; inset:0; z-index:-1;
+   311→  background:
+   312→    radial-gradient(ellipse at 20% 30%, rgba(60,30,30,0.08) 0%, transparent 50%),
+   313→    radial-gradient(ellipse at 80% 70%, rgba(30,30,60,0.05) 0%, transparent 50%),
+   314→    var(--bg-deep);
+   315→}
+   316→.page-inner {
+   317→  width:100%; max-width:850px; height:100%;
+   318→  display:flex; flex-direction:column; align-items:center; justify-content:center;
+   319→  gap:clamp(0.6rem, 2vh, 1.2rem); position:relative;
+   320→}
+   321→.page-title {
+   322→  font-size:clamp(1.4rem, 3.5vw, 2.2rem); font-weight:400;
+   323→  letter-spacing:0.18em; color:var(--fg-primary); text-transform:uppercase;
+   324→  text-align:center; text-shadow:0 0 25px rgba(184,160,96,0.1);
+   325→}
+   326→.page-subtitle {
+   327→  font-size:clamp(0.75rem, 1.6vw, 0.95rem); color:var(--fg-muted);
+   328→  letter-spacing:0.12em; font-style:italic; text-align:center;
+   329→}
+   330→
+   331→/* ----- HÖREN ----- */
+   332→.visualizer {
+   333→  width:min(75vw, 420px); height:90px;
+   334→  display:flex; align-items:flex-end; justify-content:center; gap:3px;
+   335→  margin:6px 0;
+   336→}
+   337→.v-bar {
+   338→  width:3px; background:linear-gradient(to top, var(--accent-blood), var(--accent-gold-dim));
+   339→  border-radius:2px; animation:vWave 1.2s ease-in-out infinite; opacity:0.65;
+   340→}
+   341→.v-bar:nth-child(odd) { animation-duration:0.9s; }
+   342→.v-bar:nth-child(3n) { animation-duration:1.4s; }
+   343→.v-bar:nth-child(5n) { animation-duration:0.7s; }
+   344→@keyframes vWave { 0%,100% { height:15%; } 50% { height:100%; } }
+   345→
+   346→.audio-ctrl { display:flex; gap:12px; align-items:center; margin:6px 0; }
+   347→.a-btn {
+   348→  width:42px; height:42px; border-radius:50%; border:1px solid var(--accent-gold-dim);
+   349→  background:transparent; color:var(--fg-muted); cursor:pointer;
+   350→  display:flex; align-items:center; justify-content:center;
+   351→  transition:all var(--t-fast); font-size:0.85rem;
+   352→}
+   353→.a-btn:hover { border-color:var(--accent-gold); color:var(--accent-gold); }
+   354→.a-btn.play { width:50px; height:50px; border-color:var(--accent-blood); color:var(--accent-blood); }
+   355→.a-btn.play:hover { box-shadow:0 0 20px rgba(107,26,26,0.2); }
+   356→
+   357→.tracklist { width:100%; max-width:420px; margin-top:6px; }
+   358→.track {
+   359→  display:flex; align-items:center; gap:10px;
+   360→  padding:6px 10px; border-bottom:1px solid rgba(180,170,150,0.05);
+   361→  cursor:pointer; transition:all var(--t-fast); font-size:0.8rem;
+   362→}
+   363→.track:hover { background:rgba(180,170,150,0.03); }
+   364→.track-num { color:var(--accent-gold-dim); font-family:var(--font-mono); font-size:0.7rem; width:22px; }
+   365→.track-name { flex:1; color:var(--fg-primary); letter-spacing:0.03em; }
+   366→.track-dur { color:var(--accent-gold-dim); font-family:var(--font-mono); font-size:0.7rem; }
+   367→
+   368→/* ----- LESEN ----- */
+   369→.chapters { display:flex; gap:6px; margin-bottom:8px; }
+   370→.ch-dot {
+   371→  width:8px; height:8px; border-radius:50%; border:1px solid var(--accent-gold-dim);
+   372→  background:transparent; cursor:pointer; transition:all var(--t-fast);
+   373→}
+   374→.ch-dot.active, .ch-dot:hover { background:var(--accent-blood); border-color:var(--accent-blood); box-shadow:0 0 8px rgba(107,26,26,0.3); }
+   375→
+   376→.read-area {
+   377→  width:100%; max-width:520px; max-height:45vh; overflow-y:auto;
+   378→  padding:16px; background:rgba(10,10,15,0.55); border:1px solid rgba(180,170,150,0.06);
+   379→}
+   380→.read-area::-webkit-scrollbar { width:2px; }
+   381→.read-area::-webkit-scrollbar-thumb { background:var(--accent-gold-dim); }
+   382→.read-area p {
+   383→  font-size:clamp(0.8rem, 1.6vw, 0.95rem); line-height:1.85;
+   384→  color:var(--fg-muted); margin-bottom:0.8em; text-align:justify;
+   385→}
+   386→.read-area p:first-child::first-letter {
+   387→  font-size:2.8em; float:left; line-height:0.8; margin-right:0.08em;
+   388→  color:var(--accent-blood); font-weight:400;
+   389→}
+   390→.read-progress {
+   391→  width:100%; max-width:520px; height:1px;
+   392→  background:rgba(180,170,150,0.08); margin-top:6px; position:relative;
+   393→}
+   394→.read-progress-bar { position:absolute; left:0; top:0; height:100%; width:20%; background:var(--accent-blood); transition:width var(--t-medium); }
+   395→
+   396→/* Fragment-Selektor (Buch der Begierde Feature) */
+   397→.fragment-bar {
+   398→  display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin:4px 0;
+   399→}
+   400→.fragment-tag {
+   401→  padding:4px 12px; border:1px solid rgba(180,170,150,0.12);
+   402→  background:rgba(180,170,150,0.03); color:var(--fg-muted);
+   403→  font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase;
+   404→  cursor:pointer; transition:all var(--t-fast); border-radius:3px;
+   405→}
+   406→.fragment-tag:hover, .fragment-tag.active {
+   407→  border-color:var(--accent-blood); color:var(--fg-primary);
+   408→  background:rgba(107,26,26,0.06); box-shadow:0 0 10px rgba(107,26,26,0.1);
+   409→}
+   410→
+   411→/* Echo-Metriken */
+   412→.echo-metrics {
+   413→  display:flex; gap:16px; justify-content:center; margin:4px 0;
+   414→}
+   415→.echo-metric {
+   416→  text-align:center;
+   417→}
+   418→.echo-metric .value {
+   419→  font-family:var(--font-mono); font-size:0.9rem; color:var(--accent-gold);
+   420→  font-variant-numeric:tabular-nums;
+   421→}
+   422→.echo-metric .label {
+   423→  font-size:0.6rem; color:var(--fg-muted); letter-spacing:0.15em; text-transform:uppercase;
+   424→}
+   425→
+   426→/* ----- SCHREIBEN ----- */
+   427→.write-box {
+   428→  width:100%; max-width:520px; display:flex; flex-direction:column; gap:8px;
+   429→}
+   430→.write-prompt {
+   431→  font-size:clamp(0.75rem, 1.5vw, 0.9rem); color:var(--fg-muted);
+   432→  font-style:italic; text-align:center; line-height:1.6; transition:opacity 0.3s;
+   433→}
+   434→.write-ta {
+   435→  width:100%; min-height:100px; max-height:30vh;
+   436→  background:rgba(10,10,15,0.75); border:1px solid rgba(180,170,150,0.1);
+   437→  color:var(--fg-primary); padding:12px; font-family:var(--font-serif);
+   438→  font-size:clamp(0.8rem, 1.5vw, 0.95rem); line-height:1.65;
+   439→  resize:none; outline:none; transition:border-color var(--t-fast);
+   440→}
+   441→.write-ta:focus { border-color:var(--accent-blood); box-shadow:0 0 15px rgba(107,26,26,0.08); }
+   442→.write-ta::placeholder { color:rgba(180,170,150,0.22); font-style:italic; }
+   443→.write-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+   444→.w-btn {
+   445→  padding:6px 16px; border:1px solid var(--accent-gold-dim);
+   446→  background:transparent; color:var(--fg-muted); font-family:var(--font-serif);
+   447→  font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase;
+   448→  cursor:pointer; transition:all var(--t-fast); border-radius:3px;
+   449→}
+   450→.w-btn:hover { border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(184,160,96,0.04); }
+   451→.w-btn.primary { border-color:var(--accent-blood); color:var(--accent-blood); }
+   452→.w-btn.primary:hover { background:rgba(107,26,26,0.07); }
+   453→
+   454→.notes { width:100%; max-width:520px; margin-top:6px; }
+   455→.note {
+   456→  padding:6px 10px; border-left:2px solid var(--accent-blood);
+   457→  margin-bottom:4px; background:rgba(107,26,26,0.02);
+   458→  font-size:0.75rem; color:var(--fg-muted); line-height:1.4;
+   459→}
+   460→
+   461→/* ============================================================================
+   462→   RESPONSIVE
+   463→   ============================================================================ */
+   464→@media (max-width:480px) {
+   465→  .parchment { padding:1rem; }
+   466→  .nav-links { gap:0.6rem; }
+   467→  .nav-links a { font-size:0.6rem; letter-spacing:0.08em; }
+   468→  .visualizer { height:60px; }
+   469→  .read-area { padding:10px; max-height:40vh; }
+   470→  .page { padding-top:3rem; }
+   471→}
+   472→@media (max-height:550px) {
+   473→  .parchment-wrapper { height:88vh; }
+   474→  .page { padding-top:3rem; }
+   475→  .visualizer { height:45px; }
+   476→  .read-area { max-height:35vh; }
+   477→}
+   478→@media (min-width:1600px) {
+   479→  .page-inner { max-width:1100px; }
+   480→  .parchment-wrapper { width:min(70vw, 800px); }
+   481→}
+   482→
+   483→/* ============================================================================
+   484→   PAGE TRANSITION OVERLAY
+   485→   ============================================================================ */
+   486→#page-transition {
+   487→  position:fixed; inset:0; z-index:999;
+   488→  background:var(--bg-deep); opacity:0; pointer-events:none;
+   489→  transition:opacity var(--t-medium);
+   490→}
+   491→#page-transition.active { opacity:1; pointer-events:all; }
+   492→</style>
+   493→</head>
+   494→<body>
+   495→
+   496→<!-- ==================== INTRO: HTML5 VIDEO ==================== -->
+   497→<div id="intro-video">
+   498→  <video id="introVid" autoplay muted playsinline preload="auto">
+   499→    <source src="generated_video.mp4" type="video/mp4">
+   500→    <!-- Fallback: Canvas-Animation wenn Video nicht verfügbar -->
+   501→  </video>
+   502→  <div class="video-overlay"></div>
+   503→  <div class="video-vignette"></div>
+   504→  <div class="video-text">
+   505→    <h1>Buch der Begierde</h1>
+   506→    <p>Ein interaktives Leseerlebnis</p>
+   507→  </div>
+   508→  <button class="video-skip" onclick="skipVideo()">Überspringen</button>
+   509→</div>
+   510→
+   511→<!-- ==================== BUCH-ÖFFNUNGS-ANIMATION ==================== -->
+   512→<div id="book-opening">
+   513→  <canvas id="bookCanvas"></canvas>
+   514→  <div class="book-overlay"></div>
+   515→  <div class="book-text" id="bookText">
+   516→    <h2>Die Seiten öffnen sich...</h2>
+   517→  </div>
+   518→</div>
+   519→
+   520→<!-- ==================== PERGAMENT-PORTAL ==================== -->
+   521→<div id="portal">
+   522→  <div class="parchment-wrapper">
+   523→    <div class="parchment">
+   524→      <div class="parchment-content">
+   525→        <div class="seal">
+   526→          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+   527→        </div>
+   528→        <h2>Willkommen,<br>wandernde Seele</h2>
+   529→        <div class="divider"></div>
+   530→        <p>Du hältst ein Buch in Händen, das älter ist als die Zeit selbst. Der Code auf dem Pergament ist der Schlüssel zu einer Welt aus Schatten und Sehnsucht.</p>
+   531→        <div class="code-box" onclick="scanCode()">X7-K9-Ω-42</div>
+   532→        <p style="font-size:0.75rem;opacity:0.5;margin-top:-2px;">Scanne den Code, um das Portal zu öffnen</p>
+   533→        <button class="enter-btn" onclick="enterApp()"><span>Das Tor öffnen</span></button>
+   534→      </div>
+   535→    </div>
+   536→  </div>
+   537→</div>
+   538→
+   539→<!-- ==================== HAUPT-APP ==================== -->
+   540→<div id="app">
+   541→  <div class="mist-layer"></div>
+   542→
+   543→  <!-- Navigation -->
+   544→  <nav id="main-nav">
+   545→    <div class="nav-brand" onclick="showPortal()">Buch der Begierde</div>
+   546→    <ul class="nav-links">
+   547→      <li><a class="active" onclick="goTo('lesen')">Lesen</a></li>
+   548→      <li><a onclick="goTo('hoeren')">Hören</a></li>
+   549→      <li><a onclick="goTo('schreiben')">Schreiben</a></li>
+   550→      <li><a onclick="goTo('archiv')">Archiv</a></li>
+   551→    </ul>
+   552→  </nav>
+   553→
+   554→  <!-- Seite: LESEN (Hauptseite) -->
+   555→  <section class="page active" id="pg-lesen">
+   556→    <div class="page-bg"></div>
+   557→    <div class="page-inner">
+   558→      <h2 class="page-title">Lesen</h2>
+   559→      <p class="page-subtitle">Wähle dein Fragment — Jede Kombination erzählt eine andere Geschichte</p>
+   560→
+   561→      <!-- Fragment-Selektor -->
+   562→      <div class="fragment-bar">
+   563→        <div class="fragment-tag" data-fragment="samt" onclick="toggleFragment(this)">Samt</div>
+   564→        <div class="fragment-tag" data-fragment="kaelte" onclick="toggleFragment(this)">Kälte</div>
+   565→        <div class="fragment-tag" data-fragment="waerme" onclick="toggleFragment(this)">Wärme</div>
+   566→        <div class="fragment-tag" data-fragment="licht" onclick="toggleFragment(this)">Licht</div>
+   567→        <div class="fragment-tag" data-fragment="schatten" onclick="toggleFragment(this)">Schatten</div>
+   568→        <div class="fragment-tag" data-fragment="staub" onclick="toggleFragment(this)">Staub</div>
+   569→        <div class="fragment-tag" data-fragment="atem" onclick="toggleFragment(this)">Atem</div>
+   570→      </div>
+   571→
+   572→      <!-- Echo-Metriken -->
+   573→      <div class="echo-metrics">
+   574→        <div class="echo-metric">
+   575→          <div class="value" id="echo-resonanz">0.00</div>
+   576→          <div class="label">Resonanz</div>
+   577→        </div>
+   578→        <div class="echo-metric">
+   579→          <div class="value" id="echo-tiefe">0.00</div>
+   580→          <div class="label">Tiefe</div>
+   581→        </div>
+   582→        <div class="echo-metric">
+   583→          <div class="value" id="echo-drift">0.00</div>
+   584→          <div class="label">Drift</div>
+   585→        </div>
+   586→      </div>
+   587→
+   588→      <!-- Kapitel-Selektor -->
+   589→      <div class="chapters">
+   590→        <div class="ch-dot active" onclick="loadChapter(0)"></div>
+   591→        <div class="ch-dot" onclick="loadChapter(1)"></div>
+   592→        <div class="ch-dot" onclick="loadChapter(2)"></div>
+   593→        <div class="ch-dot" onclick="loadChapter(3)"></div>
+   594→        <div class="ch-dot" onclick="loadChapter(4)"></div>
+   595→      </div>
+   596→
+   597→      <!-- Lesebereich -->
+   598→      <div class="read-area" id="readArea">
+   599→        <p>Die Nacht legte sich über die Stadt wie ein Samtgewebe, das jede Bewegung verschluckte. Ich stand am Fenster und beobachtete das Licht der Laternen, wie es sich in den Pfützen des gerade vergangenen Regens brach.</p>
+   600→        <p>Ein Geräusch hinter mir. Das Rascheln von Seide, vielleicht. Oder nur der Wind, der durch die Ritzen der alten Fensterfugen strich. Ich drehte mich nicht um. In dieser Stunde zwischen Mitternacht und Morgengrauen wagte niemand, sich zu rühren.</p>
+   601→        <p>Doch dann — ein Atemzug. Näher als der Wind. Wärmer als die Kälte, die von den Steinwänden ausging. Jemand war hier. Jemand, der genauso lange wartete wie ich.</p>
+   602→      </div>
+   603→
+   604→      <div class="read-progress"><div class="read-progress-bar" id="rpBar"></div></div>
+   605→      <p class="page-subtitle" style="margin-top:2px;">Seite <span id="pageNum">47</span> / 312</p>
+   606→    </div>
+   607→  </section>
+   608→
+   609→  <!-- Seite: HÖREN -->
+   610→  <section class="page" id="pg-hoeren">
+   611→    <div class="page-bg"></div>
+   612→    <div class="page-inner">
+   613→      <h2 class="page-title">Hören</h2>
+   614→      <p class="page-subtitle">Atmosphärische Klangwelten — Die Geschichte spricht zu dir</p>
+   615→      <div class="visualizer" id="viz"></div>
+   616→      <div class="audio-ctrl">
+   617→        <button class="a-btn" onclick="prevTrack()">◀◀</button>
+   618→        <button class="a-btn play" id="playBtn" onclick="togglePlay()">▶</button>
+   619→        <button class="a-btn" onclick="nextTrack()">▶▶</button>
+   620→      </div>
+   621→      <div class="tracklist">
+   622→        <div class="track" onclick="selTrack(this, 0)">
+   623→          <span class="track-num">01</span>
+   624→          <span class="track-name">Flüstern im Kerzenschein</span>
+   625→          <span class="track-dur">04:32</span>
+   626→        </div>
+   627→        <div class="track" onclick="selTrack(this, 1)">
+   628→          <span class="track-num">02</span>
+   629→          <span class="track-name">Das Rascheln von Seide</span>
+   630→          <span class="track-dur">03:17</span>
+   631→        </div>
+   632→        <div class="track" onclick="selTrack(this, 2)">
+   633→          <span class="track-num">03</span>
+   634→          <span class="track-name">Mitternacht in Venedig</span>
+   635→          <span class="track-dur">05:44</span>
+   636→        </div>
+   637→        <div class="track" onclick="selTrack(this, 3)">
+   638→          <span class="track-num">04</span>
+   639→          <span class="track-name">Der letzte Tanz</span>
+   640→          <span class="track-dur">06:21</span>
+   641→        </div>
+   642→        <div class="track" onclick="selTrack(this, 4)">
+   643→          <span class="track-num">05</span>
+   644→          <span class="track-name">Echo der Vergangenheit</span>
+   645→          <span class="track-dur">07:08</span>
+   646→        </div>
+   647→      </div>
+   648→      <div class="echo-metrics" style="margin-top:8px;">
+   649→        <div class="echo-metric">
+   650→          <div class="value" id="speedVal">1.0x</div>
+   651→          <div class="label">Geschwindigkeit</div>
+   652→        </div>
+   653→        <div class="echo-metric">
+   654→          <div class="value" id="pitchVal">1.0</div>
+   655→          <div class="label">Tonhöhe</div>
+   656→        </div>
+   657→      </div>
+   658→    </div>
+   659→  </section>
+   660→
+   661→  <!-- Seite: SCHREIBEN -->
+   662→  <section class="page" id="pg-schreiben">
+   663→    <div class="page-bg"></div>
+   664→    <div class="page-inner">
+   665→      <h2 class="page-title">Schreiben</h2>
+   666→      <p class="page-subtitle">Gib deiner Geschichte eine Stimme — Die Fragmente führen dich</p>
+   667→      <div class="write-box">
+   668→        <p class="write-prompt" id="wPrompt">"Schreibe die ersten Worte eines Briefes, den du niemals abschicken wirst..."</p>
+   669→        <textarea class="write-ta" id="wArea" placeholder="Deine Worte werden zu Schatten, die die Ewigkeit überdauern..."></textarea>
+   670→        <div class="write-actions">
+   671→          <button class="w-btn" onclick="newPrompt()">Inspiration</button>
+   672→          <button class="w-btn" onclick="analyzeText()">Resonanz-Analyse</button>
+   673→          <button class="w-btn primary" onclick="saveNote()">Speichern</button>
+   674→        </div>
+   675→      </div>
+   676→      <div class="notes" id="notes">
+   677→        <div class="note">„Die Nacht kennt alle Geheimnisse, die wir am Tag vergessen." <span style="color:var(--accent-gold-dim);font-size:0.65rem;">— Resonanz: Schatten, Atem</span></div>
+   678→        <div class="note">„Ich habe dich in jedem Regentropfen gesucht." <span style="color:var(--accent-gold-dim);font-size:0.65rem;">— Resonanz: Kälte, Licht</span></div>
+   679→      </div>
+   680→    </div>
+   681→  </section>
+   682→
+   683→  <!-- Seite: ARCHIV -->
+   684→  <section class="page" id="pg-archiv">
+   685→    <div class="page-bg"></div>
+   686→    <div class="page-inner">
+   687→      <h2 class="page-title">Archiv</h2>
+   688→      <p class="page-subtitle">Dein Gedächtnis — Jeder Moment hinterlässt eine Spur</p>
+   689→      <div style="width:100%;max-width:500px;height:200px;background:rgba(10,10,15,0.5);border:1px solid rgba(180,170,150,0.06);display:flex;align-items:center;justify-content:center;">
+   690→        <p style="color:var(--fg-muted);font-style:italic;font-size:0.85rem;">Memory-Graph Visualisierung<br><span style="font-size:0.7rem;">(Canvas-Graph wird hier gerendert)</span></p>
+   691→      </div>
+   692→      <div class="echo-metrics" style="margin-top:10px;">
+   693→        <div class="echo-metric"><div class="value" id="mem-episodic">12</div><div class="label">Episodisch</div></div>
+   694→        <div class="echo-metric"><div class="value" id="mem-sensory">8</div><div class="label">Sensorisch</div></div>
+   695→        <div class="echo-metric"><div class="value" id="mem-emotional">5</div><div class="label">Emotional</div></div>
+   696→        <div class="echo-metric"><div class="value" id="mem-conceptual">3</div><div class="label">Konzeptuell</div></div>
+   697→      </div>
+   698→    </div>
+   699→  </section>
+   700→</div>
+   701→
+   702→<!-- Page Transition Overlay -->
+   703→<div id="page-transition"></div>
+   704→
+   705→<script>
+   706→/* ============================================================================
+   707→   INTRO: VIDEO HANDLING
+   708→   ============================================================================ */
+   709→const video = document.getElementById('introVid');
+   710→const introVideo = document.getElementById('intro-video');
+   711→
+   712→// Wenn Video nicht ladbar -> sofort zur Buch-Animation
+   713→video.addEventListener('error', () => {
+   714→  log('Video nicht verfügbar, starte Canvas-Animation');
+   715→  skipVideo();
+   716→});
+   717→
+   718→// Video-Ende -> Buch-Animation
+   719→video.addEventListener('ended', () => {
+   720→  introVideo.classList.add('hidden');
+   721→  startBookOpening();
+   722→});
+   723→
+   724→// Fallback: Nach 6s automatisch weiter (wenn Video hängt)
+   725→setTimeout(() => {
+   726→  if (!video.ended && video.currentTime < 0.5) {
+   727→    skipVideo();
+   728→  }
+   729→}, 6000);
+   730→
+   731→function skipVideo() {
+   732→  video.pause();
+   733→  introVideo.classList.add('hidden');
+   734→  startBookOpening();
+   735→}
+   736→
+   737→/* ============================================================================
+   738→   BUCH-ÖFFNUNGS-ANIMATION (CANVAS)
+   739→   ============================================================================ */
+   740→const bookOpening = document.getElementById('book-opening');
+   741→const bookCanvas = document.getElementById('bookCanvas');
+   742→const bookCtx = bookCanvas.getContext('2d');
+   743→
+   744→function resizeBookCanvas() {
+   745→  bookCanvas.width = window.innerWidth;
+   746→  bookCanvas.height = window.innerHeight;
+   747→}
+   748→resizeBookCanvas();
+   749→window.addEventListener('resize', resizeBookCanvas);
+   750→
+   751→let bookAnimFrame = 0;
+   752→const bookDuration = 180; // frames (~3s bei 60fps)
+   753→
+   754→function drawBookOpen(progress) {
+   755→  const w = bookCanvas.width, h = bookCanvas.height;
+   756→  bookCtx.fillStyle = '#0a0a0f';
+   757→  bookCtx.fillRect(0, 0, w, h);
+   758→
+   759→  const cx = w / 2, cy = h / 2;
+   760→  const bookW = Math.min(w * 0.5, 500);
+   761→  const bookH = Math.min(h * 0.55, 400);
+   762→  const spineX = cx;
+   763→  const coverAngle = progress * Math.PI * 0.45; // max 81°
+   764→  const pageAngle = progress * Math.PI * 0.35;
+   765→
+   766→  // Schatten
+   767→  bookCtx.save();
+   768→  bookCtx.shadowColor = 'rgba(0,0,0,0.6)';
+   769→  bookCtx.shadowBlur = 40;
+   770→  bookCtx.shadowOffsetY = 20;
+   771→
+   772→  // Linke Seite (Cover öffnet sich)
+   773→  bookCtx.save();
+   774→  bookCtx.translate(spineX, cy);
+   775→  bookCtx.scale(Math.cos(coverAngle), 1);
+   776→  bookCtx.fillStyle = '#2a1f15';
+   777→  bookCtx.fillRect(-bookW/2, -bookH/2, bookW/2, bookH);
+   778→  // Cover-Details
+   779→  bookCtx.strokeStyle = '#4a3a28';
+   780→  bookCtx.lineWidth = 2;
+   781→  bookCtx.strokeRect(-bookW/2 + 8, -bookH/2 + 8, bookW/2 - 16, bookH - 16);
+   782→  bookCtx.restore();
+   783→
+   784→  // Rechte Seite (Cover öffnet sich)
+   785→  bookCtx.save();
+   786→  bookCtx.translate(spineX, cy);
+   787→  bookCtx.scale(Math.cos(coverAngle), 1);
+   788→  bookCtx.fillStyle = '#2a1f15';
+   789→  bookCtx.fillRect(0, -bookH/2, bookW/2, bookH);
+   790→  bookCtx.strokeStyle = '#4a3a28';
+   791→  bookCtx.lineWidth = 2;
+   792→  bookCtx.strokeRect(8, -bookH/2 + 8, bookW/2 - 16, bookH - 16);
+   793→  bookCtx.restore();
+   794→
+   795→  bookCtx.restore();
+   796→
+   797→  // Linke Seite (Seiten)
+   798→  bookCtx.save();
+   799→  bookCtx.translate(spineX, cy);
+   800→  bookCtx.scale(Math.cos(pageAngle), 1);
+   801→  bookCtx.fillStyle = '#e8dcc8';
+   802→  bookCtx.fillRect(-bookW/2 + 4, -bookH/2 + 4, bookW/2 - 8, bookH - 8);
+   803→  // Seiten-Textur
+   804→  bookCtx.fillStyle = 'rgba(180,170,150,0.1)';
+   805→  for (let i = 0; i < 20; i++) {
+   806→    bookCtx.fillRect(-bookW/2 + 10, -bookH/2 + 15 + i * (bookH-30)/20, bookW/2 - 20, 1);
+   807→  }
+   808→  bookCtx.restore();
+   809→
+   810→  // Rechte Seite (Seiten)
+   811→  bookCtx.save();
+   812→  bookCtx.translate(spineX, cy);
+   813→  bookCtx.scale(Math.cos(pageAngle), 1);
+   814→  bookCtx.fillStyle = '#e8dcc8';
+   815→  bookCtx.fillRect(4, -bookH/2 + 4, bookW/2 - 8, bookH - 8);
+   816→  bookCtx.fillStyle = 'rgba(180,170,150,0.1)';
+   817→  for (let i = 0; i < 20; i++) {
+   818→    bookCtx.fillRect(10, -bookH/2 + 15 + i * (bookH-30)/20, bookW/2 - 20, 1);
+   819→  }
+   820→  bookCtx.restore();
+   821→
+   822→  // Buchrücken
+   823→  bookCtx.fillStyle = '#1a1410';
+   824→  bookCtx.fillRect(spineX - 3, cy - bookH/2, 6, bookH);
+   825→
+   826→  // Partikel
+   827→  if (progress > 0.3) {
+   828→    const pCount = Math.floor((progress - 0.3) * 100);
+   829→    for (let i = 0; i < pCount; i++) {
+   830→      const px = cx + (Math.random() - 0.5) * bookW * 1.5;
+   831→      const py = cy + (Math.random() - 0.5) * bookH * 1.2;
+   832→      const ps = Math.random() * 1.5 + 0.3;
+   833→      const po = (progress - 0.3) * 0.4 * Math.random();
+   834→      bookCtx.beginPath();
+   835→      bookCtx.arc(px, py, ps, 0, Math.PI * 2);
+   836→      bookCtx.fillStyle = `rgba(184,160,96,${po})`;
+   837→      bookCtx.fill();
+   838→    }
+   839→  }
+   840→}
+   841→
+   842→function animateBook() {
+   843→  if (bookAnimFrame >= bookDuration) {
+   844→    bookOpening.classList.remove('active');
+   845→    showPortal();
+   846→    return;
+   847→  }
+   848→  const progress = bookAnimFrame / bookDuration;
+   849→  const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+   850→  drawBookOpen(eased);
+   851→  bookAnimFrame++;
+   852→  requestAnimationFrame(animateBook);
+   853→}
+   854→
+   855→function startBookOpening() {
+   856→  bookOpening.classList.add('active');
+   857→  bookAnimFrame = 0;
+   858→  animateBook();
+   859→}
+   860→
+   861→/* ============================================================================
+   862→   PORTAL & NAVIGATION
+   863→   ============================================================================ */
+   864→const portal = document.getElementById('portal');
+   865→const app = document.getElementById('app');
+   866→const nav = document.getElementById('main-nav');
+   867→
+   868→function showPortal() {
+   869→  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+   870→  portal.classList.remove('hidden-portal');
+   871→  portal.classList.add('active');
+   872→  nav.classList.remove('visible');
+   873→}
+   874→
+   875→function enterApp() {
+   876→  portal.classList.add('hidden-portal');
+   877→  app.classList.add('visible');
+   878→  nav.classList.add('visible');
+   879→  goTo('lesen');
+   880→}
+   881→
+   882→function scanCode() {
+   883→  const cb = document.querySelector('.code-box');
+   884→  cb.style.transform = 'scale(1.05)';
+   885→  cb.style.boxShadow = '0 0 25px rgba(107,26,26,0.25)';
+   886→  setTimeout(() => {
+   887→    cb.style.transform = 'scale(1)';
+   888→    cb.style.boxShadow = 'none';
+   889→    enterApp();
+   890→  }, 500);
+   891→}
+   892→
+   893→function goTo(pageId) {
+   894→  portal.classList.add('hidden-portal');
+   895→  nav.classList.add('visible');
+   896→  app.classList.add('visible');
+   897→
+   898→  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+   899→  const target = document.getElementById('pg-' + pageId);
+   900→  if (target) target.classList.add('active');
+   901→
+   902→  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+   903→  const activeLink = [...document.querySelectorAll('.nav-links a')].find(a => a.getAttribute('onclick')?.includes(pageId));
+   904→  if (activeLink) activeLink.classList.add('active');
+   905→}
+   906→
+   907→/* ============================================================================
+   908→   LESEN — Fragment-Selektor & Story
+   909→   ============================================================================ */
+   910→let activeFragments = new Set();
+   911→let currentChapter = 0;
+   912→
+   913→function toggleFragment(el) {
+   914→  const frag = el.dataset.fragment;
+   915→  if (activeFragments.has(frag)) {
+   916→    activeFragments.delete(frag);
+   917→    el.classList.remove('active');
+   918→  } else {
+   919→    if (activeFragments.size < 3) {
+   920→      activeFragments.add(frag);
+   921→      el.classList.add('active');
+   922→    }
+   923→  }
+   924→  updateEchoMetrics();
+   925→  updateStory();
+   926→}
+   927→
+   928→function updateEchoMetrics() {
+   929→  const r = (Math.random() * 0.5 + activeFragments.size * 0.15).toFixed(2);
+   930→  const t = (Math.random() * 0.3 + activeFragments.size * 0.1).toFixed(2);
+   931→  const d = (Math.random() * 0.2).toFixed(2);
+   932→  document.getElementById('echo-resonanz').textContent = r;
+   933→  document.getElementById('echo-tiefe').textContent = t;
+   934→  document.getElementById('echo-drift').textContent = d;
+   935→}
+   936→
+   937→const storyChapters = [
+   938→  {
+   939→    text: `<p>Die Nacht legte sich über die Stadt wie ein Samtgewebe, das jede Bewegung verschluckte. Ich stand am Fenster und beobachtete das Licht der Laternen, wie es sich in den Pfützen des gerade vergangenen Regens brach.</p><p>Ein Geräusch hinter mir. Das Rascheln von Seide, vielleicht. Oder nur der Wind, der durch die Ritzen der alten Fensterfugen strich. Ich drehte mich nicht um. In dieser Stunde zwischen Mitternacht und Morgengrauen wagte niemand, sich zu rühren.</p><p>Doch dann — ein Atemzug. Näher als der Wind. Wärmer als die Kälte, die von den Steinwänden ausging. Jemand war hier. Jemand, der genauso lange wartete wie ich.</p>`,
+   940→    page: 47
+   941→  },
+   942→  {
+   943→    text: `<p>Der Staub tanzte im Lichtstrahl, der durch die schmale Luke fiel. Ein einziger, goldener Faden aus Vergangenheit, der alles enthüllte, was wir zu verbergen suchten. Ich hob die Hand, und die Partikel umschmeichelten meine Finger wie Erinnerungen, die sich weigern, zu verblassen.</p><p>„Du kommst zu spät", sagte eine Stimme aus dem Schatten. Sie klang wie zerbrochenes Glas, das in Samt gewickelt wurde — scharf und sanft zugleich.</p><p>Ich lächelte. „Für manche Dinge gibt es keine Zeit. Nur den Moment."</p>`,
+   944→    page: 89
+   945→  },
+   946→  {
+   947→    text: `<p>Die Kälte war nicht körperlich. Sie saß tiefer, in den Räumen zwischen den Gedanken, in den Pausen zwischen den Worten. Ich spürte sie, als ich den Brief öffnete — das Papier war eisig, obwohl die Sonne draußen brannte.</p><p>„Wenn du das liest", stand da, „bin ich bereits fort. Nicht physisch — das wäre zu einfach. Sondern dort, wo die Worte enden und die Stille beginnt."</p><p>Ich faltete den Brief zusammen und legte ihn auf den Tisch. Der Staub würde ihn bedecken, genau wie all die anderen Dinge, die ich nicht mehr anfassen konnte.</p>`,
+   948→    page: 134
+   949→  },
+   950→  {
+   951→    text: `<p>Das Licht änderte sich. Nicht allmählich, wie es der Sonnenuntergang tat, sondern abrupt, als hätte jemand einen Schalter umgelegt. Eine Sekunde war der Raum warm und golden, die nächste lag er in bläulichem Halbdunkel.</p><p>Sie stand in der Tür. Ihr Atem war sichtbar in der plötzlichen Kälte, kleine Wolken aus Leben, die in die Leere entwichen. „Ich habe dich gesucht", sagte sie. „In jedem Schatten, in jedem Licht, in jedem Moment, der hätte deiner sein können."</p><p>„Und jetzt?" fragte ich.</p><p>„Jetzt habe ich dich gefunden."</p>`,
+   952→    page: 201
+   953→  },
+   954→  {
+   955→    text: `<p>Der letzte Atem war der schwerste. Nicht weil er körperlich anstrengend war, sondern weil er alles mit sich trug, was ich je gewesen war. Jede Liebe, jeder Verlust, jede Nacht, die zu lang und jeder Tag, der zu kurz war.</p><p>Ich öffnete die Augen — und die Welt war anders. Nicht besser, nicht schlechter. Nur anders. Die Farben waren gedämpfter, die Geräuche ferner, die Zeit langsamer. Als hätte ich einen Schleier abgenommen, den ich nicht gewusst hatte, dass ich trug.</p><p>„Willkommen", flüsterte der Schatten. „Du bist endlich angekommen."</p>`,
+   956→    page: 312
+   957→  }
+   958→];
+   959→
+   960→function loadChapter(idx) {
+   961→  currentChapter = idx;
+   962→  document.querySelectorAll('.ch-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+   963→  const area = document.getElementById('readArea');
+   964→  area.innerHTML = storyChapters[idx].text;
+   965→  area.scrollTop = 0;
+   966→  document.getElementById('rpBar').style.width = ((idx + 1) / storyChapters.length * 100) + '%';
+   967→  document.getElementById('pageNum').textContent = storyChapters[idx].page;
+   968→}
+   969→
+   970→function updateStory() {
+   971→  // Hier würde die echte Story-Engine mit Fragment-Branching greifen
+   972→  // Für Demo: leichte Text-Variation basierend auf Fragmenten
+   973→  const area = document.getElementById('readArea');
+   974→  if (activeFragments.has('samt')) {
+   975→    area.style.borderColor = 'rgba(107,26,26,0.15)';
+   976→  } else if (activeFragments.has('licht')) {
+   977→    area.style.borderColor = 'rgba(184,160,96,0.15)';
+   978→  } else {
+   979→    area.style.borderColor = 'rgba(180,170,150,0.06)';
+   980→  }
+   981→}
+   982→
+   983→/* ============================================================================
+   984→   HÖREN — Audio-Player
+   985→   ============================================================================ */
+   986→const viz = document.getElementById('viz');
+   987→for (let i = 0; i < 32; i++) {
+   988→  const b = document.createElement('div');
+   989→  b.className = 'v-bar';
+   990→  b.style.height = Math.random() * 50 + 10 + '%';
+   991→  b.style.animationDelay = Math.random() * 1.2 + 's';
+   992→  viz.appendChild(b);
+   993→}
+   994→
+   995→let isPlaying = false;
+   996→let currentTrack = 0;
+   997→const tracks = [
+   998→  { name: 'Flüstern im Kerzenschein', dur: '04:32' },
+   999→  { name: 'Das Rascheln von Seide', dur: '03:17' },
+  1000→  { name: 'Mitternacht in Venedig', dur: '05:44' },
+  1001→  { name: 'Der letzte Tanz', dur: '06:21' },
+  1002→  { name: 'Echo der Vergangenheit', dur: '07:08' }
+  1003→];
+  1004→
+  1005→function togglePlay() {
+  1006→  isPlaying = !isPlaying;
+  1007→  document.getElementById('playBtn').textContent = isPlaying ? '❚❚' : '▶';
+  1008→  document.querySelectorAll('.v-bar').forEach(b => {
+  1009→    b.style.animationPlayState = isPlaying ? 'running' : 'paused';
+  1010→  });
+  1011→}
+  1012→
+  1013→function selTrack(el, idx) {
+  1014→  currentTrack = idx;
+  1015→  document.querySelectorAll('.track').forEach(t => t.style.background = '');
+  1016→  el.style.background = 'rgba(180,170,150,0.03)';
+  1017→  if (!isPlaying) togglePlay();
+  1018→}
+  1019→
+  1020→function prevTrack() {
+  1021→  currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+  1022→  const trackEls = document.querySelectorAll('.track');
+  1023→  selTrack(trackEls[currentTrack], currentTrack);
+  1024→}
+  1025→
+  1026→function nextTrack() {
+  1027→  currentTrack = (currentTrack + 1) % tracks.length;
+  1028→  const trackEls = document.querySelectorAll('.track');
+  1029→  selTrack(trackEls[currentTrack], currentTrack);
+  1030→}
+  1031→
+  1032→/* ============================================================================
+  1033→   SCHREIBEN — Text-Engine
+  1034→   ============================================================================ */
+  1035→const prompts = [
+  1036→  "Schreibe die ersten Worte eines Briefes, den du niemals abschicken wirst...",
+  1037→  "Beschreibe den Moment, in dem zwei sich treffen, die sich einst geliebt haben...",
+  1038→  "Was würdest du sagen, wenn die Nacht zuhören würde?",
+  1039→  "Schreibe von einem Ort, an dem die Zeit stehen geblieben ist...",
+  1040→  "Erfinde das Ende einer Geschichte, die niemand je erzählt hat...",
+  1041→  "Was bleibt von einer Liebe, wenn die Worte verstummen?",
+  1042→  "Die Kälte kriecht durch die Ritzen. Was schreibst du, um sie fernzuhalten?",
+  1043→  "Ein Atemzug im Dunkeln. Beschreibe die Stille danach."
+  1044→];
+  1045→
+  1046→function newPrompt() {
+  1047→  const el = document.getElementById('wPrompt');
+  1048→  el.style.opacity = '0';
+  1049→  setTimeout(() => {
+  1050→    el.textContent = '"' + prompts[Math.floor(Math.random() * prompts.length)] + '"';
+  1051→    el.style.opacity = '1';
+  1052→  }, 300);
+  1053→}
+  1054→
+  1055→function analyzeText() {
+  1056→  const txt = document.getElementById('wArea').value.toLowerCase();
+  1057→  const found = [];
+  1058→  const fragMap = { 'samt': 'Samt', 'kälte': 'Kälte', 'kälte': 'Kälte', 'wärme': 'Wärme', 'licht': 'Licht', 'schatten': 'Schatten', 'staub': 'Staub', 'atem': 'Atem' };
+  1059→  Object.keys(fragMap).forEach(k => {
+  1060→    if (txt.includes(k)) found.push(fragMap[k]);
+  1061→  });
+  1062→  if (found.length > 0) {
+  1063→    alert('Gefundene Resonanzen: ' + found.join(', '));
+  1064→  } else {
+  1065→    alert('Keine Fragment-Resonanzen gefunden. Schreibe mehr aus dem Herzen...');
+  1066→  }
+  1067→}
+  1068→
+  1069→function saveNote() {
+  1070→  const txt = document.getElementById('wArea').value.trim();
+  1071→  if (!txt) return;
+  1072→  const nl = document.getElementById('notes');
+  1073→  const n = document.createElement('div');
+  1074→  n.className = 'note';
+  1075→  const fragText = activeFragments.size > 0 ? ' — Resonanz: ' + [...activeFragments].join(', ') : '';
+  1076→  n.innerHTML = '„' + txt.substring(0, 90) + (txt.length > 90 ? '...' : '') + '"<span style="color:var(--accent-gold-dim);font-size:0.65rem;">' + fragText + '</span>';
+  1077→  n.style.opacity = '0';
+  1078→  nl.insertBefore(n, nl.firstChild);
+  1079→  setTimeout(() => { n.style.transition = 'opacity 0.5s'; n.style.opacity = '1'; }, 50);
+  1080→  document.getElementById('wArea').value = '';
+  1081→  // Update Archiv-Memory
+  1082→  const memEmo = document.getElementById('mem-emotional');
+  1083→  if (memEmo) memEmo.textContent = parseInt(memEmo.textContent) + 1;
+  1084→}
+  1085→
+  1086→document.getElementById('wArea').addEventListener('keydown', (e) => {
+  1087→  if (e.ctrlKey && e.key === 'Enter') saveNote();
+  1088→});
+  1089→
+  1090→/* ============================================================================
+  1091→   GLOBAL
+  1092→   ============================================================================ */
+  1093→function log(msg) { console.log('[Buch der Begierde]', msg); }
+  1094→
+  1095→// Keyboard-Navigation
+  1096→document.addEventListener('keydown', (e) => {
+  1097→  if (e.key === 'Escape') showPortal();
+  1098→});
+  1099→
+  1100→// Echo-Canvas (Hintergrund-Partikel)
+  1101→const echoCanvas = document.createElement('canvas');
+  1102→echoCanvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0.4;';
+  1103→document.body.appendChild(echoCanvas);
+  1104→const echoCtx = echoCanvas.getContext('2d');
+  1105→
+  1106→function resizeEcho() {
+  1107→  echoCanvas.width = window.innerWidth;
+  1108→  echoCanvas.height = window.innerHeight;
+  1109→}
+  1110→resizeEcho();
+  1111→window.addEventListener('resize', resizeEcho);
+  1112→
+  1113→let echoParts = [];
+  1114→for (let i = 0; i < 60; i++) {
+  1115→  echoParts.push({
+  1116→    x: Math.random() * echoCanvas.width,
+  1117→    y: Math.random() * echoCanvas.height,
+  1118→    s: Math.random() * 1.2 + 0.3,
+  1119→    vx: (Math.random() - 0.5) * 0.2,
+  1120→    vy: (Math.random() - 0.5) * 0.2 - 0.05,
+  1121→    o: Math.random() * 0.3 + 0.05
+  1122→  });
+  1123→}
+  1124→
+  1125→function animEcho() {
+  1126→  echoCtx.clearRect(0, 0, echoCanvas.width, echoCanvas.height);
+  1127→  echoParts.forEach(p => {
+  1128→    p.x += p.vx; p.y += p.vy;
+  1129→    if (p.y < -5) { p.y = echoCanvas.height + 5; p.x = Math.random() * echoCanvas.width; }
+  1130→    if (p.x < -5) p.x = echoCanvas.width + 5;
+  1131→    if (p.x > echoCanvas.width + 5) p.x = -5;
+  1132→    echoCtx.beginPath();
+  1133→    echoCtx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+  1134→    echoCtx.fillStyle = `rgba(184,160,96,${p.o})`;
+  1135→    echoCtx.fill();
+  1136→  });
+  1137→  requestAnimationFrame(animEcho);
+  1138→}
+  1139→animEcho();
+  1140→</script>
+  1141→</body>
+  1142→</html>'''
+  1143→
+  1144→with open('/mnt/agents/output/index.html', 'w', encoding='utf-8') as f:
+  1145→    f.write(index_html)
+  1146→
+  1147→print(f"index.html gespeichert: {len(index_html)} Zeichen")
+  1148→
