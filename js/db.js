@@ -37,7 +37,8 @@ const DB = (() => {
         const id = 'L_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 9);
         const expiry = new Date();
         expiry.setFullYear(expiry.getFullYear() + CONFIG.COOKIE_EXPIRY_YEARS);
-        document.cookie = name + '=' + id + ';expires=' + expiry.toUTCString() + ';path=/;SameSite=Lax';
+        const secureFlag = (typeof location !== 'undefined' && location.protocol === 'https:') ? ';Secure' : '';
+        document.cookie = name + '=' + id + ';expires=' + expiry.toUTCString() + ';path=/;SameSite=Lax' + secureFlag;
         return id;
     }
 

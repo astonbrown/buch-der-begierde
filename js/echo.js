@@ -144,6 +144,12 @@ const EchoEngine = (() => {
     function _render() {
         if (!_ctx || !_canvas) return;
 
+        // Pause bei inaktivem Tab – spart CPU/GPU
+        if (document.hidden) {
+            _animId = requestAnimationFrame(_render);
+            return;
+        }
+
         const w = _canvas.getBoundingClientRect().width;
         const h = _canvas.getBoundingClientRect().height;
 

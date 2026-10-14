@@ -37,55 +37,80 @@ function _renderNodeList(containerId) {
 
         // Zustands-Klasse für Farbcodierung
         const stateClass = node.state;
-        card.innerHTML = `
-            <div class="archive-card-header">
-                <span class="archive-dot ${stateClass}"></span>
-                <span class="archive-type">${node.type.toUpperCase()}</span>
-                <span class="archive-source">${node.source}</span>
-            </div>
-            <div class="archive-name">${node.name}</div>
-            <div class="archive-meta">
-                <span>Gewicht: ${node.weight.toFixed(2)}</span>
-                <span>Zugriffe: ${node.accessCount}</span>
-                <span>Erstellt: ${new Date(node.created).toLocaleString('de-DE')}</span>
-            </div>
-        `;
+
+        const header = document.createElement('div');
+        header.classList.add('archive-card-header');
+
+        const dot = document.createElement('span');
+        dot.classList.add('archive-dot', stateClass);
+
+        const typeEl = document.createElement('span');
+        typeEl.classList.add('archive-type');
+        typeEl.textContent = node.type.toUpperCase();
+
+        const sourceEl = document.createElement('span');
+        sourceEl.classList.add('archive-source');
+        sourceEl.textContent = node.source;
+
+        header.appendChild(dot);
+        header.appendChild(typeEl);
+        header.appendChild(sourceEl);
+
+        const nameEl = document.createElement('div');
+        nameEl.classList.add('archive-name');
+        nameEl.textContent = node.name; // textContent → XSS-Schutz
+
+        const meta = document.createElement('div');
+        meta.classList.add('archive-meta');
+
+        const weightSpan = document.createElement('span');
+        weightSpan.textContent = `Gewicht: ${node.weight.toFixed(2)}`;
+
+        const accessSpan = document.createElement('span');
+        accessSpan.textContent = `Zugriffe: ${node.accessCount}`;
+
+        const createdSpan = document.createElement('span');
+        createdSpan.textContent = `Erstellt: ${new Date(node.created).toLocaleString('de-DE')}`;
+
+        meta.appendChild(weightSpan);
+        meta.appendChild(accessSpan);
+        meta.appendChild(createdSpan);
+
+        card.appendChild(header);
+        card.appendChild(nameEl);
+        card.appendChild(meta);
         container.appendChild(card);
     });
 }
 
 /* ------------------------------------------------------------------
-   Renderer: Statistik-Summary
+   Renderer: Statistik-Summary (IDs aus archiv.html)
    ------------------------------------------------------------------ */
-function _renderSummary(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
+function _renderSummary() {
     const nodes = MemoryEngine.getNodes();
     const connections = MemoryEngine.getConnections();
     const avg = MemoryEngine.getAverageWeight();
 
-    const byType = {};
-    nodes.forEach(n => { byType[n.type] = (byType[n.type] || 0) + 1; });
+    const nodeCountEl = document.getElementById('archivNodeCount');
+    if (nodeCountEl) nodeCountEl.textContent = String(nodes.length);
 
-    container.innerHTML = `
-        <div class="summary-item">
-            <div class="summary-value">${nodes.length}</div>
-            <div class="summary-label">Knoten</div>
-        </div>
-        <div class="summary-item">
-            <div class="summary-value">${connections.length}</div>
-            <div class="summary-label">Verknüpfungen</div>
-        </div>
-        <div class="summary-item">
-            <div class="summary-value">${avg.toFixed(2)}</div>
-            <div class="summary-label">Ø Gewicht</div>
-        </div>
-        <div class="summary-item">
-            <div class="summary-value">${byType.emotional || 0}</div>
-            <div class="summary-label">Emotional</div>
-        </div>
-    `;
+    const connCountEl = document.getElementById('archivConnectionCount');
+    if (connCountEl) connCountEl.textContent = String(connections.length);
+
+    const avgEl = document.getElementById('archivAverageWeight');
+    if (avgEl) avgEl.textContent = avg.toFixed(2);
+
+    // Speichergröße (approximiert)
+    const storageEl = document.getElementById('archivStorageSize');
+    if (storageEl) {
+        try {
+            const serialized = JSON.stringify(MemoryEngine.serialize());
+            const bytes = new Blob([serialized]).size;
+            storageEl.textContent = bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`;
+        } catch {
+            storageEl.textContent = '—';
+        }
+    }
 }
 
 /* ------------------------------------------------------------------
@@ -127,19 +152,19 @@ async function initArchiv() {
         showToast('Kein gespeichertes Gedächtnis gefunden', 'fa-info-circle');
     }
 
-    _renderNodeList('archiveList');
-    _renderSummary('archiveSummary');
+    _renderNodeList('archivNodeList');
+    _renderSummary();
 
-    // Export-Button
-    const btnExport = document.getElementById('btnExport');
+    // Export-Button (ID korrigiert laut HTML)
+    const btnExport = document.getElementById('btnArchivExport');
     if (btnExport) btnExport.addEventListener('click', _exportState);
 
     // Reset-Button
     const btnReset = document.getElementById('btnReset');
     if (btnReset) btnReset.addEventListener('click', () => {
         MemoryEngine.reset();
-        _renderNodeList('archiveList');
-        _renderSummary('archiveSummary');
+        _renderNodeList('archivNodeList');
+        _renderSummary();
         showToast('Gedächtnis zurückgesetzt', 'fa-trash-alt');
     });
 

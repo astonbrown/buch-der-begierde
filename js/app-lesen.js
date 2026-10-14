@@ -31,7 +31,18 @@ function _renderMemoryNodes(containerId) {
     indicator.classList.add('node-indicator', node.state);
     const info = document.createElement('div');
     info.classList.add('node-info');
-    info.innerHTML = `<div class="node-name">${node.name}</div><div class="node-detail">${node.type.toUpperCase()} · ${node.source}</div>`;
+
+    const nameEl = document.createElement('div');
+    nameEl.classList.add('node-name');
+    nameEl.textContent = node.name; // textContent statt innerHTML → XSS-Schutz
+
+    const detailEl = document.createElement('div');
+    detailEl.classList.add('node-detail');
+    detailEl.textContent = `${node.type.toUpperCase()} · ${node.source}`;
+
+    info.appendChild(nameEl);
+    info.appendChild(detailEl);
+
     const weight = document.createElement('span');
     weight.classList.add('node-weight');
     weight.textContent = node.weight.toFixed(2);

@@ -31,7 +31,9 @@ export function initScrollSpy(sectionIds) {
     const navLinks = document.querySelectorAll('nav a');
     if (navLinks.length === 0 || sectionIds.length === 0) return;
 
-    window.addEventListener('scroll', () => {
+    let ticking = false;
+
+    function updateActiveLink() {
         let current = '';
 
         sectionIds.forEach((id) => {
@@ -47,7 +49,15 @@ export function initScrollSpy(sectionIds) {
                 link.classList.add('active');
             }
         });
-    });
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateActiveLink);
+            ticking = true;
+        }
+    }, { passive: true });
 }
 
 /**

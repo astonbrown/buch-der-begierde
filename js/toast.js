@@ -19,7 +19,13 @@ export function showToast(message, icon, containerId) {
 
     const toast = document.createElement('div');
     toast.classList.add('toast');
-    toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+
+    const iconEl = document.createElement('i');
+    iconEl.className = `fas ${icon}`;
+    toast.appendChild(iconEl);
+
+    // textContent verhindert XSS – message darf nie als HTML interpretiert werden
+    toast.appendChild(document.createTextNode(' ' + String(message)));
 
     container.appendChild(toast);
 

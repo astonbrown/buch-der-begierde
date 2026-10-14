@@ -20,7 +20,7 @@ export const CONFIG = Object.freeze({
     SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1udGp3b3J5d2JrZnB3dmFraWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMTczMjAsImV4cCI6MjA5MDg5MzMyMH0.4LTwi6IY6WoiQTQfy0612j-8xi1C1Ly1zjMQJ5bOps0',
 
     /* --- Version --- */
-    VERSION: '0.5.0',
+    VERSION: '0.6.0',
 
     /* --- Fragment-Selektor --- */
     MAX_FRAGMENTS: 3,
@@ -54,7 +54,7 @@ export const CONFIG = Object.freeze({
 
     /* --- Story --- */
     STORY_FADE_DURATION: 300,      // ms — Textübergang
-    STORY_TOTAL_PAGES: 312,        // fiktive Gesamtzahl
+    STORY_TOTAL_PAGES: 7,          // aktuell implementierte Seiten (story-data.js)
 
     /* --- QR Scanner --- */
     QR_SCAN_DURATION: 6000,        // ms bis Simulationsergebnis
