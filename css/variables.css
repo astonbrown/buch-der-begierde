@@ -1,0 +1,56 @@
+/* ===================================================================
+ * variables.css — Zentrale CSS Custom Properties
+ * Alle Farb- und Typografie-Konstanten für das gesamte Projekt.
+ * =================================================================== */
+
+:root {
+    /* --- Hintergrund --- */
+    --bg: #1a160f;
+    --bg-deep: #0f0a05;
+
+    /* --- Vordergrund --- */
+    --fg: #e8d9b5;
+    --fg-muted: #c9b58f;
+
+    /* --- Akzent --- */
+    --accent: #7a1f1f;
+    --accent-dark: #3a1b1b;
+
+    /* --- Gold / Bronze --- */
+    --gold: #c9a44c;
+    --gold-dim: #8a6d32;
+
+    /* --- Karten & Flächen --- */
+    --card: rgba(232, 217, 181, 0.96);
+    --card-border: rgba(109, 83, 35, 0.55);
+
+    /* --- Rahmen --- */
+    --border: rgba(109, 83, 35, 0.22);
+
+    /* --- Holz / Pergament --- */
+    --wood: #3a2a1a;
+    --paper: #e8d9b5;
+    --paper-shadow: rgba(22, 14, 5, 0.18);
+
+    /* --- Fragment-Farben --- */
+    --samt: #6b2d3e;
+    --kälte: #3a5c6b;
+    --wärme: #8b5e2f;
+    --licht: #d0b16e;
+    --schatten: #2a1f1a;
+    --staub: #9a7f5a;
+    --atem: #c4463a;
+
+    /* --- Datenbank-Status --- */
+    --db-ok: #4a8c5c;
+    --db-err: #8c4a4a;
+
+    /* --- Typografie --- */
+    --font-serif: 'Cormorant Garamond', serif;
+    --font-display: 'Cinzel', serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* --- Transitions --- */
+    --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}

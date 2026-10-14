@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hören — Buch der Begierde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+
+<header>
+  <div class="logo-group">
+    <a href="index.html" class="logo-icon"><span>B</span></a>
+    <div class="logo-text"><strong>Buch der Begierde</strong><span>Hören</span></div>
+  </div>
+  <nav>
+    <a href="lesen.html" id="navLesen">Lesen</a>
+    <a href="hoeren.html" class="active" id="navHoeren">Hören</a>
+    <a href="schreiben.html" id="navSchreiben">Schreiben</a>
+  </nav>
+</header>
+
+<main style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);">
+  <div class="panel" style="max-width:600px;width:90%;animation:fadeInUp 0.8s ease;">
+    <div class="panel-header">
+      <span class="panel-tag"><i>◈</i> Stimme</span>
+    </div>
+    <h2 class="panel-title" style="text-align:center;">Steuerung der Stimme</h2>
+    <p class="panel-desc" style="text-align:center;">Spielen, pausieren, unterbrechen und fortsetzen. Deine Kontrolle über die Erzählung.</p>
+
+    <div class="hoeren-controls">
+      <button class="btn btn-primary" id="btnPlay">▶ Spielen</button>
+      <button class="btn" id="btnPause">⏸ Pausieren</button>
+      <button class="btn" id="btnResume">⏵ Fortsetzen</button>
+      <button class="btn btn-ghost" id="btnStop">■ Stoppen</button>
+    </div>
+
+    <div class="hoeren-slider-group">
+      <div class="hoeren-slider-row">
+        <span class="hoeren-slider-label">Geschwindigkeit</span>
+        <input type="range" class="intensity-slider" id="rateSlider" min="0.1" max="10" step="0.1" value="1">
+        <span class="hoeren-slider-value" id="rateValue">1.0x</span>
+      </div>
+      <div class="hoeren-slider-row">
+        <span class="hoeren-slider-label">Tonhöhe</span>
+        <input type="range" class="intensity-slider" id="pitchSlider" min="0.1" max="2" step="0.1" value="1">
+        <span class="hoeren-slider-value" id="pitchValue">1.0</span>
+      </div>
+    </div>
+
+    <div class="hoeren-preview" id="textPreview">
+      <em>Hier wird die Geschichte angezeigt, die abgespielt wird...</em>
+    </div>
+
+    <div class="hoeren-status" id="hoerenStatus">Status: Bereit — Stimme: Deutsch (Standard)</div>
+
+    <div style="text-align:center;margin-top:1rem;">
+      <button class="btn btn-ghost" id="btnBack">← Zurück zum Lesen</button>
+    </div>
+  </div>
+</main>
+
+<footer class="centered"><span>Buch der Begierde — v0.6.0</span></footer>
+<div class="page-transition" id="pageTransition"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script type="module" src="js/app-hoeren.js"></script>
+</body>
+</html>

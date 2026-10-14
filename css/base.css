@@ -1,0 +1,31 @@
+/* ===================================================================
+ * base.css — Reset, Body, Scrollbar
+ * =================================================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-dim) var(--bg-deep);
+}
+
+body {
+    font-family: var(--font-serif);
+    background: radial-gradient(circle at top, rgba(255,255,255,0.05), transparent 25%),
+                linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+    color: var(--fg);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    line-height: 1.7;
+    background-attachment: fixed;
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

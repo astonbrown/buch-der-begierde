@@ -1,0 +1,56 @@
+{
+  "provider": "ollama",
+  "offline": true,
+  "ollama": {
+    "baseUrl": "http://localhost:11434",
+    "apiPath": "/api/chat",
+    "timeout": 60000
+  },
+  "model": {
+    "name": "qwen3.8:latest",
+    "provider": "ollama",
+    "temperature": 0.2,
+    "contextWindow": 32768,
+    "maxTokens": 4096,
+    "toolCallFormat": "native"
+  },
+  "agent": {
+    "toolsEnabled": true,
+    "autoToolUse": true,
+    "toolApproval": "auto",
+    "maxSteps": 20,
+    "verbose": true
+  },
+  "mcp": {
+    "servers": {
+      "filesystem": {
+        "type": "stdio",
+        "command": "npx.cmd",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "C:\\Users\\andre\\Desktop\\buch-der-begierde"
+        ],
+        "env": {
+          "PATH": "C:\\Program Files\\nodejs"
+        },
+        "enabled": true,
+        "autoStart": true
+      }
+    }
+  },
+  "permissions": {
+    "filesystem": {
+      "read": true,
+      "write": true,
+      "create": true,
+      "delete": false,
+      "allowedPaths": [
+        "C:\\Users\\andre\\Desktop\\buch-der-begierde"
+      ],
+      "deniedPaths": [
+        "C:\\Windows\\System32"
+      ]
+    }
+  }
+}

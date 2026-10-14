@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geräteanalyse — Buch der Begierde</title>
+    <meta name="description" content="Diagnose deines Lesegeräts: Browser, Display, Leistung, APIs.">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Stylesheets (modular) -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/atmosphere.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/analyse.css">
+</head>
+<body>
+
+    <!-- Atmosphäre & Grain -->
+    <div class="atmosphere"></div>
+    <div class="grain-overlay"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== Header ===== -->
+    <header>
+        <a href="index.html" class="logo-group" style="text-decoration:none;">
+            <div class="logo-icon"><span>B</span></div>
+            <div class="logo-text">
+                <strong>Buch der Begierde</strong>
+                <span>Geräteanalyse</span>
+            </div>
+        </a>
+        <nav>
+            <a href="lesen.html">Lesen</a>
+            <a href="hoeren.html">Hören</a>
+            <a href="schreiben.html">Schreiben</a>
+            <a href="archiv.html">Archiv</a>
+            <a href="analyse.html" class="active">Analyse</a>
+        </nav>
+    </header>
+
+    <!-- ===== Main ===== -->
+    <main>
+        <div class="section-label" style="margin-top:2rem;">Diagnose deines Lesegeräts</div>
+        <p class="panel-desc" style="margin-bottom:2rem; max-width:600px;">
+            Diese Seite sammelt technische Daten deines Browsers und Geräts, um die Kompatibilität mit allen Modulen des Buchs der Begierde zu prüfen.
+        </p>
+
+        <!-- Summary Bar -->
+        <div class="summary-bar">
+            <div class="summary-item">
+                <div class="summary-value" id="sumStatus">OK</div>
+                <div class="summary-label">Status</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="sumBrowser">—</div>
+                <div class="summary-label">Browser</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="sumResolution">—</div>
+                <div class="summary-label">Auflösung</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value" id="sumFeatures">—</div>
+                <div class="summary-label">APIs</div>
+            </div>
+        </div>
+
+        <!-- Browser & System -->
+        <div class="section-label">Browser &amp; System</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon"><i class="fas fa-globe"></i></div><div class="card-name">Browser</div><div class="card-value" id="anaBrowser">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fab fa-windows"></i></div><div class="card-name">Betriebssystem</div><div class="card-value" id="anaOs">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-language"></i></div><div class="card-name">Sprache</div><div class="card-value" id="anaLanguage">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-cookie-bite"></i></div><div class="card-name">Cookies</div><div class="card-value" id="anaCookie">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-wifi"></i></div><div class="card-name">Verbindung</div><div class="card-value" id="anaOnline">—</div></div>
+        </div>
+
+        <!-- Display -->
+        <div class="section-label">Bildschirm &amp; Anzeige</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon"><i class="fas fa-desktop"></i></div><div class="card-name">Auflösung</div><div class="card-value" id="anaResolution">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-expand"></i></div><div class="card-name">Viewport</div><div class="card-value" id="anaViewport">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-palette"></i></div><div class="card-name">Farbtiefe</div><div class="card-value" id="anaColorDepth">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-th"></i></div><div class="card-name">Pixel-Ratio</div><div class="card-value" id="anaPixelRatio">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-compass"></i></div><div class="card-name">Ausrichtung</div><div class="card-value" id="anaOrientation">—</div></div>
+        </div>
+
+        <!-- Performance -->
+        <div class="section-label">Leistung &amp; Hardware</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon"><i class="fas fa-microchip"></i></div><div class="card-name">CPU-Kerne</div><div class="card-value" id="anaCores">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-memory"></i></div><div class="card-name">Arbeitsspeicher</div><div class="card-value" id="anaMemory">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-signal"></i></div><div class="card-name">Verbindungstyp</div><div class="card-value" id="anaConnType">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-tachometer-alt"></i></div><div class="card-name">Downlink</div><div class="card-value" id="anaDownlink">—</div></div>
+        </div>
+
+        <!-- Features & APIs -->
+        <div class="section-label">Funktionen &amp; APIs</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon"><i class="fas fa-cube"></i></div><div class="card-name">WebGL</div><div class="card-value" id="anaWebgl">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-volume-up"></i></div><div class="card-name">Web Speech</div><div class="card-value" id="anaWebSpeech">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-camera"></i></div><div class="card-name">Media Devices</div><div class="card-value" id="anaMediaDevices">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-cogs"></i></div><div class="card-name">Service Worker</div><div class="card-value" id="anaServiceWorker">—</div></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-database"></i></div><div class="card-name">LocalStorage</div><div class="card-value" id="anaLocalStorage">—</div></div>
+        </div>
+
+        <!-- Datenbank-Test -->
+        <div class="section-label">Datenbank-Verbindung</div>
+        <div class="summary-bar" style="flex-direction:column; align-items:stretch;">
+            <p class="panel-desc" style="margin-bottom:1rem;">
+                Teste die Verbindung zum Supabase-Backend, das LeserIn-Daten und Eingaben speichert.
+            </p>
+            <button class="btn btn-primary" id="dbTestBtn" style="align-self:flex-start;"><span><i class="fas fa-plug"></i> Verbindung testen</span></button>
+        </div>
+
+        <div class="section-label">Ollama-Verbindung</div>
+        <div class="summary-bar" style="flex-direction:column; align-items:stretch; gap:0.75rem;">
+            <p class="panel-desc" style="margin-bottom:0.5rem;">
+                Prüfe, ob Ollama unter der angegebenen Adresse erreichbar ist. Standardmäßig wird <strong>http://localhost:11434</strong> verwendet.
+            </p>
+            <label for="ollamaEndpoint" class="panel-desc" style="font-weight:600;">Endpoint</label>
+            <input id="ollamaEndpoint" type="text" placeholder="http://localhost:11434" style="padding:0.75rem 1rem; border:1px solid var(--border-color, #3b3128); border-radius:0.5rem; background:rgba(255,255,255,0.04); color:inherit;">
+            <label for="ollamaModel" class="panel-desc" style="font-weight:600;">Modell</label>
+            <input id="ollamaModel" type="text" placeholder="llama3.1" style="padding:0.75rem 1rem; border:1px solid var(--border-color, #3b3128); border-radius:0.5rem; background:rgba(255,255,255,0.04); color:inherit;">
+            <button class="btn btn-primary" id="ollamaTestBtn" style="align-self:flex-start;"><span><i class="fas fa-plug"></i> Verbindung testen</span></button>
+            <div id="ollamaStatus" class="panel-desc" style="margin-top:0.25rem;">Noch nicht getestet.</div>
+        </div>
+
+    </main>
+
+    <!-- ===== Footer ===== -->
+    <footer>
+        <span>Buch der Begierde · Geräteanalyse</span>
+        <span>Vanilla ES6</span>
+    </footer>
+
+    <!-- ===== Entry-Point ===== -->
+    <script type="module" src="js/app-analyse.js"></script>
+</body>
+</html>
